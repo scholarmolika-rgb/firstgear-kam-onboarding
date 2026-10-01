@@ -1,0 +1,53 @@
+{
+  "name": "firstgear-kam-onboarding",
+  "version": "1.0.0",
+  "private": true,
+  "description": "FirstGear KAM Onboarding Compass — evidence-based 30-day readiness platform for Key Account Managers. Learn first. Then earn access.",
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:db": "vitest run tests/db",
+    "test:e2e": "playwright test",
+    "seed": "tsx scripts/seed.ts",
+    "ingest": "tsx scripts/ingest-knowledge.ts",
+    "generate:intents": "tsx scripts/generate-intent-dataset.ts"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "dependencies": {
+    "@supabase/ssr": "^0.12.7",
+    "@supabase/supabase-js": "^2.117.2",
+    "clsx": "^2.1.1",
+    "jspdf": "^3.0.4",
+    "jspdf-autotable": "^5.0.8",
+    "lucide-react": "^1.49.0",
+    "next": "^15.5.27",
+    "react": "^19.1.1",
+    "react-dom": "^19.1.1",
+    "server-only": "^0.0.1",
+    "unpdf": "^1.8.1",
+    "zod": "^3.25.76"
+  },
+  "devDependencies": {
+    "@electric-sql/pglite": "^0.4.6",
+    "@playwright/test": "^1.63.0",
+    "@types/node": "^22.20.4",
+    "@types/react": "^19.3.0",
+    "@types/react-dom": "^19.3.0",
+    "autoprefixer": "^10.6.1",
+    "dotenv": "^18.0.5",
+    "eslint": "^9.39.5",
+    "eslint-config-next": "^15.5.27",
+    "postcss": "^8.5.28",
+    "tailwindcss": "^3.4.17",
+    "tsx": "^4.23.15",
+    "typescript": "5.8",
+    "vitest": "^3.2.4"
+  }
+}

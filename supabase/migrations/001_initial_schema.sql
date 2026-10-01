@@ -1,0 +1,679 @@
+-- ════════════════════════════════════════════════════════════════════
+-- FirstGear KAM Onboarding Compass — 001 initial schema
+-- Supabase Postgres is the single source of truth for onboarding state.
+-- ════════════════════════════════════════════════════════════════════
+
+create extension if not exists vector;
+
+-- ── Generic helpers ────────────────────────────────────────────────
+create or replace function public.touch_updated_at() returns trigger
+language plpgsql as $$
+begin
+  new.updated_at := now();
+  return new;
+end $$;
+
+-- ── Roles & identity ───────────────────────────────────────────────
+create table public.roles (
+  id          text primary key check (id in ('KAM','MENTOR','REPORTING_BOSS','HR_ADMIN')),
+  name        text not null,
+  description text
+);
+
+create table public.profiles (
+  id          uuid primary key references auth.users(id) on delete cascade,
+  full_name   text not null,
+  email       text not null,
+  role        text not null references public.roles(id),
+  title       text,
+  is_active   boolean not null default true,
+  created_at  timestamptz not null default now(),
+  updated_at  timestamptz not null default now()
+);
+create index profiles_role_idx on public.profiles(role);
+
+create table public.employees (
+  id                 uuid primary key default gen_random_uuid(),
+  profile_id         uuid unique references public.profiles(id) on delete set null,
+  employee_code      text unique not null,
+  full_name          text not null,
+  email              text not null,
+  designation        text not null default 'Key Account Manager',
+  department         text not null default 'Sales & Key Accounts',
+  location           text,
+  joining_type       text not null default 'NEW_JOINER' check (joining_type in ('NEW_JOINER','REASSIGNED')),
+  joining_date       date not null,
+  assigned_customer  text,
+  mentor_id          uuid references public.profiles(id) on delete set null,
+  reporting_boss_id  uuid references public.profiles(id) on delete set null,
+  hr_owner_id        uuid references public.profiles(id) on delete set null,
+  status             text not null default 'ACTIVE' check (status in ('ACTIVE','INACTIVE')),
+  created_at         timestamptz not null default now(),
+  updated_at         timestamptz not null default now()
+);
+create index employees_mentor_idx on public.employees(mentor_id);
+create index employees_boss_idx on public.employees(reporting_boss_id);
+
+-- ── Programme configuration ────────────────────────────────────────
+create table public.app_settings (
+  key          text primary key,
+  value        jsonb not null,
+  category     text not null default 'general',
+  label        text not null,
+  description  text,
+  value_type   text not null default 'number' check (value_type in ('number','boolean','string','json','date')),
+  updated_by   uuid references public.profiles(id) on delete set null,
+  updated_at   timestamptz not null default now()
+);
+
+create table public.onboarding_templates (
+  id             uuid primary key default gen_random_uuid(),
+  code           text unique not null,
+  name           text not null,
+  description    text,
+  duration_days  int not null default 30 check (duration_days between 5 and 120),
+  version        int not null default 1,
+  is_active      boolean not null default true,
+  created_at     timestamptz not null default now(),
+  updated_at     timestamptz not null default now()
+);
+
+create table public.onboarding_days (
+  id            uuid primary key default gen_random_uuid(),
+  template_id   uuid not null references public.onboarding_templates(id) on delete cascade,
+  day_number    int not null check (day_number >= 1),
+  phase         int not null check (phase in (1,2)),
+  segment       text not null,
+  title         text not null,
+  pillars       text[] not null default '{}',
+  objectives    text[] not null default '{}',
+  resources     jsonb not null default '[]'::jsonb,
+  gate_code     text,
+  created_at    timestamptz not null default now(),
+  unique (template_id, day_number)
+);
+
+create table public.gate_definitions (
+  id                  uuid primary key default gen_random_uuid(),
+  template_id         uuid not null references public.onboarding_templates(id) on delete cascade,
+  code                text not null,
+  day_number          int not null,
+  name                text not null,
+  description         text,
+  gate_type           text not null check (gate_type in ('TASKS','ASSESSMENT','SCENARIO','PANEL')),
+  min_score           numeric(5,2),
+  approver_role       text references public.roles(id),
+  unlocks             text[] not null default '{}',
+  sort_order          int not null default 0,
+  is_required         boolean not null default true,
+  created_at          timestamptz not null default now(),
+  unique (template_id, code)
+);
+
+-- Tasks: template tasks (instance_id null) and instance-specific tasks
+-- generated by the engine (targeted refresh, remediation plans).
+create table public.tasks (
+  id                 uuid primary key default gen_random_uuid(),
+  template_id        uuid references public.onboarding_templates(id) on delete cascade,
+  instance_id        uuid,  -- FK added after onboarding_instances exists
+  code               text not null,
+  day_number         int not null check (day_number >= 1),
+  title              text not null,
+  description        text,
+  pillar             text not null check (pillar in ('GOVERNANCE','PEOPLE','PROCESS','PRODUCT')),
+  task_type          text not null default 'LEARNING'
+                     check (task_type in ('LEARNING','ACTIVITY','SESSION','ASSESSMENT','SCENARIO','REVIEW','DELIVERABLE','REFRESH','REMEDIATION')),
+  owner_role         text not null default 'KAM' references public.roles(id),
+  due_day            int not null check (due_day >= 1),
+  is_mandatory       boolean not null default true,
+  requires_approval  boolean not null default false,
+  exposure           text not null default 'NONE' check (exposure in ('NONE','CUSTOMER','PRICING')),
+  gate_code          text,
+  resource_url       text,
+  action_ref         text,   -- system-completed link, e.g. 'assessment:DAY15-READINESS', 'scenario:SCN-RFQ', 'review:ACCOUNT_BRIEF'
+  knowledge_topic    text,
+  sort_order         int not null default 0,
+  is_active          boolean not null default true,
+  created_at         timestamptz not null default now(),
+  updated_at         timestamptz not null default now(),
+  check ((template_id is not null) <> (instance_id is not null))
+);
+create unique index tasks_template_code_uq on public.tasks(template_id, code) where template_id is not null;
+create unique index tasks_instance_code_uq on public.tasks(instance_id, code) where instance_id is not null;
+create index tasks_day_idx on public.tasks(day_number);
+
+create table public.task_dependencies (
+  task_id             uuid not null references public.tasks(id) on delete cascade,
+  depends_on_task_id  uuid not null references public.tasks(id) on delete cascade,
+  primary key (task_id, depends_on_task_id),
+  check (task_id <> depends_on_task_id)
+);
+
+-- ── Per-employee lifecycle ─────────────────────────────────────────
+create table public.onboarding_instances (
+  id                  uuid primary key default gen_random_uuid(),
+  employee_id         uuid not null references public.employees(id) on delete cascade,
+  template_id         uuid not null references public.onboarding_templates(id),
+  start_date          date not null,
+  status              text not null default 'ACTIVE'
+                      check (status in ('ACTIVE','PAUSED','EXTENDED','READY','NOT_READY','ARCHIVED')),
+  extension_days      int not null default 0 check (extension_days >= 0),
+  pricing_exposure    text not null default 'BLOCKED' check (pricing_exposure in ('BLOCKED','GUIDED','DEFERRED')),
+  customer_exposure   text not null default 'BLOCKED' check (customer_exposure in ('BLOCKED','SHADOW','GUIDED','DEFERRED')),
+  final_decision      text check (final_decision in ('READY','EXTENDED','NOT_READY')),
+  final_decision_at   timestamptz,
+  final_decision_by   uuid references public.profiles(id),
+  independent_since   date,
+  created_at          timestamptz not null default now(),
+  updated_at          timestamptz not null default now()
+);
+create unique index onboarding_instances_active_uq
+  on public.onboarding_instances(employee_id) where status <> 'ARCHIVED';
+
+alter table public.tasks
+  add constraint tasks_instance_fk foreign key (instance_id)
+  references public.onboarding_instances(id) on delete cascade;
+create index tasks_instance_idx on public.tasks(instance_id);
+
+create table public.task_completions (
+  id             uuid primary key default gen_random_uuid(),
+  instance_id    uuid not null references public.onboarding_instances(id) on delete cascade,
+  employee_id    uuid not null references public.employees(id) on delete cascade,
+  task_id        uuid not null references public.tasks(id) on delete cascade,
+  status         text not null default 'PENDING'
+                 check (status in ('PENDING','IN_PROGRESS','SUBMITTED','COMPLETED','REJECTED')),
+  completed_at   timestamptz,
+  completed_by   uuid references public.profiles(id),
+  evidence       text,
+  notes          text,
+  created_at     timestamptz not null default now(),
+  updated_at     timestamptz not null default now(),
+  unique (instance_id, task_id)
+);
+create index task_completions_employee_idx on public.task_completions(employee_id, status);
+
+-- ── Sessions ───────────────────────────────────────────────────────
+create table public.sessions (
+  id                 uuid primary key default gen_random_uuid(),
+  employee_id        uuid not null references public.employees(id) on delete cascade,
+  instance_id        uuid references public.onboarding_instances(id) on delete cascade,
+  title              text not null,
+  session_type       text not null,
+  owner_id           uuid references public.profiles(id) on delete set null,
+  day_number         int,
+  scheduled_at       timestamptz not null,
+  duration_minutes   int not null default 60 check (duration_minutes between 5 and 600),
+  meeting_link       text,
+  location           text,
+  status             text not null default 'SCHEDULED'
+                     check (status in ('SCHEDULED','CONFIRMED','RESCHEDULED','COMPLETED','CANCELLED')),
+  notes              text,
+  calendar_provider  text not null default 'none',
+  external_event_id  text,
+  created_by         uuid references public.profiles(id),
+  created_at         timestamptz not null default now(),
+  updated_at         timestamptz not null default now()
+);
+create index sessions_employee_idx on public.sessions(employee_id, scheduled_at);
+
+create table public.session_attendance (
+  id            uuid primary key default gen_random_uuid(),
+  session_id    uuid not null references public.sessions(id) on delete cascade,
+  employee_id   uuid not null references public.employees(id) on delete cascade,
+  attendee_id   uuid references public.profiles(id) on delete cascade,
+  status        text not null default 'INVITED' check (status in ('INVITED','CONFIRMED','ATTENDED','ABSENT')),
+  confirmed_at  timestamptz,
+  created_at    timestamptz not null default now(),
+  unique (session_id, attendee_id)
+);
+
+-- ── Knowledge (RAG) ────────────────────────────────────────────────
+create table public.knowledge_documents (
+  id              uuid primary key default gen_random_uuid(),
+  document_key    text not null,               -- stable across versions
+  name            text not null,
+  category        text not null check (category in
+                    ('Company','Products','Customers','Sales','Processes','Training','Policies','Quality','Governance','Account')),
+  topic           text,
+  version         text not null default '1.0',
+  owner           text,
+  effective_date  date,
+  review_date     date,
+  source_url      text,
+  approved        boolean not null default false,
+  is_current      boolean not null default true,
+  status          text not null default 'DRAFT' check (status in ('DRAFT','APPROVED','SUPERSEDED','ARCHIVED')),
+  supersedes_id   uuid references public.knowledge_documents(id) on delete set null,
+  content         text not null default '',
+  chunk_count     int not null default 0,
+  indexed_at      timestamptz,
+  embedding_model text,
+  uploaded_by     uuid references public.profiles(id) on delete set null,
+  created_at      timestamptz not null default now(),
+  updated_at      timestamptz not null default now(),
+  unique (document_key, version)
+);
+create unique index knowledge_documents_current_uq on public.knowledge_documents(document_key) where is_current;
+
+create table public.knowledge_chunks (
+  id              uuid primary key default gen_random_uuid(),
+  document_id     uuid not null references public.knowledge_documents(id) on delete cascade,
+  chunk_index     int not null,
+  content         text not null,
+  section         text,
+  page            int,
+  token_count     int,
+  -- denormalised metadata for filtering and citation
+  document_name   text not null,
+  category        text not null,
+  topic           text,
+  version         text not null,
+  owner           text,
+  effective_date  date,
+  source_url      text,
+  approved        boolean not null default false,
+  is_current      boolean not null default true,
+  last_updated    timestamptz not null default now(),
+  embedding       vector(384),
+  fts             tsvector generated always as (to_tsvector('english', coalesce(section,'') || ' ' || content)) stored,
+  created_at      timestamptz not null default now(),
+  unique (document_id, chunk_index)
+);
+create index knowledge_chunks_doc_idx on public.knowledge_chunks(document_id);
+create index knowledge_chunks_fts_idx on public.knowledge_chunks using gin(fts);
+create index knowledge_chunks_filter_idx on public.knowledge_chunks(approved, is_current, category);
+create index knowledge_chunks_embedding_idx on public.knowledge_chunks using hnsw (embedding vector_cosine_ops);
+
+-- ── Assessments ────────────────────────────────────────────────────
+create table public.assessments (
+  id                  uuid primary key default gen_random_uuid(),
+  code                text unique not null,
+  title               text not null,
+  description         text,
+  stage               text not null check (stage in ('DAY10_CHECK','DAY15_READINESS','PRACTICE')),
+  gate_code           text,
+  available_from_day  int not null default 1,
+  time_limit_minutes  int,
+  is_active           boolean not null default true,
+  created_at          timestamptz not null default now(),
+  updated_at          timestamptz not null default now()
+);
+
+create table public.assessment_questions (
+  id                uuid primary key default gen_random_uuid(),
+  question_code     text unique not null,
+  assessment_stage  text not null check (assessment_stage in ('DAY10_CHECK','DAY15_READINESS','PRACTICE')),
+  question_type     text not null check (question_type in
+                      ('MULTIPLE_CHOICE','MULTI_SELECT','TRUE_FALSE','SHORT_ANSWER','SCENARIO','CASE_STUDY','ROLE_PLAY')),
+  pillar            text not null check (pillar in ('GOVERNANCE','PEOPLE','PROCESS','PRODUCT')),
+  topic             text not null,
+  difficulty        text not null default 'medium' check (difficulty in ('easy','medium','hard')),
+  question          text not null,
+  options           jsonb not null default '[]'::jsonb,
+  correct_answer    jsonb not null,
+  explanation       text,
+  weight            numeric(5,2) not null default 1 check (weight > 0),
+  source_document   text,
+  source_reference  text,
+  is_active         boolean not null default true,
+  sort_order        int not null default 0,
+  created_at        timestamptz not null default now(),
+  updated_at        timestamptz not null default now()
+);
+create index assessment_questions_stage_idx on public.assessment_questions(assessment_stage, is_active);
+
+create table public.assessment_attempts (
+  id                  uuid primary key default gen_random_uuid(),
+  employee_id         uuid not null references public.employees(id) on delete cascade,
+  instance_id         uuid not null references public.onboarding_instances(id) on delete cascade,
+  assessment_id       uuid not null references public.assessments(id),
+  attempt_number      int not null default 1,
+  is_recheck          boolean not null default false,
+  status              text not null default 'IN_PROGRESS' check (status in ('IN_PROGRESS','SCORED','REVIEWED')),
+  started_at          timestamptz not null default now(),
+  submitted_at        timestamptz,
+  overall_score       numeric(5,2),
+  band                text check (band in ('GREEN','AMBER','RED')),
+  confidence          int check (confidence between 1 and 5),
+  assessor_id         uuid references public.profiles(id),
+  feedback            text,
+  evidence            jsonb not null default '{}'::jsonb,
+  source_attribution  jsonb not null default '{}'::jsonb,
+  scoring_config      jsonb not null default '{}'::jsonb,
+  question_ids        uuid[] not null default '{}',
+  created_at          timestamptz not null default now(),
+  unique (instance_id, assessment_id, attempt_number)
+);
+create index assessment_attempts_employee_idx on public.assessment_attempts(employee_id, created_at);
+
+create table public.assessment_answers (
+  id                 uuid primary key default gen_random_uuid(),
+  attempt_id         uuid not null references public.assessment_attempts(id) on delete cascade,
+  employee_id        uuid not null references public.employees(id) on delete cascade,
+  question_id        uuid not null references public.assessment_questions(id),
+  answer             jsonb not null,
+  is_correct         boolean,
+  score_awarded      numeric(6,3) not null default 0,
+  max_score          numeric(6,3) not null default 0,
+  feedback           text,
+  created_at         timestamptz not null default now(),
+  unique (attempt_id, question_id)
+);
+
+create table public.pillar_scores (
+  id              uuid primary key default gen_random_uuid(),
+  employee_id     uuid not null references public.employees(id) on delete cascade,
+  instance_id     uuid not null references public.onboarding_instances(id) on delete cascade,
+  attempt_id      uuid references public.assessment_attempts(id) on delete cascade,
+  source          text not null check (source in ('DAY10_CHECK','DAY15_READINESS','SCENARIO')),
+  pillar          text not null check (pillar in ('GOVERNANCE','PEOPLE','PROCESS','PRODUCT')),
+  raw_score       numeric(5,2) not null,
+  weight          numeric(5,2) not null,
+  weighted_score  numeric(5,2) not null,
+  created_at      timestamptz not null default now()
+);
+create index pillar_scores_employee_idx on public.pillar_scores(employee_id, created_at);
+
+-- ── Scenarios ──────────────────────────────────────────────────────
+create table public.scenario_templates (
+  id                 uuid primary key default gen_random_uuid(),
+  code               text unique not null,
+  title              text not null,
+  category           text not null,
+  pillar             text not null check (pillar in ('GOVERNANCE','PEOPLE','PROCESS','PRODUCT')),
+  situation          text not null,
+  prompt             text not null,
+  rubric             jsonb not null,  -- [{id, criterion, description, weight, keywords[], min_matches}]
+  red_flags          jsonb not null default '[]'::jsonb, -- [{id, label, patterns[], penalty}]
+  is_certification   boolean not null default false,
+  requires_review    boolean not null default false,
+  source_document    text,
+  is_active          boolean not null default true,
+  sort_order         int not null default 0,
+  created_at         timestamptz not null default now(),
+  updated_at         timestamptz not null default now()
+);
+
+create table public.scenario_attempts (
+  id                       uuid primary key default gen_random_uuid(),
+  employee_id              uuid not null references public.employees(id) on delete cascade,
+  instance_id              uuid not null references public.onboarding_instances(id) on delete cascade,
+  scenario_id              uuid not null references public.scenario_templates(id),
+  attempt_number           int not null default 1,
+  is_certification         boolean not null default false,
+  response                 text not null,
+  rule_score               numeric(5,2) not null,
+  score                    numeric(5,2) not null,
+  criteria_results         jsonb not null default '[]'::jsonb,
+  red_flags_triggered      jsonb not null default '[]'::jsonb,
+  missing_considerations   text[] not null default '{}',
+  feedback                 text,
+  evaluator                text not null default 'RULES' check (evaluator in ('RULES','RULES+AI')),
+  status                   text not null default 'SUBMITTED' check (status in ('SUBMITTED','REVIEW_REQUIRED','REVIEWED')),
+  reviewer_id              uuid references public.profiles(id),
+  reviewer_score           numeric(5,2),
+  reviewer_comments        text,
+  reviewed_at              timestamptz,
+  created_at               timestamptz not null default now()
+);
+create index scenario_attempts_employee_idx on public.scenario_attempts(employee_id, scenario_id, created_at);
+
+-- ── Gates ──────────────────────────────────────────────────────────
+create table public.gate_results (
+  id            uuid primary key default gen_random_uuid(),
+  employee_id   uuid not null references public.employees(id) on delete cascade,
+  instance_id   uuid not null references public.onboarding_instances(id) on delete cascade,
+  gate_id       uuid not null references public.gate_definitions(id) on delete cascade,
+  status        text not null default 'NOT_STARTED' check (status in
+                  ('NOT_STARTED','IN_PROGRESS','SUBMITTED','PASSED','FAILED','BLOCKED','REQUIRES_REVIEW','APPROVED','EXTENDED')),
+  score         numeric(5,2),
+  band          text check (band in ('GREEN','AMBER','RED')),
+  required_tasks jsonb not null default '[]'::jsonb,
+  evidence      jsonb not null default '{}'::jsonb,
+  assessor_id   uuid references public.profiles(id),
+  comments      text,
+  decision      text,
+  next_action   text,
+  decided_at    timestamptz,
+  updated_at    timestamptz not null default now(),
+  unique (instance_id, gate_id)
+);
+
+-- ── Human input ────────────────────────────────────────────────────
+create table public.feedback (
+  id           uuid primary key default gen_random_uuid(),
+  employee_id  uuid not null references public.employees(id) on delete cascade,
+  author_id    uuid references public.profiles(id) on delete set null,
+  author_role  text not null references public.roles(id),
+  category     text not null default 'GENERAL' check (category in ('GENERAL','COACHING','PANEL','STRENGTH','DEVELOPMENT')),
+  pillar       text check (pillar in ('GOVERNANCE','PEOPLE','PROCESS','PRODUCT')),
+  content      text not null,
+  visible_to_kam boolean not null default true,
+  created_at   timestamptz not null default now()
+);
+create index feedback_employee_idx on public.feedback(employee_id, created_at);
+
+create table public.mentor_reviews (
+  id                   uuid primary key default gen_random_uuid(),
+  employee_id          uuid not null references public.employees(id) on delete cascade,
+  instance_id          uuid not null references public.onboarding_instances(id) on delete cascade,
+  mentor_id            uuid references public.profiles(id) on delete set null,
+  review_type          text not null check (review_type in
+                         ('ACCOUNT_BRIEF','CUSTOMER_360','STAKEHOLDER_MAP','SCENARIO','GATE','COACHING','DRAFT_RESPONSE','INTERNAL_REVIEW','PANEL')),
+  entity_id            uuid,
+  decision             text not null check (decision in ('APPROVED','CHANGES_REQUESTED','REJECTED','NOTED')),
+  rating               int check (rating between 1 and 5),
+  comments             text,
+  reinforcement_areas  text[] not null default '{}',
+  created_at           timestamptz not null default now()
+);
+create index mentor_reviews_employee_idx on public.mentor_reviews(employee_id, created_at);
+
+create table public.manager_reviews (
+  id                    uuid primary key default gen_random_uuid(),
+  employee_id           uuid not null references public.employees(id) on delete cascade,
+  instance_id           uuid not null references public.onboarding_instances(id) on delete cascade,
+  manager_id            uuid references public.profiles(id) on delete set null,
+  review_type           text not null check (review_type in
+                          ('PROGRESSION','PRICING_EXPOSURE','CUSTOMER_OWNERSHIP','DAY30_SIGNOFF','DEVELOPMENT_ACTION','HR_PANEL_INPUT')),
+  decision              text not null check (decision in ('APPROVED','DEFERRED','REJECTED','EXTENDED','NOTED','READY','NOT_READY')),
+  comments              text,
+  development_actions   text[] not null default '{}',
+  created_at            timestamptz not null default now()
+);
+create index manager_reviews_employee_idx on public.manager_reviews(employee_id, created_at);
+
+-- ── Customer 360 / account brief ───────────────────────────────────
+create table public.account_briefs (
+  id                    uuid primary key default gen_random_uuid(),
+  employee_id           uuid not null references public.employees(id) on delete cascade,
+  instance_id           uuid references public.onboarding_instances(id) on delete cascade,
+  customer_name         text not null,
+  customer_organization text,
+  strategic_context     text,
+  applications          text,
+  supplied_parts        text,
+  programmes            text,
+  volumes               text,
+  pipeline              text,
+  pricing_history       text,
+  commercial_history    text,
+  open_commitments      text,
+  past_issues           text,
+  lessons_learned       text,
+  source_notes          text,
+  status                text not null default 'DRAFT' check (status in ('DRAFT','SUBMITTED','APPROVED','CHANGES_REQUESTED')),
+  approved              boolean not null default false,
+  version               int not null default 1,
+  submitted_at          timestamptz,
+  reviewed_by           uuid references public.profiles(id),
+  reviewed_at           timestamptz,
+  review_comments       text,
+  created_at            timestamptz not null default now(),
+  updated_at            timestamptz not null default now(),
+  unique (employee_id, customer_name)
+);
+
+create table public.stakeholder_maps (
+  id                   uuid primary key default gen_random_uuid(),
+  employee_id          uuid not null references public.employees(id) on delete cascade,
+  account_brief_id     uuid references public.account_briefs(id) on delete cascade,
+  side                 text not null check (side in ('CUSTOMER','INTERNAL')),
+  function             text not null check (function in ('PURCHASING','ENGINEERING','QUALITY','SCM','PLANT','FINANCE','NPD','PROGRAMME','LEADERSHIP','OTHER')),
+  name                 text not null,
+  title                text,
+  influence            text not null default 'MEDIUM' check (influence in ('HIGH','MEDIUM','LOW')),
+  relationship_status  text not null default 'NEW' check (relationship_status in ('NEW','DEVELOPING','ESTABLISHED','AT_RISK')),
+  notes                text,
+  created_at           timestamptz not null default now(),
+  updated_at           timestamptz not null default now()
+);
+create index stakeholder_maps_employee_idx on public.stakeholder_maps(employee_id);
+
+-- ── Progress, dependency, notifications ────────────────────────────
+create table public.support_events (
+  id           uuid primary key default gen_random_uuid(),
+  employee_id  uuid not null references public.employees(id) on delete cascade,
+  instance_id  uuid not null references public.onboarding_instances(id) on delete cascade,
+  event_type   text not null check (event_type in ('MENTOR_HELP','COLLEAGUE_HELP','ESCALATION','AI_ESCALATION','INDEPENDENT_RESOLUTION')),
+  day_number   int not null,
+  description  text,
+  recorded_by  uuid references public.profiles(id),
+  created_at   timestamptz not null default now()
+);
+create index support_events_employee_idx on public.support_events(employee_id, day_number);
+
+create table public.progress_snapshots (
+  id                       uuid primary key default gen_random_uuid(),
+  employee_id              uuid not null references public.employees(id) on delete cascade,
+  instance_id              uuid not null references public.onboarding_instances(id) on delete cascade,
+  snapshot_date            date not null,
+  day_number               int not null,
+  task_completion_pct      numeric(5,2) not null,
+  learning_completion_pct  numeric(5,2) not null,
+  knowledge_score          numeric(5,2),
+  scenario_score           numeric(5,2),
+  overall_readiness        numeric(5,2) not null,
+  band                     text,
+  dependency_index         numeric(5,2),
+  overdue_count            int not null default 0,
+  metrics                  jsonb not null default '{}'::jsonb,
+  created_at               timestamptz not null default now(),
+  unique (instance_id, snapshot_date)
+);
+
+create table public.notifications (
+  id            uuid primary key default gen_random_uuid(),
+  employee_id   uuid references public.employees(id) on delete cascade,
+  recipient_id  uuid not null references public.profiles(id) on delete cascade,
+  type          text not null,
+  severity      text not null default 'INFO' check (severity in ('INFO','ATTENTION','CRITICAL')),
+  title         text not null,
+  body          text,
+  link          text,
+  dedupe_key    text,
+  read_at       timestamptz,
+  created_at    timestamptz not null default now(),
+  unique (recipient_id, dedupe_key)   -- NULL keys never collide; used for idempotent upserts
+);
+create index notifications_recipient_idx on public.notifications(recipient_id, read_at, created_at desc);
+
+-- ── Conversation ───────────────────────────────────────────────────
+create table public.conversation_sessions (
+  id           uuid primary key default gen_random_uuid(),
+  employee_id  uuid not null references public.employees(id) on delete cascade,
+  user_id      uuid not null references public.profiles(id) on delete cascade,
+  title        text not null default 'Onboarding assistant',
+  created_at   timestamptz not null default now(),
+  updated_at   timestamptz not null default now()
+);
+
+create table public.conversation_messages (
+  id                 uuid primary key default gen_random_uuid(),
+  session_id         uuid not null references public.conversation_sessions(id) on delete cascade,
+  employee_id        uuid not null references public.employees(id) on delete cascade,
+  role               text not null check (role in ('user','assistant')),
+  content            text not null,
+  intent             text,
+  intent_confidence  numeric(4,3),
+  intent_source      text,
+  grounding          text check (grounding in ('COMPANY_KNOWLEDGE','EMPLOYEE_STATE','GENERAL','INSUFFICIENT','OUT_OF_SCOPE')),
+  citations          jsonb not null default '[]'::jsonb,
+  actions            jsonb not null default '[]'::jsonb,
+  model              text,
+  created_at         timestamptz not null default now()
+);
+create index conversation_messages_session_idx on public.conversation_messages(session_id, created_at);
+
+-- ── Audit ──────────────────────────────────────────────────────────
+create table public.audit_logs (
+  id              uuid primary key default gen_random_uuid(),
+  employee_id     uuid references public.employees(id) on delete set null,
+  actor_id        uuid references public.profiles(id) on delete set null,
+  actor_role      text,
+  event_type      text not null,
+  entity_type     text not null,
+  entity_id       text,
+  previous_value  jsonb,
+  new_value       jsonb,
+  created_at      timestamptz not null default now()
+);
+create index audit_logs_employee_idx on public.audit_logs(employee_id, created_at desc);
+create index audit_logs_event_idx on public.audit_logs(event_type, created_at desc);
+
+-- updated_at triggers
+do $$
+declare t text;
+begin
+  foreach t in array array['profiles','employees','onboarding_templates','tasks','onboarding_instances','task_completions',
+                           'sessions','knowledge_documents','assessments','assessment_questions','scenario_templates',
+                           'gate_results','account_briefs','stakeholder_maps','conversation_sessions']
+  loop
+    execute format('create trigger %I before update on public.%I for each row execute function public.touch_updated_at()',
+                   t || '_touch', t);
+  end loop;
+end $$;
+
+-- ── Retrieval functions (approved + current documents only) ────────
+create or replace function public.match_knowledge_chunks(
+  query_embedding vector(384),
+  match_count int default 8,
+  filter_categories text[] default null
+) returns table (
+  id uuid, document_id uuid, content text, section text, page int,
+  document_name text, category text, topic text, version text, owner text,
+  effective_date date, source_url text, last_updated timestamptz, similarity float
+)
+language sql stable as $$
+  select c.id, c.document_id, c.content, c.section, c.page,
+         c.document_name, c.category, c.topic, c.version, c.owner,
+         c.effective_date, c.source_url, c.last_updated,
+         1 - (c.embedding <=> query_embedding) as similarity
+  from public.knowledge_chunks c
+  where c.approved and c.is_current and c.embedding is not null
+    and (filter_categories is null or c.category = any(filter_categories))
+  order by c.embedding <=> query_embedding
+  limit match_count
+$$;
+
+create or replace function public.search_knowledge_text(
+  query_text text,
+  match_count int default 8,
+  filter_categories text[] default null
+) returns table (
+  id uuid, document_id uuid, content text, section text, page int,
+  document_name text, category text, topic text, version text, owner text,
+  effective_date date, source_url text, last_updated timestamptz, rank float
+)
+language sql stable as $$
+  select c.id, c.document_id, c.content, c.section, c.page,
+         c.document_name, c.category, c.topic, c.version, c.owner,
+         c.effective_date, c.source_url, c.last_updated,
+         ts_rank_cd(c.fts, q)::float as rank
+  from public.knowledge_chunks c,
+       websearch_to_tsquery('english', query_text) q
+  where c.approved and c.is_current and c.fts @@ q
+    and (filter_categories is null or c.category = any(filter_categories))
+  order by rank desc
+  limit match_count
+$$;

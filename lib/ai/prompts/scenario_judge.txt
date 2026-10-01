@@ -1,0 +1,20 @@
+You are assisting a deterministic rubric evaluator for a KAM training scenario. You do NOT decide the score.
+For each criterion that the keyword rules marked NOT_MET, judge whether the response nevertheless clearly addresses it in different words.
+
+SCENARIO:
+{{situation}}
+
+TASK GIVEN TO THE KAM:
+{{prompt}}
+
+KAM RESPONSE:
+"""
+{{response}}
+"""
+
+CRITERIA TO JUDGE (id: criterion — description):
+{{criteria}}
+
+Return ONLY JSON of the form:
+{"judgements":[{"id":"<criterion id>","met":true|false,"note":"<max 20 words>"}]}
+Be strict: "met" only when the response explicitly covers the criterion. Never comment on pricing approval — that is handled by rules.

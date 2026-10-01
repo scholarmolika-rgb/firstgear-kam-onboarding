@@ -1,0 +1,40 @@
+{"text":"How does approval matrix work here?","label":"FAQ"}
+{"text":"What is the margin floor?","label":"FAQ"}
+{"text":"What is the complaint handling?","label":"FAQ"}
+{"text":"Explain RFQ process to me","label":"FAQ"}
+{"text":"Explain margin floor to me","label":"FAQ"}
+{"text":"What should I do next?","label":"TASK_STATUS"}
+{"text":"What's next for me?","label":"TASK_STATUS"}
+{"text":"I have finished the quotation workflow module","label":"TASK_COMPLETE"}
+{"text":"I just completed code of conduct, please tick it","label":"TASK_COMPLETE"}
+{"text":"I just completed mock RFQ, please tick it","label":"TASK_COMPLETE"}
+{"text":"Schedule a Customer 360 review for Thursday","label":"SCHEDULE"}
+{"text":"Book a mentor check-in with my mentor","label":"SCHEDULE"}
+{"text":"Reschedule my plant walk to Monday","label":"RESCHEDULE"}
+{"text":"Can we move the manager review?","label":"RESCHEDULE"}
+{"text":"How am I doing?","label":"PROGRESS"}
+{"text":"What is my progress?","label":"PROGRESS"}
+{"text":"Is there a practice quiz?","label":"ASSESSMENT"}
+{"text":"Show my test history","label":"ASSESSMENT"}
+{"text":"How are scenarios scored?","label":"SCENARIO"}
+{"text":"How do I pass certification?","label":"SCENARIO"}
+{"text":"Where can I find the document on RFQ process?","label":"KNOWLEDGE_SEARCH"}
+{"text":"Which SOP covers hybrid components?","label":"KNOWLEDGE_SEARCH"}
+{"text":"Where can I find the document on governance calendar?","label":"KNOWLEDGE_SEARCH"}
+{"text":"Where can I find the document on 8D?","label":"KNOWLEDGE_SEARCH"}
+{"text":"What are our open commitments to Northwind?","label":"CUSTOMER_360"}
+{"text":"What programmes does Northwind have?","label":"CUSTOMER_360"}
+{"text":"Is the stakeholder map complete?","label":"ACCOUNT_BRIEF"}
+{"text":"How do I submit the account brief?","label":"ACCOUNT_BRIEF"}
+{"text":"Loop in my mentor","label":"MENTOR_REQUEST"}
+{"text":"Talk to the senior KAM","label":"MENTOR_REQUEST"}
+{"text":"Can I speak to my boss?","label":"MANAGER_REQUEST"}
+{"text":"Ask my manager","label":"MANAGER_REQUEST"}
+{"text":"Which gate am I on?","label":"GATE_STATUS"}
+{"text":"Why is Day 16 locked?","label":"GATE_STATUS"}
+{"text":"Readiness score?","label":"READINESS"}
+{"text":"Is pricing exposure approved?","label":"READINESS"}
+{"text":"What did the panel say?","label":"FEEDBACK"}
+{"text":"Show mentor notes","label":"FEEDBACK"}
+{"text":"What can you do?","label":"GENERAL_HELP"}
+{"text":"Can you help me?","label":"GENERAL_HELP"}

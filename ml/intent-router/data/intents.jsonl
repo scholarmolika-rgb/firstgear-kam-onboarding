@@ -1,0 +1,399 @@
+{"text":"What is the RFQ process?","label":"FAQ"}
+{"text":"What is the APQP?","label":"FAQ"}
+{"text":"What is the PPAP levels?","label":"FAQ"}
+{"text":"What is the 8D?","label":"FAQ"}
+{"text":"What is the margin floor?","label":"FAQ"}
+{"text":"What is the tooling amortisation?","label":"FAQ"}
+{"text":"What is the payment terms?","label":"FAQ"}
+{"text":"What is the approval matrix?","label":"FAQ"}
+{"text":"What is the code of conduct gifts?","label":"FAQ"}
+{"text":"What is the BEV product family?","label":"FAQ"}
+{"text":"What is the hybrid components?","label":"FAQ"}
+{"text":"What is the traceability?","label":"FAQ"}
+{"text":"What is the escalation levels?","label":"FAQ"}
+{"text":"What is the engineering change?","label":"FAQ"}
+{"text":"What is the quotation validity?","label":"FAQ"}
+{"text":"What is the raw material index?","label":"FAQ"}
+{"text":"What is the KAM charter?","label":"FAQ"}
+{"text":"What is the governance calendar?","label":"FAQ"}
+{"text":"What is the complaint handling?","label":"FAQ"}
+{"text":"What is the premium freight approval?","label":"FAQ"}
+{"text":"Explain RFQ process to me","label":"FAQ"}
+{"text":"Explain APQP to me","label":"FAQ"}
+{"text":"Explain PPAP levels to me","label":"FAQ"}
+{"text":"Explain 8D to me","label":"FAQ"}
+{"text":"Explain margin floor to me","label":"FAQ"}
+{"text":"Explain tooling amortisation to me","label":"FAQ"}
+{"text":"Explain payment terms to me","label":"FAQ"}
+{"text":"Explain approval matrix to me","label":"FAQ"}
+{"text":"Explain code of conduct gifts to me","label":"FAQ"}
+{"text":"Explain BEV product family to me","label":"FAQ"}
+{"text":"Explain hybrid components to me","label":"FAQ"}
+{"text":"Explain traceability to me","label":"FAQ"}
+{"text":"Explain escalation levels to me","label":"FAQ"}
+{"text":"Explain engineering change to me","label":"FAQ"}
+{"text":"Explain quotation validity to me","label":"FAQ"}
+{"text":"Explain raw material index to me","label":"FAQ"}
+{"text":"Explain KAM charter to me","label":"FAQ"}
+{"text":"Explain governance calendar to me","label":"FAQ"}
+{"text":"Explain complaint handling to me","label":"FAQ"}
+{"text":"Explain premium freight approval to me","label":"FAQ"}
+{"text":"How does RFQ process work here?","label":"FAQ"}
+{"text":"How does APQP work here?","label":"FAQ"}
+{"text":"How does PPAP levels work here?","label":"FAQ"}
+{"text":"How does 8D work here?","label":"FAQ"}
+{"text":"How does margin floor work here?","label":"FAQ"}
+{"text":"How does tooling amortisation work here?","label":"FAQ"}
+{"text":"How does payment terms work here?","label":"FAQ"}
+{"text":"How does approval matrix work here?","label":"FAQ"}
+{"text":"How does code of conduct gifts work here?","label":"FAQ"}
+{"text":"How does BEV product family work here?","label":"FAQ"}
+{"text":"What should I do next?","label":"TASK_STATUS"}
+{"text":"What's next for me?","label":"TASK_STATUS"}
+{"text":"What are my tasks today?","label":"TASK_STATUS"}
+{"text":"Do I have anything overdue?","label":"TASK_STATUS"}
+{"text":"What is pending for me?","label":"TASK_STATUS"}
+{"text":"Show my to-do list","label":"TASK_STATUS"}
+{"text":"Which tasks are left this week?","label":"TASK_STATUS"}
+{"text":"What do I need to finish today?","label":"TASK_STATUS"}
+{"text":"Anything I missed?","label":"TASK_STATUS"}
+{"text":"What's my next step?","label":"TASK_STATUS"}
+{"text":"List my open tasks","label":"TASK_STATUS"}
+{"text":"What remains on Day 7?","label":"TASK_STATUS"}
+{"text":"Which activity should I start now?","label":"TASK_STATUS"}
+{"text":"Am I behind on anything?","label":"TASK_STATUS"}
+{"text":"Give me today's checklist","label":"TASK_STATUS"}
+{"text":"What's left before the gate?","label":"TASK_STATUS"}
+{"text":"What tasks are overdue?","label":"TASK_STATUS"}
+{"text":"Which task is blocking me?","label":"TASK_STATUS"}
+{"text":"What should I work on now?","label":"TASK_STATUS"}
+{"text":"Next task please","label":"TASK_STATUS"}
+{"text":"I have finished the plant walk","label":"TASK_COMPLETE"}
+{"text":"I have finished the HR orientation","label":"TASK_COMPLETE"}
+{"text":"I have finished the code of conduct","label":"TASK_COMPLETE"}
+{"text":"I have finished the mock RFQ","label":"TASK_COMPLETE"}
+{"text":"I have finished the ownership mapping","label":"TASK_COMPLETE"}
+{"text":"I have finished the BEV module","label":"TASK_COMPLETE"}
+{"text":"I have finished the quotation workflow module","label":"TASK_COMPLETE"}
+{"text":"I have finished the stakeholder map","label":"TASK_COMPLETE"}
+{"text":"I have finished the pricing history","label":"TASK_COMPLETE"}
+{"text":"I have finished the action tracker","label":"TASK_COMPLETE"}
+{"text":"Mark the plant walk as done","label":"TASK_COMPLETE"}
+{"text":"Mark the HR orientation as done","label":"TASK_COMPLETE"}
+{"text":"Mark the code of conduct as done","label":"TASK_COMPLETE"}
+{"text":"Mark the mock RFQ as done","label":"TASK_COMPLETE"}
+{"text":"Mark the ownership mapping as done","label":"TASK_COMPLETE"}
+{"text":"Mark the BEV module as done","label":"TASK_COMPLETE"}
+{"text":"Mark the quotation workflow module as done","label":"TASK_COMPLETE"}
+{"text":"Mark the stakeholder map as done","label":"TASK_COMPLETE"}
+{"text":"Mark the pricing history as done","label":"TASK_COMPLETE"}
+{"text":"Mark the action tracker as done","label":"TASK_COMPLETE"}
+{"text":"I just completed plant walk, please tick it","label":"TASK_COMPLETE"}
+{"text":"I just completed HR orientation, please tick it","label":"TASK_COMPLETE"}
+{"text":"I just completed code of conduct, please tick it","label":"TASK_COMPLETE"}
+{"text":"I just completed mock RFQ, please tick it","label":"TASK_COMPLETE"}
+{"text":"I just completed ownership mapping, please tick it","label":"TASK_COMPLETE"}
+{"text":"I just completed BEV module, please tick it","label":"TASK_COMPLETE"}
+{"text":"I just completed quotation workflow module, please tick it","label":"TASK_COMPLETE"}
+{"text":"I just completed stakeholder map, please tick it","label":"TASK_COMPLETE"}
+{"text":"I just completed pricing history, please tick it","label":"TASK_COMPLETE"}
+{"text":"I just completed action tracker, please tick it","label":"TASK_COMPLETE"}
+{"text":"Done with today's reading","label":"TASK_COMPLETE"}
+{"text":"I attended the session already","label":"TASK_COMPLETE"}
+{"text":"Schedule a mentor check-in for Thursday","label":"SCHEDULE"}
+{"text":"Schedule a plant walk for Thursday","label":"SCHEDULE"}
+{"text":"Schedule a Customer 360 review for Thursday","label":"SCHEDULE"}
+{"text":"Schedule a manager review for Thursday","label":"SCHEDULE"}
+{"text":"Schedule a product training for Thursday","label":"SCHEDULE"}
+{"text":"Schedule a process training for Thursday","label":"SCHEDULE"}
+{"text":"When is my next mentor check-in?","label":"SCHEDULE"}
+{"text":"When is my next plant walk?","label":"SCHEDULE"}
+{"text":"When is my next Customer 360 review?","label":"SCHEDULE"}
+{"text":"When is my next manager review?","label":"SCHEDULE"}
+{"text":"When is my next product training?","label":"SCHEDULE"}
+{"text":"When is my next process training?","label":"SCHEDULE"}
+{"text":"Book a mentor check-in with my mentor","label":"SCHEDULE"}
+{"text":"Book a plant walk with my mentor","label":"SCHEDULE"}
+{"text":"Book a Customer 360 review with my mentor","label":"SCHEDULE"}
+{"text":"Book a manager review with my mentor","label":"SCHEDULE"}
+{"text":"Book a product training with my mentor","label":"SCHEDULE"}
+{"text":"Book a process training with my mentor","label":"SCHEDULE"}
+{"text":"What sessions do I have this week?","label":"SCHEDULE"}
+{"text":"Show my calendar","label":"SCHEDULE"}
+{"text":"Set up a meeting with Quality","label":"SCHEDULE"}
+{"text":"Reschedule my mentor check-in to Monday","label":"RESCHEDULE"}
+{"text":"Reschedule my plant walk to Monday","label":"RESCHEDULE"}
+{"text":"Reschedule my Customer 360 review to Monday","label":"RESCHEDULE"}
+{"text":"Reschedule my manager review to Monday","label":"RESCHEDULE"}
+{"text":"Reschedule my product training to Monday","label":"RESCHEDULE"}
+{"text":"Reschedule my process training to Monday","label":"RESCHEDULE"}
+{"text":"Can we move the mentor check-in?","label":"RESCHEDULE"}
+{"text":"Can we move the plant walk?","label":"RESCHEDULE"}
+{"text":"Can we move the Customer 360 review?","label":"RESCHEDULE"}
+{"text":"Can we move the manager review?","label":"RESCHEDULE"}
+{"text":"Can we move the product training?","label":"RESCHEDULE"}
+{"text":"Can we move the process training?","label":"RESCHEDULE"}
+{"text":"Postpone the mentor check-in by a day","label":"RESCHEDULE"}
+{"text":"Postpone the plant walk by a day","label":"RESCHEDULE"}
+{"text":"Postpone the Customer 360 review by a day","label":"RESCHEDULE"}
+{"text":"Postpone the manager review by a day","label":"RESCHEDULE"}
+{"text":"Postpone the product training by a day","label":"RESCHEDULE"}
+{"text":"Postpone the process training by a day","label":"RESCHEDULE"}
+{"text":"I can't make tomorrow's session, move it","label":"RESCHEDULE"}
+{"text":"Shift my check-in to the afternoon","label":"RESCHEDULE"}
+{"text":"How am I doing?","label":"PROGRESS"}
+{"text":"What is my progress?","label":"PROGRESS"}
+{"text":"How far along am I?","label":"PROGRESS"}
+{"text":"What percentage have I completed?","label":"PROGRESS"}
+{"text":"What day am I on?","label":"PROGRESS"}
+{"text":"Show my overall readiness","label":"PROGRESS"}
+{"text":"How much of the journey is done?","label":"PROGRESS"}
+{"text":"Am I on track?","label":"PROGRESS"}
+{"text":"Give me a progress summary","label":"PROGRESS"}
+{"text":"What's my completion rate?","label":"PROGRESS"}
+{"text":"How many tasks have I completed?","label":"PROGRESS"}
+{"text":"Progress update please","label":"PROGRESS"}
+{"text":"Where do I stand overall?","label":"PROGRESS"}
+{"text":"How is my onboarding going?","label":"PROGRESS"}
+{"text":"Am I ahead or behind?","label":"PROGRESS"}
+{"text":"What's my readiness percentage?","label":"PROGRESS"}
+{"text":"Overall status?","label":"PROGRESS"}
+{"text":"Summarise my journey so far","label":"PROGRESS"}
+{"text":"How many days are left?","label":"PROGRESS"}
+{"text":"Show my dashboard numbers","label":"PROGRESS"}
+{"text":"When is the Day-15 assessment?","label":"ASSESSMENT"}
+{"text":"Can I take the knowledge check now?","label":"ASSESSMENT"}
+{"text":"What's on the Day-10 check?","label":"ASSESSMENT"}
+{"text":"How is the assessment scored?","label":"ASSESSMENT"}
+{"text":"When can I retake the assessment?","label":"ASSESSMENT"}
+{"text":"What did I score on the quiz?","label":"ASSESSMENT"}
+{"text":"Is the re-check open?","label":"ASSESSMENT"}
+{"text":"How many questions are in the assessment?","label":"ASSESSMENT"}
+{"text":"What is the pass mark for the Day-10 check?","label":"ASSESSMENT"}
+{"text":"Start my assessment","label":"ASSESSMENT"}
+{"text":"How are pillar weights applied?","label":"ASSESSMENT"}
+{"text":"Can I see my assessment results?","label":"ASSESSMENT"}
+{"text":"When is my re-check?","label":"ASSESSMENT"}
+{"text":"What topics does the Day-15 test cover?","label":"ASSESSMENT"}
+{"text":"Is there a practice quiz?","label":"ASSESSMENT"}
+{"text":"Show my test history","label":"ASSESSMENT"}
+{"text":"Why did I get Amber?","label":"ASSESSMENT"}
+{"text":"What happens if I fail the knowledge check?","label":"ASSESSMENT"}
+{"text":"Open the assessment","label":"ASSESSMENT"}
+{"text":"How long is the test?","label":"ASSESSMENT"}
+{"text":"I want to practise a price challenge","label":"SCENARIO"}
+{"text":"Open the RFQ scenario","label":"SCENARIO"}
+{"text":"When is scenario certification?","label":"SCENARIO"}
+{"text":"How are scenarios scored?","label":"SCENARIO"}
+{"text":"Give me a delivery risk simulation","label":"SCENARIO"}
+{"text":"Practice a quality escalation","label":"SCENARIO"}
+{"text":"What's in Day-21 certification?","label":"SCENARIO"}
+{"text":"Show my scenario scores","label":"SCENARIO"}
+{"text":"Can I retry the scenario?","label":"SCENARIO"}
+{"text":"Role play a customer complaint","label":"SCENARIO"}
+{"text":"Start the costing challenge","label":"SCENARIO"}
+{"text":"Which scenarios are certification?","label":"SCENARIO"}
+{"text":"What did I miss in my scenario answer?","label":"SCENARIO"}
+{"text":"Practise an engineering change case","label":"SCENARIO"}
+{"text":"How do I pass certification?","label":"SCENARIO"}
+{"text":"Open scenario practice","label":"SCENARIO"}
+{"text":"Try the programme delay scenario","label":"SCENARIO"}
+{"text":"Simulate an internal escalation","label":"SCENARIO"}
+{"text":"APQP PPAP issue practice","label":"SCENARIO"}
+{"text":"Compare my scenario attempts","label":"SCENARIO"}
+{"text":"Where can I find the document on RFQ process?","label":"KNOWLEDGE_SEARCH"}
+{"text":"Where can I find the document on APQP?","label":"KNOWLEDGE_SEARCH"}
+{"text":"Where can I find the document on PPAP levels?","label":"KNOWLEDGE_SEARCH"}
+{"text":"Where can I find the document on 8D?","label":"KNOWLEDGE_SEARCH"}
+{"text":"Where can I find the document on margin floor?","label":"KNOWLEDGE_SEARCH"}
+{"text":"Where can I find the document on tooling amortisation?","label":"KNOWLEDGE_SEARCH"}
+{"text":"Where can I find the document on payment terms?","label":"KNOWLEDGE_SEARCH"}
+{"text":"Where can I find the document on approval matrix?","label":"KNOWLEDGE_SEARCH"}
+{"text":"Where can I find the document on code of conduct gifts?","label":"KNOWLEDGE_SEARCH"}
+{"text":"Where can I find the document on BEV product family?","label":"KNOWLEDGE_SEARCH"}
+{"text":"Where can I find the document on hybrid components?","label":"KNOWLEDGE_SEARCH"}
+{"text":"Where can I find the document on traceability?","label":"KNOWLEDGE_SEARCH"}
+{"text":"Where can I find the document on escalation levels?","label":"KNOWLEDGE_SEARCH"}
+{"text":"Where can I find the document on engineering change?","label":"KNOWLEDGE_SEARCH"}
+{"text":"Where can I find the document on quotation validity?","label":"KNOWLEDGE_SEARCH"}
+{"text":"Where can I find the document on raw material index?","label":"KNOWLEDGE_SEARCH"}
+{"text":"Where can I find the document on KAM charter?","label":"KNOWLEDGE_SEARCH"}
+{"text":"Where can I find the document on governance calendar?","label":"KNOWLEDGE_SEARCH"}
+{"text":"Where can I find the document on complaint handling?","label":"KNOWLEDGE_SEARCH"}
+{"text":"Where can I find the document on premium freight approval?","label":"KNOWLEDGE_SEARCH"}
+{"text":"Which SOP covers RFQ process?","label":"KNOWLEDGE_SEARCH"}
+{"text":"Which SOP covers APQP?","label":"KNOWLEDGE_SEARCH"}
+{"text":"Which SOP covers PPAP levels?","label":"KNOWLEDGE_SEARCH"}
+{"text":"Which SOP covers 8D?","label":"KNOWLEDGE_SEARCH"}
+{"text":"Which SOP covers margin floor?","label":"KNOWLEDGE_SEARCH"}
+{"text":"Which SOP covers tooling amortisation?","label":"KNOWLEDGE_SEARCH"}
+{"text":"Which SOP covers payment terms?","label":"KNOWLEDGE_SEARCH"}
+{"text":"Which SOP covers approval matrix?","label":"KNOWLEDGE_SEARCH"}
+{"text":"Which SOP covers code of conduct gifts?","label":"KNOWLEDGE_SEARCH"}
+{"text":"Which SOP covers BEV product family?","label":"KNOWLEDGE_SEARCH"}
+{"text":"Which SOP covers hybrid components?","label":"KNOWLEDGE_SEARCH"}
+{"text":"Which SOP covers traceability?","label":"KNOWLEDGE_SEARCH"}
+{"text":"Show me the escalation playbook","label":"KNOWLEDGE_SEARCH"}
+{"text":"Find the approval authority matrix","label":"KNOWLEDGE_SEARCH"}
+{"text":"Is there a policy on gifts?","label":"KNOWLEDGE_SEARCH"}
+{"text":"Open the quality governance manual","label":"KNOWLEDGE_SEARCH"}
+{"text":"What does Northwind buy from us?","label":"CUSTOMER_360"}
+{"text":"Who are Northwind's purchasing contacts?","label":"CUSTOMER_360"}
+{"text":"What programmes does Northwind have?","label":"CUSTOMER_360"}
+{"text":"What is Project Aster?","label":"CUSTOMER_360"}
+{"text":"What are Northwind's volumes?","label":"CUSTOMER_360"}
+{"text":"What's in the Northwind pipeline?","label":"CUSTOMER_360"}
+{"text":"What is Northwind's strategy?","label":"CUSTOMER_360"}
+{"text":"What are our open commitments to Northwind?","label":"CUSTOMER_360"}
+{"text":"Pricing history with Northwind?","label":"CUSTOMER_360"}
+{"text":"What issues have we had with Northwind?","label":"CUSTOMER_360"}
+{"text":"Lessons learned on this account?","label":"CUSTOMER_360"}
+{"text":"How is the customer's purchasing organised?","label":"CUSTOMER_360"}
+{"text":"Who is the SQE at the customer plant?","label":"CUSTOMER_360"}
+{"text":"What parts do we supply the OEM?","label":"CUSTOMER_360"}
+{"text":"What did we agree on price-downs with Northwind?","label":"CUSTOMER_360"}
+{"text":"Customer 360 summary","label":"CUSTOMER_360"}
+{"text":"Tell me about my assigned customer","label":"CUSTOMER_360"}
+{"text":"What's the customer's EV plan?","label":"CUSTOMER_360"}
+{"text":"Any premium freight claims with Northwind?","label":"CUSTOMER_360"}
+{"text":"Which customer programmes launch next year?","label":"CUSTOMER_360"}
+{"text":"Is my account brief approved?","label":"ACCOUNT_BRIEF"}
+{"text":"Has my mentor reviewed the brief?","label":"ACCOUNT_BRIEF"}
+{"text":"How do I submit the account brief?","label":"ACCOUNT_BRIEF"}
+{"text":"What's missing in my account brief?","label":"ACCOUNT_BRIEF"}
+{"text":"Update my stakeholder map","label":"ACCOUNT_BRIEF"}
+{"text":"What sections does the brief need?","label":"ACCOUNT_BRIEF"}
+{"text":"Status of my account brief","label":"ACCOUNT_BRIEF"}
+{"text":"Can I edit the brief after approval?","label":"ACCOUNT_BRIEF"}
+{"text":"Submit my brief","label":"ACCOUNT_BRIEF"}
+{"text":"Why was my brief sent back?","label":"ACCOUNT_BRIEF"}
+{"text":"Add a contact to the stakeholder map","label":"ACCOUNT_BRIEF"}
+{"text":"How many stakeholders do I need?","label":"ACCOUNT_BRIEF"}
+{"text":"Open my account brief","label":"ACCOUNT_BRIEF"}
+{"text":"Who reviews the account brief?","label":"ACCOUNT_BRIEF"}
+{"text":"When is the brief due?","label":"ACCOUNT_BRIEF"}
+{"text":"Brief feedback?","label":"ACCOUNT_BRIEF"}
+{"text":"Is the stakeholder map complete?","label":"ACCOUNT_BRIEF"}
+{"text":"Save my brief draft","label":"ACCOUNT_BRIEF"}
+{"text":"What does the mentor check in the brief?","label":"ACCOUNT_BRIEF"}
+{"text":"Account brief requirements","label":"ACCOUNT_BRIEF"}
+{"text":"I need to talk to my mentor","label":"MENTOR_REQUEST"}
+{"text":"Ask my mentor about this","label":"MENTOR_REQUEST"}
+{"text":"Can my mentor help me?","label":"MENTOR_REQUEST"}
+{"text":"Escalate this to my mentor","label":"MENTOR_REQUEST"}
+{"text":"Contact Arjun","label":"MENTOR_REQUEST"}
+{"text":"I'm stuck, get my mentor","label":"MENTOR_REQUEST"}
+{"text":"Book time with my mentor","label":"MENTOR_REQUEST"}
+{"text":"Send this question to my mentor","label":"MENTOR_REQUEST"}
+{"text":"My mentor should look at this","label":"MENTOR_REQUEST"}
+{"text":"Need mentor help on costing","label":"MENTOR_REQUEST"}
+{"text":"Can you ping my mentor?","label":"MENTOR_REQUEST"}
+{"text":"Request a mentor call","label":"MENTOR_REQUEST"}
+{"text":"I want mentor feedback","label":"MENTOR_REQUEST"}
+{"text":"Ask the mentor to review my draft","label":"MENTOR_REQUEST"}
+{"text":"Get mentor support","label":"MENTOR_REQUEST"}
+{"text":"Message my mentor","label":"MENTOR_REQUEST"}
+{"text":"Mentor please","label":"MENTOR_REQUEST"}
+{"text":"Talk to the senior KAM","label":"MENTOR_REQUEST"}
+{"text":"Need guidance from my mentor","label":"MENTOR_REQUEST"}
+{"text":"Loop in my mentor","label":"MENTOR_REQUEST"}
+{"text":"I need my reporting boss to approve this","label":"MANAGER_REQUEST"}
+{"text":"Ask my manager","label":"MANAGER_REQUEST"}
+{"text":"Escalate to the Head of Key Accounts","label":"MANAGER_REQUEST"}
+{"text":"Can my boss review my pricing position?","label":"MANAGER_REQUEST"}
+{"text":"Request manager sign-off","label":"MANAGER_REQUEST"}
+{"text":"Talk to Meera","label":"MANAGER_REQUEST"}
+{"text":"Send this to my reporting boss","label":"MANAGER_REQUEST"}
+{"text":"Need my manager's decision","label":"MANAGER_REQUEST"}
+{"text":"Ask the KAM head","label":"MANAGER_REQUEST"}
+{"text":"Get approval from my manager","label":"MANAGER_REQUEST"}
+{"text":"Can I speak to my boss?","label":"MANAGER_REQUEST"}
+{"text":"Request a manager review","label":"MANAGER_REQUEST"}
+{"text":"Escalate to reporting boss","label":"MANAGER_REQUEST"}
+{"text":"Manager approval needed","label":"MANAGER_REQUEST"}
+{"text":"Contact my line manager","label":"MANAGER_REQUEST"}
+{"text":"Loop in my manager","label":"MANAGER_REQUEST"}
+{"text":"Boss needs to see this","label":"MANAGER_REQUEST"}
+{"text":"Reporting boss please","label":"MANAGER_REQUEST"}
+{"text":"I need manager guidance","label":"MANAGER_REQUEST"}
+{"text":"Ask the head of key accounts","label":"MANAGER_REQUEST"}
+{"text":"Why is Day 16 locked?","label":"GATE_STATUS"}
+{"text":"What is blocking my progress?","label":"GATE_STATUS"}
+{"text":"Status of gate 3","label":"GATE_STATUS"}
+{"text":"Has my Day-10 gate passed?","label":"GATE_STATUS"}
+{"text":"When does Phase 2 unlock?","label":"GATE_STATUS"}
+{"text":"What do I need to pass the gate?","label":"GATE_STATUS"}
+{"text":"Which gate am I on?","label":"GATE_STATUS"}
+{"text":"Why can't I start certification?","label":"GATE_STATUS"}
+{"text":"Is gate 1 complete?","label":"GATE_STATUS"}
+{"text":"What unlocks pricing exposure?","label":"GATE_STATUS"}
+{"text":"Day 15 gate status","label":"GATE_STATUS"}
+{"text":"Show my gates","label":"GATE_STATUS"}
+{"text":"Why is the scenario certification blocked?","label":"GATE_STATUS"}
+{"text":"What's required for the Day-21 gate?","label":"GATE_STATUS"}
+{"text":"Has the mentor approved my gate?","label":"GATE_STATUS"}
+{"text":"Gate requirements please","label":"GATE_STATUS"}
+{"text":"Why is Day 6 locked?","label":"GATE_STATUS"}
+{"text":"Gate timeline","label":"GATE_STATUS"}
+{"text":"What happens at the Day-30 gate?","label":"GATE_STATUS"}
+{"text":"Am I blocked?","label":"GATE_STATUS"}
+{"text":"Am I ready for customer meetings?","label":"READINESS"}
+{"text":"What is my readiness band?","label":"READINESS"}
+{"text":"Am I Green?","label":"READINESS"}
+{"text":"When will I be allowed to price?","label":"READINESS"}
+{"text":"Is pricing exposure approved?","label":"READINESS"}
+{"text":"Am I ready for independent handling?","label":"READINESS"}
+{"text":"What's my readiness status?","label":"READINESS"}
+{"text":"When can I own the account?","label":"READINESS"}
+{"text":"Am I Amber or Red?","label":"READINESS"}
+{"text":"Readiness score?","label":"READINESS"}
+{"text":"Can I handle customers alone now?","label":"READINESS"}
+{"text":"When will I be cleared?","label":"READINESS"}
+{"text":"Have I earned customer access?","label":"READINESS"}
+{"text":"Will I be ready on Day 30?","label":"READINESS"}
+{"text":"What decides my readiness?","label":"READINESS"}
+{"text":"Customer exposure status","label":"READINESS"}
+{"text":"Pricing readiness?","label":"READINESS"}
+{"text":"Am I allowed to quote?","label":"READINESS"}
+{"text":"Readiness panel status","label":"READINESS"}
+{"text":"Who decides if I'm ready?","label":"READINESS"}
+{"text":"What feedback did my mentor give?","label":"FEEDBACK"}
+{"text":"Show my feedback","label":"FEEDBACK"}
+{"text":"Any coaching notes for me?","label":"FEEDBACK"}
+{"text":"What did my manager say?","label":"FEEDBACK"}
+{"text":"Where can I improve?","label":"FEEDBACK"}
+{"text":"My development areas?","label":"FEEDBACK"}
+{"text":"Strengths noted by my mentor?","label":"FEEDBACK"}
+{"text":"Latest feedback please","label":"FEEDBACK"}
+{"text":"Did my boss comment on my progress?","label":"FEEDBACK"}
+{"text":"What should I work on according to my mentor?","label":"FEEDBACK"}
+{"text":"Feedback on my scenario?","label":"FEEDBACK"}
+{"text":"Review comments on my draft?","label":"FEEDBACK"}
+{"text":"Show mentor notes","label":"FEEDBACK"}
+{"text":"What did the panel say?","label":"FEEDBACK"}
+{"text":"Any feedback this week?","label":"FEEDBACK"}
+{"text":"Comments on my account brief?","label":"FEEDBACK"}
+{"text":"Coaching summary","label":"FEEDBACK"}
+{"text":"How did my mentor rate me?","label":"FEEDBACK"}
+{"text":"Areas needing reinforcement?","label":"FEEDBACK"}
+{"text":"Recent reviews","label":"FEEDBACK"}
+{"text":"Hi","label":"GENERAL_HELP"}
+{"text":"Hello","label":"GENERAL_HELP"}
+{"text":"Help","label":"GENERAL_HELP"}
+{"text":"What can you do?","label":"GENERAL_HELP"}
+{"text":"How does this app work?","label":"GENERAL_HELP"}
+{"text":"Who are you?","label":"GENERAL_HELP"}
+{"text":"Good morning","label":"GENERAL_HELP"}
+{"text":"Thanks","label":"GENERAL_HELP"}
+{"text":"What is the Compass?","label":"GENERAL_HELP"}
+{"text":"How do I use the assistant?","label":"GENERAL_HELP"}
+{"text":"Can you help me?","label":"GENERAL_HELP"}
+{"text":"I'm new here","label":"GENERAL_HELP"}
+{"text":"Where do I start?","label":"GENERAL_HELP"}
+{"text":"Explain this tool","label":"GENERAL_HELP"}
+{"text":"What does Ask FirstGear do?","label":"GENERAL_HELP"}
+{"text":"Hey there","label":"GENERAL_HELP"}
+{"text":"Menu","label":"GENERAL_HELP"}
+{"text":"Options?","label":"GENERAL_HELP"}
+{"text":"How do I navigate?","label":"GENERAL_HELP"}
+{"text":"Start","label":"GENERAL_HELP"}

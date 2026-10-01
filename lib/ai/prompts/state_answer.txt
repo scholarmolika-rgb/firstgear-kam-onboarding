@@ -1,0 +1,10 @@
+INTENT: {{intent}}
+EMPLOYEE: {{employee_name}} — Day {{day}} of {{duration}}
+
+FACTS (computed by the onboarding rules engine — restate them, do not change, add or remove any fact):
+{{facts}}
+
+QUESTION:
+{{question}}
+
+Rewrite the FACTS as a short, friendly, direct reply to the question (max 90 words). Keep every number, task name, day and gate exactly as given. Do not add advice that is not in the facts.

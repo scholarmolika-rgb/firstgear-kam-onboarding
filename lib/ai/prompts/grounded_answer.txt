@@ -1,0 +1,17 @@
+INTENT: {{intent}}
+ONBOARDING DAY: {{day}} of {{duration}}
+EMPLOYEE: {{employee_name}} ({{role}})
+
+EMPLOYEE STATE (authoritative, from the database):
+{{state}}
+
+KNOWLEDGE PASSAGES (approved, current versions only):
+{{passages}}
+
+RECENT CONVERSATION:
+{{history}}
+
+QUESTION:
+{{question}}
+
+Write the answer now. Cite knowledge passages with their [S#] tags. If the passages do not answer the question, say so and suggest asking the Mentor.

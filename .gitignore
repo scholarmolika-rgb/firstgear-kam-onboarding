@@ -1,0 +1,28 @@
+# dependencies
+node_modules/
+# next
+.next/
+out/
+next-env.d.ts
+*.tsbuildinfo
+# env — never commit secrets
+.env
+.env.local
+.env.*.local
+.env.production
+# testing
+coverage/
+playwright-report/
+test-results/
+# python / ml
+__pycache__/
+*.pyc
+.venv/
+ml/**/models/
+ml/**/checkpoints/
+ml/**/*.onnx
+# misc
+.DS_Store
+*.log
+.vercel
+supabase/.temp/

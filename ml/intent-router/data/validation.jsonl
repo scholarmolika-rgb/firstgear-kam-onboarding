@@ -1,0 +1,40 @@
+{"text":"How does margin floor work here?","label":"FAQ"}
+{"text":"What is the escalation levels?","label":"FAQ"}
+{"text":"What is the KAM charter?","label":"FAQ"}
+{"text":"Explain BEV product family to me","label":"FAQ"}
+{"text":"Explain 8D to me","label":"FAQ"}
+{"text":"Which task is blocking me?","label":"TASK_STATUS"}
+{"text":"What do I need to finish today?","label":"TASK_STATUS"}
+{"text":"I have finished the plant walk","label":"TASK_COMPLETE"}
+{"text":"Mark the code of conduct as done","label":"TASK_COMPLETE"}
+{"text":"I have finished the ownership mapping","label":"TASK_COMPLETE"}
+{"text":"When is my next product training?","label":"SCHEDULE"}
+{"text":"When is my next mentor check-in?","label":"SCHEDULE"}
+{"text":"Can we move the plant walk?","label":"RESCHEDULE"}
+{"text":"Reschedule my mentor check-in to Monday","label":"RESCHEDULE"}
+{"text":"Am I ahead or behind?","label":"PROGRESS"}
+{"text":"Am I on track?","label":"PROGRESS"}
+{"text":"Is the re-check open?","label":"ASSESSMENT"}
+{"text":"How is the assessment scored?","label":"ASSESSMENT"}
+{"text":"What's in Day-21 certification?","label":"SCENARIO"}
+{"text":"Compare my scenario attempts","label":"SCENARIO"}
+{"text":"Which SOP covers PPAP levels?","label":"KNOWLEDGE_SEARCH"}
+{"text":"Is there a policy on gifts?","label":"KNOWLEDGE_SEARCH"}
+{"text":"Where can I find the document on hybrid components?","label":"KNOWLEDGE_SEARCH"}
+{"text":"Which SOP covers BEV product family?","label":"KNOWLEDGE_SEARCH"}
+{"text":"Pricing history with Northwind?","label":"CUSTOMER_360"}
+{"text":"Which customer programmes launch next year?","label":"CUSTOMER_360"}
+{"text":"When is the brief due?","label":"ACCOUNT_BRIEF"}
+{"text":"Account brief requirements","label":"ACCOUNT_BRIEF"}
+{"text":"Escalate this to my mentor","label":"MENTOR_REQUEST"}
+{"text":"Contact Arjun","label":"MENTOR_REQUEST"}
+{"text":"Request manager sign-off","label":"MANAGER_REQUEST"}
+{"text":"I need my reporting boss to approve this","label":"MANAGER_REQUEST"}
+{"text":"What unlocks pricing exposure?","label":"GATE_STATUS"}
+{"text":"Is gate 1 complete?","label":"GATE_STATUS"}
+{"text":"What's my readiness status?","label":"READINESS"}
+{"text":"Pricing readiness?","label":"READINESS"}
+{"text":"What feedback did my mentor give?","label":"FEEDBACK"}
+{"text":"My development areas?","label":"FEEDBACK"}
+{"text":"I'm new here","label":"GENERAL_HELP"}
+{"text":"Menu","label":"GENERAL_HELP"}
