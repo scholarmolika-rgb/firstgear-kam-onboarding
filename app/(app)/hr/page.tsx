@@ -11,7 +11,6 @@ import { CohortTable } from "@/components/staff/CohortTable";
 import { StaffAssistant } from "@/components/assistant/StaffAssistant";
 import { helpText } from "@/lib/ai/staff/guide";
 import { staffSuggestions } from "@/lib/ai/staff/suggestions";
-import { PILLARS, PILLAR_LABEL } from "@/types/domain";
 import type { Snapshot } from "@/lib/services/snapshot";
 
 export const metadata = { title: "HR dashboard" };
@@ -74,7 +73,6 @@ export default async function HrDashboard({ searchParams }: { searchParams: Prom
     { label: "Gate 2 · Day 21 scenario test", value: cleared("G2") },
     { label: "Gate 3 · Day 30 sign-off", value: cleared("G3") },
   ];
-  const pillarAvg = Object.fromEntries(PILLARS.map((p) => [p, avg(cohort.map((c) => c.day15Pillars?.[p] ?? null))]));
   const rows = cohort.filter((s) =>
     view === "attention" ? flags(s).length > 0 : view === "phase1" ? inPhase1(s) : view === "phase2" ? !inPhase1(s) && !decided(s) : view === "done" ? decided(s) : true);
 
@@ -153,9 +151,6 @@ export default async function HrDashboard({ searchParams }: { searchParams: Prom
             <div className="pt-5"><CohortTable rows={rows} pending={(c) => pendingFor(c, "HR_ADMIN")} showExposure /></div>
           </Card>
 
-          <Card title="Average Day-15 pillar scores">
-            <ul className="grid gap-x-8 gap-y-2 text-sm sm:grid-cols-2">{PILLARS.map((p) => <li key={p} className="flex justify-between"><span>{PILLAR_LABEL[p]}</span><span className="tabular-nums">{fmtPct(pillarAvg[p], 1)}</span></li>)}</ul>
-          </Card>
         </div>
 
         <div className="space-y-6">
