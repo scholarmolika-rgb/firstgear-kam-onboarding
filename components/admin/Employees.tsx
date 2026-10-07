@@ -1,8 +1,8 @@
 "use client";
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
-import { UserPlus, RotateCcw, Save } from "lucide-react";
-import { createEmployeeAction, updateAssignmentsAction, resetOnboardingAction } from "@/app/actions/admin";
+import { UserPlus, RotateCcw, Save, Pencil } from "lucide-react";
+import { createEmployeeAction, updateEmployeeAction, updateAssignmentsAction, resetOnboardingAction } from "@/app/actions/admin";
 import { Field } from "@/components/ui";
 
 interface Person { id: string; full_name: string }
@@ -33,6 +33,43 @@ export function CreateEmployeeForm({ mentors, bosses }: { mentors: Person[]; bos
       </div>
       <p className="text-[11px] text-ink-faint">This creates the KAM&apos;s sign-in to the Compass only. It never creates or changes accounts in other IT systems.</p>
       <div className="flex items-center gap-3"><button className="btn-primary" disabled={pending}><UserPlus size={15} />Create KAM & assign onboarding</button>{msg && <span className={msg.ok ? "text-xs text-ok" : "text-xs text-bad"}>{msg.text}</span>}</div>
+    </form>
+  );
+}
+
+export interface EditableEmployee { id: string; full_name: string; email: string; employee_code: string; joining_date: string; joining_type: string; location: string | null; assigned_customer: string | null; status: string }
+
+/** HR edits an already-added KAM's details, inline in the KAM table. */
+export function EditEmployee({ e }: { e: EditableEmployee }) {
+  const router = useRouter();
+  const [open, setOpen] = useState(false);
+  const [pending, start] = useTransition();
+  const [msg, setMsg] = useState<string | null>(null);
+  const initial = { full_name: e.full_name, email: e.email, employee_code: e.employee_code, joining_date: e.joining_date, joining_type: e.joining_type, location: e.location ?? "", assigned_customer: e.assigned_customer ?? "", status: e.status, new_password: "" };
+  const [f, setF] = useState(initial);
+  const set = (k: keyof typeof f) => (ev: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => setF({ ...f, [k]: ev.target.value });
+  if (!open) return <button type="button" className="btn-ghost btn-sm mt-1" onClick={() => { setF(initial); setMsg(null); setOpen(true); }}><Pencil size={12} />Edit</button>;
+  return (
+    <form className="mt-2 space-y-2 rounded-md border border-line bg-canvas p-3" onSubmit={(ev) => { ev.preventDefault(); start(async () => {
+      const r = await updateEmployeeAction(e.id, { ...f, joining_type: f.joining_type as "NEW_JOINER", status: f.status as "ACTIVE" });
+      if (r.ok) { setOpen(false); router.refresh(); } else setMsg(r.error);
+    }); }}>
+      <div className="grid gap-2 sm:grid-cols-2">
+        <Field label="Full name"><input className="input py-1.5 text-xs" required value={f.full_name} onChange={set("full_name")} /></Field>
+        <Field label="Work email" hint="Also changes their sign-in"><input className="input py-1.5 text-xs" type="email" required value={f.email} onChange={set("email")} /></Field>
+        <Field label="Employee code"><input className="input py-1.5 text-xs" required value={f.employee_code} onChange={set("employee_code")} /></Field>
+        <Field label="Joining date" hint="Day 1 changes only via reset"><input className="input py-1.5 text-xs" type="date" required value={f.joining_date} onChange={set("joining_date")} /></Field>
+        <Field label="Joining type"><select className="input py-1.5 text-xs" value={f.joining_type} onChange={set("joining_type")}><option value="NEW_JOINER">New joiner</option><option value="REASSIGNED">Reassigned KAM</option></select></Field>
+        <Field label="Status"><select className="input py-1.5 text-xs" value={f.status} onChange={set("status")}><option value="ACTIVE">Active</option><option value="INACTIVE">Inactive</option></select></Field>
+        <Field label="Location"><input className="input py-1.5 text-xs" value={f.location} onChange={set("location")} /></Field>
+        <Field label="Assigned customer"><input className="input py-1.5 text-xs" value={f.assigned_customer} onChange={set("assigned_customer")} /></Field>
+        <Field label="New password" hint="Optional · min 10 characters"><input className="input py-1.5 text-xs" type="text" minLength={10} autoComplete="new-password" value={f.new_password} onChange={set("new_password")} /></Field>
+      </div>
+      <div className="flex items-center gap-2">
+        <button className="btn-primary btn-sm" disabled={pending}><Save size={12} />{pending ? "Saving…" : "Save changes"}</button>
+        <button type="button" className="btn-ghost btn-sm" onClick={() => setOpen(false)}>Cancel</button>
+        {msg && <span role="alert" className="text-xs text-bad">{msg}</span>}
+      </div>
     </form>
   );
 }

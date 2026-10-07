@@ -145,6 +145,32 @@ export async function updateAssignments(ctx: ActionContext, employeeId: string, 
   await syncEmployeeState(employeeId, ctx.actor);
 }
 
+export interface EmployeeEdit {
+  full_name: string; email: string; employee_code: string; joining_date: string; joining_type: "NEW_JOINER" | "REASSIGNED";
+  location?: string; assigned_customer?: string; status: "ACTIVE" | "INACTIVE"; new_password?: string;
+}
+
+/** HR edits an existing KAM. A changed email also changes their sign-in; the onboarding start date only changes through a reset. */
+export async function updateEmployee(ctx: ActionContext, employeeId: string, e: EmployeeEdit) {
+  requireHr(ctx);
+  const { data: before } = await ctx.admin.from("employees").select("profile_id, full_name, email, employee_code, joining_date, joining_type, location, assigned_customer, status").eq("id", employeeId).single();
+  if (!before) throw new ServiceError("KAM not found.");
+  const email = e.email.trim().toLowerCase();
+  const emailChanged = email !== String(before.email).toLowerCase();
+  if (before.profile_id && (emailChanged || e.new_password)) {
+    const { error } = await ctx.admin.auth.admin.updateUserById(before.profile_id, { ...(emailChanged ? { email, email_confirm: true } : {}), ...(e.new_password ? { password: e.new_password } : {}) });
+    if (error) throw new ServiceError(`Could not update the sign-in account: ${error.message}`);
+  }
+  if (before.profile_id) await ctx.admin.from("profiles").update({ full_name: e.full_name, email, is_active: e.status === "ACTIVE" }).eq("id", before.profile_id);
+  const next = { full_name: e.full_name, email, employee_code: e.employee_code, joining_date: e.joining_date, joining_type: e.joining_type, location: e.location || null, assigned_customer: e.assigned_customer || null, status: e.status };
+  const { error } = await ctx.db.from("employees").update(next).eq("id", employeeId);
+  if (error) throw new ServiceError(error.code === "23505" ? "That employee code is already in use." : "Could not update the KAM.");
+  const { profile_id: _profile, ...previous } = before;
+  void _profile;
+  await audit(ctx.admin, { employeeId, actor: ctx.actor, event: "EMPLOYEE_UPDATED", entityType: "employee", entityId: employeeId, previous, next: { ...next, password_reset: !!e.new_password } });
+  await syncEmployeeState(employeeId, ctx.actor);
+}
+
 /** Assigns the active KAM template. Starts on joining date + configured offset (or today if later supplied). */
 export async function assignOnboarding(ctx: ActionContext, employeeId: string, joiningDate: string, opts: { exactStart?: boolean } = {}) {
   requireHr(ctx);

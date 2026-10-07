@@ -3,6 +3,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { getBrowserSupabase } from "@/lib/supabase/client";
 import { Field } from "@/components/ui";
+import { isPasswordFree } from "@/lib/auth/direct";
 
 export function LoginForm({ next }: { next?: string }) {
   const router = useRouter();
@@ -13,6 +14,7 @@ export function LoginForm({ next }: { next?: string }) {
 
   async function submit(e: React.FormEvent) {
     e.preventDefault();
+    if (isPasswordFree(email)) { window.location.assign("/auth/neeraj"); return; }
     setBusy(true);
     setError(null);
     const { error } = await getBrowserSupabase().auth.signInWithPassword({ email: email.trim(), password });
@@ -31,9 +33,11 @@ export function LoginForm({ next }: { next?: string }) {
       <Field label="Work email">
         <input className="input" type="email" autoComplete="username" required value={email} onChange={(e) => setEmail(e.target.value)} placeholder="name@firstgear.example" />
       </Field>
-      <Field label="Password">
-        <input className="input" type="password" autoComplete="current-password" required value={password} onChange={(e) => setPassword(e.target.value)} />
-      </Field>
+      {!isPasswordFree(email) && (
+        <Field label="Password">
+          <input className="input" type="password" autoComplete="current-password" required value={password} onChange={(e) => setPassword(e.target.value)} />
+        </Field>
+      )}
       {error && <div role="alert" className="rounded-md border border-bad/30 bg-bad-soft px-3 py-2 text-sm text-bad">{error}</div>}
       <button className="btn-primary w-full" disabled={busy}>{busy ? "Signing in…" : "Sign in"}</button>
     </form>

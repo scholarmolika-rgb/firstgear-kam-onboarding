@@ -2,7 +2,7 @@
 /** HR / Admin server actions: configuration, content and people management. */
 import { revalidatePath } from "next/cache";
 import { actionContext, run, ServiceError, type Result } from "@/lib/services/context";
-import { saveConfig, saveTemplateTask, saveQuestion, saveScenarioRubric, createEmployee, updateAssignments, resetOnboarding, type TaskEdit, type QuestionEdit, type EmployeeInput } from "@/lib/services/admin";
+import { saveConfig, saveTemplateTask, saveQuestion, saveScenarioRubric, createEmployee, updateEmployee, updateAssignments, resetOnboarding, type TaskEdit, type QuestionEdit, type EmployeeInput, type EmployeeEdit } from "@/lib/services/admin";
 import { setDocumentApproval, reindexAll } from "@/lib/services/knowledge";
 import { QuestionSchema, uuid, firstError } from "@/lib/security/validation";
 import type { ProgrammeConfig } from "@/types/domain";
@@ -79,6 +79,24 @@ export async function createEmployeeAction(input: EmployeeInput): Promise<Result
     revalidatePath("/admin/employees");
     revalidatePath("/hr");
     return id;
+  });
+}
+
+const EmployeeEditSchema = z.object({
+  full_name: z.string().trim().min(3).max(120), email: z.string().trim().email(), employee_code: z.string().trim().min(3).max(30),
+  joining_date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/), joining_type: z.enum(["NEW_JOINER", "REASSIGNED"]), location: z.string().max(120).optional(),
+  assigned_customer: z.string().max(120).optional(), status: z.enum(["ACTIVE", "INACTIVE"]), new_password: z.string().min(10).max(72).optional().or(z.literal("")),
+});
+
+export async function updateEmployeeAction(employeeId: string, input: EmployeeEdit): Promise<Result<true>> {
+  return run(async () => {
+    uuid.parse(employeeId);
+    const v = EmployeeEditSchema.safeParse(input);
+    if (!v.success) throw new ServiceError(firstError(v.error));
+    const ctx = await actionContext();
+    await updateEmployee(ctx, employeeId, v.data as EmployeeEdit);
+    revalidatePath("/", "layout");
+    return true as const;
   });
 }
 
