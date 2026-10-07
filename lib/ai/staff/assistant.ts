@@ -1,12 +1,12 @@
 import "server-only";
 import { loadSnapshot, type Snapshot } from "@/lib/services/snapshot";
 import { loadCohort, pendingFor } from "@/lib/services/cohort";
-import { chatInbox } from "@/lib/services/chat";
+import { chatInbox, chatEnabled } from "@/lib/services/chat";
 import { getConfig } from "@/lib/services/settings";
 import { audit } from "@/lib/services/audit";
 import { ServiceError, type ActionContext } from "@/lib/services/context";
 import { assistantLimiter } from "@/lib/security/rate-limit";
-import { retrieve, validateCitations, formatCitation, toCitations, type Citation } from "@/lib/ai/rag/retrieve";
+import { retrieve, validateCitations, formatCitation, toCitations, focusedExcerpt, type Citation } from "@/lib/ai/rag/retrieve";
 import { mistralChat } from "@/lib/ai/llm/mistral";
 import { renderPrompt } from "@/lib/ai/prompts";
 import { phaseLabel } from "@/lib/report/build";
@@ -93,10 +93,7 @@ async function knowledge(ctx: ActionContext, role: StaffRole, question: string, 
     const v = validateCitations(llm.text, citations);
     if (v.used.length) return { text: v.text, grounding: "COMPANY_KNOWLEDGE", links: [], citations: v.used, model: llm.model };
   }
-  const top = r.passages.slice(0, 2).map((p, i) => {
-    const body = p.content.replace(/^[^\n]*\n/, "").replace(/\s+/g, " ").trim();
-    return `${body.length > 600 ? body.slice(0, 600).replace(/\s\S*$/, "") + " …" : body} [${citations[i].tag}]`;
-  });
+  const top = r.passages.slice(0, 2).map((p, i) => `${focusedExcerpt(p.content, question)} [${citations[i].tag}]`);
   return { text: `From the approved sources:\n\n${top.join("\n\n")}`, grounding: "COMPANY_KNOWLEDGE", links: [], citations: citations.slice(0, 2), model: null };
 }
 
@@ -169,7 +166,7 @@ export async function handleStaffMessage(ctx: ActionContext, message: string, hi
       break;
     }
     case "MESSAGES": {
-      const inbox = await chatInbox(ctx);
+      const inbox = (await chatEnabled(ctx.admin)) ? await chatInbox(ctx) : [];
       const unread = inbox.filter((r) => r.unread);
       reply = {
         text: unread.length ? `Unread support messages from ${unread.length} KAM${unread.length === 1 ? "" : "s"}:\n${unread.map((r) => `• ${r.name} — ${r.unread} unread: "${(r.lastMessage?.body ?? "").slice(0, 90)}"`).join("\n")}` : "No unread support messages.",

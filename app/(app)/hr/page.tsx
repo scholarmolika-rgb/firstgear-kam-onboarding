@@ -4,7 +4,8 @@ import { requireRole } from "@/lib/auth/session";
 import { createServerSupabase } from "@/lib/supabase/server";
 import { actionContext } from "@/lib/services/context";
 import { loadCohort, pendingFor } from "@/lib/services/cohort";
-import { chatInbox } from "@/lib/services/chat";
+import { chatInbox, chatEnabled } from "@/lib/services/chat";
+import { createAdminClient } from "@/lib/supabase/server";
 import { Card, PageHeader, Stat, fmtPct, cn } from "@/components/ui";
 import { CohortTable } from "@/components/staff/CohortTable";
 import { StaffAssistant } from "@/components/assistant/StaffAssistant";
@@ -53,9 +54,10 @@ export default async function HrDashboard({ searchParams }: { searchParams: Prom
   const { view = "all" } = await searchParams;
   const db = await createServerSupabase();
   const ctx = await actionContext({ rateLimit: false });
+  const chatOn = await chatEnabled(createAdminClient());
   const [cohort, inbox, { count: docCount }, suggestions] = await Promise.all([
     loadCohort(db),
-    chatInbox(ctx).catch(() => []),
+    chatOn ? chatInbox(ctx).catch(() => []) : Promise.resolve([]),
     db.from("knowledge_documents").select("id", { count: "exact", head: true }).eq("is_current", true).eq("approved", true),
     staffSuggestions("HR_ADMIN"),
   ]);
@@ -83,7 +85,7 @@ export default async function HrDashboard({ searchParams }: { searchParams: Prom
         title="HR dashboard"
         subtitle={`${n} KAM${n === 1 ? "" : "s"} in onboarding · ${flagged.length} need attention · ${unread} unread message${unread === 1 ? "" : "s"}`}
         actions={<>
-          <Link prefetch={false} href="/messages" className="btn-secondary"><MessagesSquare size={15} />Messages{unread ? ` (${unread})` : ""}</Link>
+          {chatOn && <Link prefetch={false} href="/messages" className="btn-secondary"><MessagesSquare size={15} />Messages{unread ? ` (${unread})` : ""}</Link>}
           <Link prefetch={false} href="/admin/employees" className="btn-primary"><UserPlus size={15} />Add KAM</Link>
         </>}
       />
@@ -91,7 +93,7 @@ export default async function HrDashboard({ searchParams }: { searchParams: Prom
       {/* Where do you want to go? */}
       <div className="mb-6 grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
         <Tile href="/admin/employees" icon={Users} title="People & onboarding" text="Add KAMs, assign Mentor and Reporting Boss, reset a journey" count={n} />
-        <Tile href="/messages" icon={MessagesSquare} title="Messages" text="Support chat with KAMs in their first 15 days" count={unread} tone={unread ? "warn" : undefined} />
+        {chatOn && <Tile href="/messages" icon={MessagesSquare} title="Messages" text="Support chat with KAMs in their first 15 days" count={unread} tone={unread ? "warn" : undefined} />}
         <Tile href="/copilot" icon={Bot} title="Ask Compass" text="Status, what to do next and how-to — in one question" />
         <Tile href="/admin/config" icon={SlidersHorizontal} title="Programme configuration" text="Weights, pass marks, gates, chat window, reminders" />
         <Tile href="/admin/assessments" icon={FileCog} title="Assessments & scenarios" text="Question bank and scenario rubrics" />
@@ -120,7 +122,7 @@ export default async function HrDashboard({ searchParams }: { searchParams: Prom
                   <li key={s.employee.id} className="flex flex-wrap items-center justify-between gap-2 px-5 py-2.5 text-sm">
                     <span><span className="font-medium">{s.employee.full_name}</span> <span className="text-xs text-ink-muted">Day {Math.max(s.day, 0)}</span> — <span className="text-bad">{f.join(" · ")}</span></span>
                     <span className="flex gap-1.5">
-                      <Link prefetch={false} href={`/messages?kam=${s.employee.id}`} className="btn-secondary btn-sm">Message</Link>
+                      {chatOn && <Link prefetch={false} href={`/messages?kam=${s.employee.id}`} className="btn-secondary btn-sm">Message</Link>}
                       <Link prefetch={false} href={`/people/${s.employee.id}`} className="btn-secondary btn-sm">Open</Link>
                     </span>
                   </li>
@@ -167,7 +169,7 @@ export default async function HrDashboard({ searchParams }: { searchParams: Prom
           <Card title="Ask Compass" subtitle="Ask anything — live data, how-to, policies" action={<Link prefetch={false} href="/copilot" className="link text-xs">Full screen</Link>}>
             <StaffAssistant compact suggestions={suggestions} intro={helpText("HR_ADMIN")} />
           </Card>
-          <Card title="Recent messages" action={<Link prefetch={false} href="/messages" className="link text-xs">All messages</Link>}>
+          {chatOn && <Card title="Recent messages" action={<Link prefetch={false} href="/messages" className="link text-xs">All messages</Link>}>
             {inbox.some((r) => r.lastMessage) ? (
               <ul className="-mx-5 -my-5 divide-y divide-line">
                 {inbox.filter((r) => r.lastMessage).slice(0, 5).map((r) => (
@@ -180,7 +182,7 @@ export default async function HrDashboard({ searchParams }: { searchParams: Prom
                 ))}
               </ul>
             ) : <p className="text-sm text-ink-muted">No messages yet.</p>}
-          </Card>
+          </Card>}
           <Link prefetch={false} href="/admin/audit" className="card card-pad flex items-center gap-3 text-sm hover:bg-canvas"><ScrollText size={16} className="text-ink-faint" />Audit log — who changed or decided what</Link>
         </div>
       </div>

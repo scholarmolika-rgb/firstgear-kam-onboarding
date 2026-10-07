@@ -20,3 +20,19 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "The assistant is unavailable right now." }, { status: 500 });
   }
 }
+
+/** The KAM's latest assistant conversation — used by the Ask FirstGear dock when it opens. */
+export async function GET() {
+  try {
+    const ctx = await actionContext({ rateLimit: false });
+    if (ctx.actor.role !== "KAM" || !ctx.employeeId) return NextResponse.json({ sessionId: null, messages: [] });
+    const { data: session } = await ctx.db.from("conversation_sessions").select("id").eq("employee_id", ctx.employeeId).order("updated_at", { ascending: false }).limit(1).maybeSingle();
+    if (!session) return NextResponse.json({ sessionId: null, messages: [] });
+    const { data: msgs } = await ctx.db.from("conversation_messages").select("id, role, content, citations, actions, grounding, intent, intent_source")
+      .eq("session_id", session.id).order("created_at", { ascending: false }).limit(40);
+    return NextResponse.json({ sessionId: session.id, messages: (msgs ?? []).reverse() });
+  } catch (e) {
+    console.error("[assistant:history]", (e as Error).message);
+    return NextResponse.json({ sessionId: null, messages: [] });
+  }
+}

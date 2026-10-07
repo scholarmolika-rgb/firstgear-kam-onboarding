@@ -38,7 +38,7 @@ const RULES: [Intent, RegExp[]][] = [
   ["SCENARIO", [/\b(scenario|simulation|role[- ]?play|certification|practi[cs]e)\b/i]],
   ["ACCOUNT_BRIEF", [/\baccount brief\b/i, /\bstakeholder map\b/i]],
   ["CUSTOMER_360", [/\b(customer 360|northwind|oem|customer'?s?|account)\b.{0,40}\b(organi[sz]ation|strategy|programmes?|programs?|volumes?|pipeline|contacts?|history|commitments?|parts|lessons|issues)\b/i, /\bproject aster\b/i, /\bnorthwind\b/i]],
-  ["PROGRESS", [/\b(progress|how am i doing|how far|percentage|% complete|completion|overall)\b/i, /\bwhat day\b/i, /\bday \d+ of\b/i]],
+  ["PROGRESS", [/\b(progress\w*|how am i doing|how far|percentage|% complete|completion|overall)\b/i, /\bwhat day\b/i, /\bday \d+ of\b/i]],
   ["TASK_STATUS", [/\b(what should i do|what(?:'s| is) next|next (task|step|action)|today'?s tasks|my tasks|pending|overdue|to-?do|left to do)\b/i]],
   ["FEEDBACK", [/\bfeedback\b/i, /\bcoaching notes?\b/i, /\bwhat did (my )?(mentor|manager|boss) say\b/i]],
   ["KNOWLEDGE_SEARCH", [/\b(where (can|do) i find|which document|sop|policy|manual|guide|playbook|matrix|procedure)\b/i]],
@@ -52,4 +52,18 @@ export function ruleClassify(text: string): { intent: Intent; confidence: number
     if (patterns.some((p) => p.test(t))) return { intent, confidence: 0.7 };
   }
   return { intent: "GENERAL_HELP", confidence: 0.4 };
+}
+
+/**
+ * Company policy topics (HR, leave, travel, conveyance, reimbursement, admin,
+ * IT, KPIs, organisation, SOPs, compliance, safety). These are answered from
+ * the policy FAQ documents, so they go straight to knowledge search — before
+ * the intent model, which was not trained on them and could mistake "overdue
+ * claims" or "leave for exams" for onboarding-state questions.
+ */
+const POLICY_TOPICS = /\b(leaves?|holidays?|vacation|sick|maternity|paternity|bereavement|comp(ensatory)?[- ]?off|salary|payslips?|payroll|ctc|provident fund|pf|uan|gratuity|insurance|mediclaim|notice period|resign(ation)?|probation|confirmation|appraisal|promotions?|increment|variable pay|bonus|incentives?|reimburs\w*|expenses?|claims?|allowances?|per diem|da|travel\w*|hotels?|flights?|trains?|rail|taxi|cabs?|conveyance|mileage|per km|tolls?|parking|visas?|forex|advance|laptop|id card|access card|visiting cards?|stationery|courier|canteen|pool car|dress code|working hours|office hours|attendance|work from home|wfh|posh|harass\w*|grievance|ethics|whistle\w*|insider|trading window|upsi|conflicts? of interest|bribe\w*|gifts?|hospitality|competition law|passwords?|phishing|usb|social media|ai tools?|data classification|ppe|safety shoes|near miss|plant visits?|org(anisation|anization)? chart|departments?|who (handles|owns|approves)|kpis?|otif|ppm|dso|hit rate|scorecard|credit (limit|note|hold)|nda|warranty|incoterms?|sops?|rma|cost centre|grade|hr ?bp|helpdesk)\b/i;
+const ONBOARDING_STATE = /\b(my (progress|journey|tasks?|gates?|readiness|band|sessions?|next step)|day[- ]?(15|21|30) (assessment|gate|panel|test)|what should i do next|northwind|project aster|account brief|customer 360)\b/i;
+
+export function isPolicyQuestion(text: string): boolean {
+  return POLICY_TOPICS.test(text) && !ONBOARDING_STATE.test(text);
 }

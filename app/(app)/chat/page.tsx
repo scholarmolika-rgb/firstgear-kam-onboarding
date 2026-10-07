@@ -1,7 +1,8 @@
 import Link from "next/link";
 import { requireRole } from "@/lib/auth/session";
 import { actionContext } from "@/lib/services/context";
-import { loadThread } from "@/lib/services/chat";
+import { loadThread, chatEnabled } from "@/lib/services/chat";
+import { createAdminClient } from "@/lib/supabase/server";
 import { Card, PageHeader, Notice, fmtDate } from "@/components/ui";
 import { ChatThread } from "@/components/chat/ChatThread";
 
@@ -11,6 +12,7 @@ export const dynamic = "force-dynamic";
 export default async function KamChat({ searchParams }: { searchParams: Promise<{ t?: string }> }) {
   const s = await requireRole(["KAM"]);
   if (!s.employeeId) return <Notice tone="warn" title="Chat not available">Your onboarding profile is not set up yet.</Notice>;
+  if (!(await chatEnabled(createAdminClient()))) return <Notice tone="neutral" title="Support chat is being enabled">The KAM ↔ Mentor ↔ HR chat will appear here as soon as its database update is applied. Meanwhile, use Ask FirstGear or your sessions.</Notice>;
   const { t } = await searchParams;
   const ctx = await actionContext({ rateLimit: false });
   const th = await loadThread(ctx, s.employeeId);

@@ -64,10 +64,17 @@ export const NAV: Record<Role, { section?: string; items: Item[] }[]> = {
   ],
 };
 
-export function SideNav({ role }: { role: Role }) {
+const CHAT_ROUTES = new Set(["/chat", "/messages"]);
+
+/** The role's navigation; chat entries appear only once the chat tables exist. */
+export function navFor(role: Role, opts: { chat: boolean }) {
+  return NAV[role].map((g) => ({ ...g, items: g.items.filter((it) => opts.chat || !CHAT_ROUTES.has(it.href)) }));
+}
+
+export function SideNav({ role, chat = true }: { role: Role; chat?: boolean }) {
   const path = usePathname();
   const [open, setOpen] = useState(false);
-  const groups = [...NAV[role], { section: undefined, items: [{ href: "/settings", label: "Settings", icon: Settings }] }];
+  const groups = [...navFor(role, { chat }), { section: undefined, items: [{ href: "/settings", label: "Settings", icon: Settings }] }];
   const list = (
     <nav className="space-y-5" aria-label="Main">
       {groups.map((g, i) => (

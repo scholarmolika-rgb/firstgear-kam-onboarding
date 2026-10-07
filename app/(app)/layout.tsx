@@ -1,7 +1,9 @@
 import Link from "next/link";
 import { Suspense } from "react";
 import { requireSession } from "@/lib/auth/session";
-import { createServerSupabase } from "@/lib/supabase/server";
+import { createServerSupabase, createAdminClient } from "@/lib/supabase/server";
+import { chatEnabled } from "@/lib/services/chat";
+import { AskDock } from "@/components/assistant/AskDock";
 import { SideNav } from "@/components/layout/SideNav";
 import { NotificationBell } from "@/components/layout/NotificationBell";
 import { RealtimeRefresher } from "@/components/layout/RealtimeRefresher";
@@ -12,13 +14,14 @@ import { LogOut } from "lucide-react";
 export default async function AppLayout({ children }: { children: React.ReactNode }) {
   const { profile, employeeId } = await requireSession();
   const db = await createServerSupabase();
+  const chat = await chatEnabled(createAdminClient());
   const { data: notes } = await db.from("notifications").select("id, title, body, link, severity, created_at").eq("recipient_id", profile.id).is("read_at", null).order("created_at", { ascending: false }).limit(20);
   const initials = profile.full_name.split(" ").map((p) => p[0]).slice(0, 2).join("");
   return (
     <div className="flex min-h-screen flex-col">
       <header className="sticky top-0 z-30 border-b border-line bg-surface/95 backdrop-blur">
         <div className="flex h-14 items-center gap-3 px-4 lg:px-6">
-          <div className="lg:hidden"><SideNavMobileSlot role={profile.role} /></div>
+          <div className="lg:hidden"><SideNavMobileSlot role={profile.role} chat={chat} /></div>
           <Link href="/" className="flex items-center gap-2.5">
             <svg width="26" height="26" viewBox="0 0 32 32" aria-hidden><rect width="32" height="32" rx="7" fill="#1F4E79" /><circle cx="16" cy="16" r="8.5" fill="none" stroke="#fff" strokeWidth="2" /><path d="M16 9.5 18.6 16 16 22.5 13.4 16z" fill="#fff" /></svg>
             <span className="leading-tight">
@@ -42,9 +45,10 @@ export default async function AppLayout({ children }: { children: React.ReactNod
         </div>
       </header>
       <div className="flex flex-1">
-        <div className="hidden lg:block"><SideNav role={profile.role} /></div>
+        <div className="hidden lg:block"><SideNav role={profile.role} chat={chat} /></div>
+        {profile.role === "KAM" && employeeId && <AskDock employeeId={employeeId} />}
         <main className="min-w-0 flex-1 px-4 py-6 lg:px-8 lg:py-8">
-          <div className="mx-auto max-w-[1240px]"><Suspense fallback={null}><TrainingBanner /></Suspense>{children}<Suspense fallback={null}><PageStepper role={profile.role} /></Suspense></div>
+          <div className="mx-auto max-w-[1240px]"><Suspense fallback={null}><TrainingBanner /></Suspense>{children}<Suspense fallback={null}><PageStepper role={profile.role} chat={chat} /></Suspense></div>
         </main>
       </div>
       <RealtimeRefresher employeeId={employeeId} userId={profile.id} />
@@ -52,6 +56,6 @@ export default async function AppLayout({ children }: { children: React.ReactNod
   );
 }
 
-function SideNavMobileSlot({ role }: { role: Parameters<typeof SideNav>[0]["role"] }) {
-  return <SideNav role={role} />;
+function SideNavMobileSlot({ role, chat }: { role: Parameters<typeof SideNav>[0]["role"]; chat: boolean }) {
+  return <SideNav role={role} chat={chat} />;
 }

@@ -8,7 +8,7 @@
  * The model can be replaced at any time without touching the app.
  */
 import { isIntent, type Intent } from "./intents";
-import { guard, ruleClassify, type Guard } from "./rules";
+import { guard, ruleClassify, isPolicyQuestion, type Guard } from "./rules";
 
 export interface RoutedIntent {
   intent: Intent;
@@ -51,6 +51,7 @@ export async function classifyWithDistilBert(text: string, fetchImpl: typeof fet
 export async function routeIntent(text: string, fetchImpl?: typeof fetch): Promise<RoutedIntent> {
   const g = guard(text);
   if (g) return { intent: g === "PRICING_AUTHORITY" ? "MANAGER_REQUEST" : "GENERAL_HELP", confidence: 1, source: "guard", guard: g };
+  if (isPolicyQuestion(text)) return { intent: "KNOWLEDGE_SEARCH", confidence: 0.9, source: "rules", guard: null };
   const min = Number(process.env.INTENT_MIN_CONFIDENCE ?? 0.55);
   const model = await classifyWithDistilBert(text, fetchImpl);
   if (model && model.confidence >= min) return { ...model, source: "distilbert", guard: null };

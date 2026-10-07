@@ -2,7 +2,7 @@
 import Link from "next/link";
 import { usePathname, useSearchParams } from "next/navigation";
 import { ArrowLeft, ArrowRight, GraduationCap } from "lucide-react";
-import { NAV } from "@/components/layout/SideNav";
+import { navFor } from "@/components/layout/SideNav";
 import type { Role } from "@/types/domain";
 
 /** The training step a page was opened from (`?t=<task code>`), if any. */
@@ -35,7 +35,7 @@ export function TrainingBanner() {
  * order. Detail pages step relative to their parent section. The training
  * player and journey day pages render their own navigation.
  */
-export function PageStepper({ role }: { role: Role }) {
+export function PageStepper({ role, chat = true }: { role: Role; chat?: boolean }) {
   const path = usePathname();
   const step = useTrainingStep();
   if (/^\/journey\/\d+/.test(path) || path.startsWith("/learn")) return null;
@@ -50,7 +50,7 @@ export function PageStepper({ role }: { role: Role }) {
     );
   }
 
-  const flow = NAV[role].flatMap((g) => g.items);
+  const flow = navFor(role, { chat }).flatMap((g) => g.items);
   let i = flow.findIndex((it) => path === it.href || path.startsWith(it.href + "/"));
   // A KAM's profile (/people/:id) is reached from the staff dashboard — step back to it.
   if (i < 0 && path.startsWith("/people/")) i = 0;

@@ -159,3 +159,33 @@ export function formatCitation(c: Citation): string {
   return [c.document_name, c.section ? `Section ${c.section.replace(/^(\d+(\.\d+)*)\s.*$/, "$1")}` : null, c.page ? `Page ${c.page}` : null, `Version ${c.version}`, c.effective_date ? `effective ${c.effective_date}` : null]
     .filter(Boolean).join(" · ");
 }
+
+const EXCERPT_STOP = new Set("a an and are as at be by can do does for from how i in is it me my of on or our the to was we what when where which who why will with you your about tell much many get there any".split(" "));
+const excerptTerms = (s: string) => s.toLowerCase().replace(/[^a-z0-9₹%\s-]/g, " ").split(/[\s-]+/).filter((w) => w.length > 1 && !EXCERPT_STOP.has(w));
+
+/**
+ * Question-focused excerpt for extractive answers: keeps the sentences and
+ * list lines of a passage that share the most terms with the question, in
+ * their original order, up to `maxChars`. Long summary passages (for example a
+ * policy's "at a glance" list) then show the line that answers the question
+ * instead of whatever happens to come first.
+ */
+export function focusedExcerpt(content: string, question: string, maxChars = 600): string {
+  const body = content.replace(/^[^\n]*\n/, "").trim();
+  const q = new Set(excerptTerms(question));
+  const units = body.split(/\n+|(?<=[.!?])\s+(?=[A-Z0-9₹"(])/).map((u) => u.replace(/\s+/g, " ").trim()).filter(Boolean);
+  if (body.length <= maxChars || !q.size) return body.length <= maxChars ? body.replace(/\s+/g, " ") : body.replace(/\s+/g, " ").slice(0, maxChars).replace(/\s\S*$/, "") + " …";
+  const scored = units.map((u, i) => ({ u, i, s: excerptTerms(u).filter((w) => q.has(w)).length }));
+  const ranked = [...scored].sort((a, b) => b.s - a.s || a.i - b.i);
+  const keep: typeof scored = [];
+  let len = 0;
+  for (const x of ranked) {
+    if (x.s === 0 && keep.length) break;
+    if (len + x.u.length > maxChars && keep.length) continue;
+    keep.push(x);
+    len += x.u.length + 1;
+    if (len >= maxChars) break;
+  }
+  const out = keep.sort((a, b) => a.i - b.i).map((x) => x.u).join(" ");
+  return out.length > maxChars ? out.slice(0, maxChars).replace(/\s\S*$/, "") + " …" : out;
+}

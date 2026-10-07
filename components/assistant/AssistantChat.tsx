@@ -27,7 +27,7 @@ function SourceCard({ c }: { c: Citation }) {
   return c.source_url ? <Link href={c.source_url} className="block rounded-md border border-line bg-canvas px-2.5 py-2 hover:bg-white">{body}</Link> : <div className="rounded-md border border-line bg-canvas px-2.5 py-2">{body}</div>;
 }
 
-export function AssistantChat({ initial, sessionId: initialSession, employeeId, compact = false, prefill }: { initial: ChatMessage[]; sessionId: string | null; employeeId: string; compact?: boolean; prefill?: string }) {
+export function AssistantChat({ initial, sessionId: initialSession, employeeId, compact = false, prefill, dock = false }: { initial: ChatMessage[]; sessionId: string | null; employeeId: string; compact?: boolean; prefill?: string; dock?: boolean }) {
   const router = useRouter();
   const [messages, setMessages] = useState<ChatMessage[]>(initial);
   const [sessionId, setSessionId] = useState(initialSession);
@@ -77,10 +77,10 @@ export function AssistantChat({ initial, sessionId: initialSession, employeeId, 
   const lastUserBefore = (idx: number) => [...messages.slice(0, idx)].reverse().find((m) => m.role === "user")?.content ?? "";
 
   return (
-    <div className={cn("flex flex-col", compact ? "h-[520px]" : "h-[calc(100vh-220px)] min-h-[520px]")}>
+    <div className={cn("flex flex-col", dock ? "h-full min-h-0" : compact ? "h-[520px]" : "h-[calc(100vh-220px)] min-h-[520px]")}>
       <div className="flex-1 space-y-5 overflow-y-auto px-1 pb-4" aria-live="polite">
         {messages.length === 0 && (
-          <div className="mx-auto max-w-xl pt-8 text-center">
+          <div className={cn("mx-auto max-w-xl text-center", dock ? "pt-3" : "pt-8")}>
             <div className="text-sm font-semibold">Ask FirstGear</div>
             <p className="mt-1 text-sm text-ink-muted">Answers about company knowledge come only from approved documents, with sources. Answers about your progress come from your recorded journey.</p>
             <div className="mt-5 flex flex-wrap justify-center gap-2">
@@ -90,8 +90,8 @@ export function AssistantChat({ initial, sessionId: initialSession, employeeId, 
         )}
         {messages.map((m, idx) => (
           <div key={m.id} className={cn("flex gap-3", m.role === "user" && "justify-end")}>
-            {m.role === "assistant" && <div className="mt-1 flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-accent text-[10px] font-bold text-white">FG</div>}
-            <div className={cn("max-w-[min(680px,85%)]", m.role === "user" ? "rounded-lg bg-accent px-3.5 py-2.5 text-sm text-white" : "")}>
+            {m.role === "assistant" && !dock && <div className="mt-1 flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-accent text-[10px] font-bold text-white">FG</div>}
+            <div className={cn(dock ? (m.role === "user" ? "max-w-[88%]" : "w-full min-w-0") : "max-w-[min(680px,85%)]", m.role === "user" ? "rounded-lg bg-accent px-3.5 py-2.5 text-sm text-white" : "")}>
               {m.role === "assistant" ? (
                 <div className="space-y-2.5">
                   <div className="rounded-lg border border-line bg-surface px-4 py-3 text-sm leading-relaxed whitespace-pre-wrap">{m.content}</div>
@@ -102,13 +102,13 @@ export function AssistantChat({ initial, sessionId: initialSession, employeeId, 
                       {m.grounding === "INSUFFICIENT" && <><Info size={11} />Insufficient evidence — not answered</>}
                       {m.grounding === "OUT_OF_SCOPE" && <><ShieldAlert size={11} />Outside the assistant&apos;s scope</>}
                       {m.grounding === "GENERAL" && <><Info size={11} />General guidance</>}
-                      {m.intent && <span className="ml-1 rounded bg-canvas px-1.5 py-0.5 font-mono text-[10px]">{m.intent}{m.intent_source ? ` · ${m.intent_source}` : ""}</span>}
+                      {m.intent && !dock && <span className="ml-1 rounded bg-canvas px-1.5 py-0.5 font-mono text-[10px]">{m.intent}{m.intent_source ? ` · ${m.intent_source}` : ""}</span>}
                     </div>
                   )}
                   {!!m.citations?.length && (
                     <div>
                       <div className="label mb-1">Source{m.citations.length > 1 ? "s" : ""}</div>
-                      <div className="grid gap-1.5 sm:grid-cols-2">{m.citations.map((c) => <SourceCard key={c.tag} c={c} />)}</div>
+                      <div className={cn("grid gap-1.5", !dock && "sm:grid-cols-2")}>{m.citations.map((c) => <SourceCard key={c.tag} c={c} />)}</div>
                     </div>
                   )}
                   {!!m.actions?.length && (
@@ -130,13 +130,13 @@ export function AssistantChat({ initial, sessionId: initialSession, employeeId, 
             </div>
           </div>
         ))}
-        {busy && <div className="flex items-center gap-2 pl-10 text-xs text-ink-muted"><Loader2 size={14} className="animate-spin" />Checking your journey and approved sources…</div>}
-        {error && <div role="alert" className="ml-10 rounded-md border border-bad/30 bg-bad-soft px-3 py-2 text-xs text-bad">{error}</div>}
+        {busy && <div className={cn("flex items-center gap-2 text-xs text-ink-muted", !dock && "pl-10")}><Loader2 size={14} className="animate-spin" />Checking your journey and approved sources…</div>}
+        {error && <div role="alert" className={cn("rounded-md border border-bad/30 bg-bad-soft px-3 py-2 text-xs text-bad", !dock && "ml-10")}>{error}</div>}
         <div ref={endRef} />
       </div>
       <form onSubmit={(e) => { e.preventDefault(); void send(input); }} className="mt-2 flex gap-2 border-t border-line pt-3">
         <label htmlFor="ask" className="sr-only">Ask FirstGear</label>
-        <input id="ask" className="input flex-1" placeholder="Ask about your onboarding, products, processes, policies or next task..." value={input} onChange={(e) => setInput(e.target.value)} maxLength={2000} autoComplete="off" />
+        <input id="ask" className="input flex-1" placeholder={dock ? "Ask about policies, products, your next task…" : "Ask about your onboarding, products, processes, policies or next task..."} value={input} onChange={(e) => setInput(e.target.value)} maxLength={2000} autoComplete="off" />
         <button className="btn-primary" disabled={busy || !input.trim()} aria-label="Send"><Send size={15} /></button>
       </form>
     </div>

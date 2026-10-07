@@ -16,6 +16,24 @@ import { notifyOne } from "@/lib/notifications/service";
 
 export type ChatRole = "KAM" | "MENTOR" | "HR_ADMIN";
 
+let enabledCache: { value: boolean; at: number } | null = null;
+
+/**
+ * True once migration 008 (chat tables) has been applied. Until then chat
+ * entry points stay hidden and chat pages explain it is being enabled, so the
+ * app can be deployed before the schema change. A positive result is cached
+ * for the life of the server instance; a negative one is re-checked each minute.
+ */
+export async function chatEnabled(admin: SupabaseClient): Promise<boolean> {
+  if (enabledCache && (enabledCache.value || Date.now() - enabledCache.at < 60_000)) return enabledCache.value;
+  // A GET (not HEAD), so a missing table comes back with a real error body.
+  const { error, status } = await admin.from("chat_threads").select("id").limit(1);
+  const missing = !!error && (status === 404 || error.code === "42P01" || error.code === "PGRST205" || /does not exist|could not find the table|schema cache/i.test(error.message ?? ""));
+  if (error && !missing) return enabledCache?.value ?? false; // transient error: keep the last known state
+  enabledCache = { value: !missing, at: Date.now() };
+  return enabledCache.value;
+}
+
 export interface ChatMessage {
   id: string;
   sender_id: string;

@@ -1,7 +1,7 @@
 import "server-only";
 import { routeIntent } from "./intent/router";
 import { INTENT_GROUNDING, type Intent } from "./intent/intents";
-import { retrieve, validateCitations, formatCitation, toCitations, type Citation, type Hit } from "./rag/retrieve";
+import { retrieve, validateCitations, formatCitation, toCitations, focusedExcerpt, type Citation, type Hit } from "./rag/retrieve";
 import { mistralChat } from "./llm/mistral";
 import { renderPrompt } from "./prompts";
 import { loadSnapshot, type Snapshot } from "@/lib/services/snapshot";
@@ -149,10 +149,7 @@ async function knowledgeAnswer(ctx: ActionContext, snap: Snapshot, intent: Inten
     // The model answered without citing — fall through to the extractive answer rather than show an unsourced claim.
   }
   // Extractive fallback: quote the best passages directly, each with its tag.
-  const top = passages.slice(0, 2).map((p, i) => {
-    const body = p.content.replace(/^[^\n]*\n/, "").replace(/\s+/g, " ").trim();
-    return `${body.length > 600 ? body.slice(0, 600).replace(/\s\S*$/, "") + " …" : body} [${citations[i].tag}]`;
-  });
+  const top = passages.slice(0, 2).map((p, i) => `${focusedExcerpt(p.content, question)} [${citations[i].tag}]`);
   return { text: `From the approved sources:\n\n${top.join("\n\n")}`, grounding: "COMPANY_KNOWLEDGE" as Grounding, citations: citations.slice(0, 2), model: null };
 }
 

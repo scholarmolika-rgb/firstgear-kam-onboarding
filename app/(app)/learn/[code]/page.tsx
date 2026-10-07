@@ -8,7 +8,7 @@ import { Card, Notice, StatusPill, cn } from "@/components/ui";
 import { DocText } from "@/components/kam/DocText";
 import { StepAction } from "@/components/kam/Training";
 import { createAdminClient } from "@/lib/supabase/server";
-import { chatWindow } from "@/lib/services/chat";
+import { chatWindow, chatEnabled } from "@/lib/services/chat";
 
 export const dynamic = "force-dynamic";
 export const metadata = { title: "Training" };
@@ -44,7 +44,7 @@ export default async function TrainingStep({ params, searchParams }: { params: P
   const nextHref = next ? `/learn/${encodeURIComponent(next.code)}` : "/journey";
   const completed = path.steps.filter((s) => done(s.availability)).length;
   const t = `t=${encodeURIComponent(step.code)}`;
-  const chat = await chatWindow(createAdminClient(), snap.employee.id).catch(() => null);
+  const chat = (await chatEnabled(createAdminClient())) ? await chatWindow(createAdminClient(), snap.employee.id).catch(() => null) : null;
 
   const nav = (
     <div className="flex items-center justify-between gap-3">

@@ -1,8 +1,9 @@
 import Link from "next/link";
 import { requireRole } from "@/lib/auth/session";
 import { actionContext } from "@/lib/services/context";
-import { chatInbox, loadThread } from "@/lib/services/chat";
-import { Card, PageHeader, Empty, cn } from "@/components/ui";
+import { chatInbox, loadThread, chatEnabled } from "@/lib/services/chat";
+import { createAdminClient } from "@/lib/supabase/server";
+import { Card, PageHeader, Empty, Notice, cn } from "@/components/ui";
 import { ChatThread } from "@/components/chat/ChatThread";
 
 export const metadata = { title: "Messages" };
@@ -12,6 +13,7 @@ const when = (iso: string) => new Date(iso).toLocaleString("en-IN", { day: "nume
 
 export default async function StaffMessages({ searchParams }: { searchParams: Promise<{ kam?: string }> }) {
   const s = await requireRole(["MENTOR", "HR_ADMIN"]);
+  if (!(await chatEnabled(createAdminClient()))) return <Notice tone="neutral" title="Support chat is being enabled">The KAM ↔ Mentor ↔ HR chat will appear here as soon as its database update is applied. Meanwhile, use Ask FirstGear or your sessions.</Notice>;
   const { kam } = await searchParams;
   const ctx = await actionContext({ rateLimit: false });
   const inbox = await chatInbox(ctx);
