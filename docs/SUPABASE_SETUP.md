@@ -24,6 +24,7 @@ notepad .env.local
 | `004_rls.sql` | Row Level Security, guard triggers, append-only audit, Realtime publication |
 | `005_three_gates.sql` | Upgrades an existing project from five gates to three (Day 15 · Day 21 · Day 30). No-op on a fresh install |
 | `006_real_company_profile.sql` | Upgrades an existing project to the real-company content: Day 1–2 tasks, FAQ links on journey days, realigned quiz questions and scenarios. No-op on a fresh install. Then run `npx tsx scripts/ingest-knowledge.ts` |
+| `007_pillar_ordered_phase1.sql` | Re-orders Phase 1 by pillar — Governance (Days 1–4) → People (5–7) → Product (8–9) → Process (10–14) → Day-15 gate; interim check on Day 13. Tasks keep their ids, so progress is preserved. Or run `npx tsx scripts/apply-pillar-order.ts` |
 
 CLI: `npx supabase link --project-ref <ref>` then `npx supabase db push`.
 Dashboard: **SQL Editor → New query** → paste each file → **Run**, in order.

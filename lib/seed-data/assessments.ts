@@ -31,13 +31,13 @@ export interface SeedQuestion {
 const o = (...texts: string[]) => texts.map((text, i) => ({ id: String.fromCharCode(97 + i), text }));
 
 export const ASSESSMENTS = [
-  { code: "DAY10-CHECK", title: "Day-10 interim knowledge check", stage: "DAY10_CHECK" as const, gate: "G1", from: 6, minutes: 20, description: "Interim check on Days 1–10: governance, products, plant, quality, RFQ and costing knowledge." },
+  { code: "DAY10-CHECK", title: "Interim knowledge check (Day 13)", stage: "DAY10_CHECK" as const, gate: "G1", from: 13, minutes: 20, description: "Interim check after the Governance, People, Product and Process blocks: governance, products, plant, quality, RFQ and costing knowledge." },
   { code: "DAY15-READINESS", title: "Day-15 four-pillar readiness assessment", stage: "DAY15_READINESS" as const, gate: "G1", from: 11, minutes: 45, description: "Weighted Governance / People / Process / Product assessment that decides the readiness band." },
   { code: "PRACTICE", title: "Practice quiz", stage: "PRACTICE" as const, gate: null, from: 1, minutes: null, description: "Unscored practice on any topic. Does not affect gates." },
 ];
 
 export const QUESTIONS: SeedQuestion[] = [
-  // ── Day-10 interim check ──────────────────────────────────────────
+  // ── Interim knowledge check (Day 13) ──────────────────────────────────────────
   { code: "D10-GOV-01", stage: "DAY10_CHECK", type: "MULTIPLE_CHOICE", pillar: "GOVERNANCE", topic: "Code of conduct", difficulty: "easy", question: "A customer buyer offers you a gift worth about ₹12,000 after a meeting. What does the code of conduct require?", options: o("Accept it if your manager is copied", "Declare it to Compliance; it is normally declined", "Accept it, gifts from customers are allowed", "Share it with the team"), correct: { value: "b" }, explanation: "Gifts above the nominal ₹5,000 value must be declared to Compliance and are normally declined.", source: "Code of Conduct", ref: "Section 1, v6.0" },
   { code: "D10-PRD-03", stage: "DAY10_CHECK", type: "MULTIPLE_CHOICE", pillar: "PRODUCT", topic: "BEV", difficulty: "easy", question: "Which FirstGear product belongs to the BEV technology family?", options: o("Conventional starter motor", "Micro-hybrid starter motor", "EV differential assembly with final-drive gear", "Railway coupler"), correct: { value: "c" }, explanation: "EV differential assemblies with final-drive gear are BEV products; conventional starters are ICE, micro-hybrid starters are hybrid, couplers are railway.", source: "Product Portfolio Guide", ref: "Section 6, v4.0" },
   { code: "D10-PRC-01", stage: "DAY10_CHECK", type: "TRUE_FALSE", pillar: "PROCESS", topic: "Traceability", difficulty: "easy", question: "Lot traceability lets Quality contain a suspect lot precisely instead of sorting all stock.", options: [], correct: { value: true }, explanation: "Laser-marked lot codes link parts to heat lot, machine, shift and test data.", source: "Manufacturing Process Overview", ref: "Section 3, v2.1" },

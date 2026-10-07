@@ -15,6 +15,7 @@ export const NAV: Record<Role, { section?: string; items: Item[] }[]> = {
   KAM: [
     { items: [
       { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
+      { href: "/learn", label: "Training", icon: GraduationCap },
       { href: "/journey", label: "30-day journey", icon: Route },
       { href: "/tasks", label: "Tasks", icon: ListChecks },
       { href: "/assistant", label: "Ask FirstGear", icon: MessageSquareText },

@@ -3,7 +3,7 @@ document_key: FAQ-ONBOARDING
 name: KAM FAQ — 30-Day Onboarding Journey and the Compass App
 category: Training
 topic: FAQ
-version: "1.0"
+version: "1.1"
 owner: HR Learning & Development
 effective_date: 2026-10-01
 review_date: 2027-04-01
@@ -15,10 +15,10 @@ approved: true
 How the KAM 30-Day Readiness Journey works. The governing documents are the Readiness Assessment Guide and the KAM Charter.
 
 ### Q: What is the structure of the 30-day journey?
-Phase 1 (Days 1–15) — learn about the company across Governance, People, Process and Product, with no pricing and no customer exposure. Phase 2 (Days 16–30) — practise, then own: shadow reviews (Days 16–17), own low-risk queries (18–19), lead an internal review (20), scenario test (21), guided pricing (22–25), own the account (26–29) and the readiness panel sign-off (30). Source: Readiness Assessment Guide §6.
+Phase 1 (Days 1–15) — learn about the company pillar by pillar: Governance (Days 1–4), People (Days 5–7), Product (Days 8–9) and Process (Days 10–14), then the Day-15 gate. No pricing and no customer exposure. Phase 2 (Days 16–30) — practise, then own: shadow reviews (Days 16–17), own low-risk queries (18–19), lead an internal review (20), scenario test (21), guided pricing (22–25), own the account (26–29) and the readiness panel sign-off (30). Source: Readiness Assessment Guide §6.
 
 ### Q: What are the three gates?
-Gate 1 (Day 15) — Phase-1 learning done, Day-10 check passed, Customer 360 and account brief reviewed by the Mentor, and readiness score of 80% or more. Gate 2 (Day 21) — scenario test certified by the Mentor. Gate 3 (Day 30) — readiness panel sign-off by the Reporting Boss. Source: Readiness Assessment Guide §6.
+Gate 1 (Day 15) — Phase-1 learning done, interim knowledge check passed, Customer 360 and account brief reviewed by the Mentor, and readiness score of 80% or more. Gate 2 (Day 21) — scenario test certified by the Mentor. Gate 3 (Day 30) — readiness panel sign-off by the Reporting Boss. Source: Readiness Assessment Guide §6.
 
 ### Q: Do I become ready automatically after 30 days?
 No. Customer access is earned by passing gates, not by days passing. Only the Reporting Boss's Day-30 decision makes a KAM ready. Source: Readiness Assessment Guide §5 and KAM Charter §6.
@@ -26,8 +26,8 @@ No. Customer access is earned by passing gates, not by days passing. Only the Re
 ### Q: Can I work ahead of the calendar?
 Yes, inside an open phase. The calendar only decides what is due or overdue; gates decide what is unlocked. Source: Readiness Assessment Guide §6.
 
-### Q: What is the Day-10 check and what happens if I fail it?
-A short interim check on Days 1–10 content with a pass mark set by HR (default 70%). It is a checkpoint, not a gate: you can retake it, and the Day-15 assessment opens only once it is passed. Source: Readiness Assessment Guide §1.
+### Q: What is the interim knowledge check and what happens if I fail it?
+A short check on Day 13, after the Governance, People, Product and Process blocks, with a pass mark set by HR (default 70%). It is a checkpoint, not a gate: you can retake it, and the Day-15 assessment opens only once it is passed. Source: Readiness Assessment Guide §1.
 
 ### Q: How is the Day-15 assessment scored?
 Questions cover Governance, People, Process and Product; each pillar score is the share of marks earned, and the overall score is weighted Governance 25%, People 20%, Process 30%, Product 25% (HR can change the weights). Source: Readiness Assessment Guide §2.
@@ -69,4 +69,4 @@ It answers only from approved, current documents. If nothing relevant is found i
 Your Mentor for coaching and reviews, your Reporting Boss for expectations and approvals, and HR for programme questions. Source: KAM Charter §6.
 
 ### Q: How do I move between pages in the Compass app?
-Use the left menu, or the Previous / Next buttons at the bottom of each page, which follow the menu order. Journey day pages have Day N−1 / Day N+1 buttons. Source: Readiness Assessment Guide §6.
+The left menu is an overview. For training, open Training (or Continue training on the dashboard): each step shows the task and its learning material, with Back and Next buttons and pillar tabs (Governance, People, Product, Process, gates). Complete & continue ticks the step and moves you to the next one automatically. Assessments, scenarios, the account brief and documents opened from a step show a Continue training bar, so you never need the menu during training. Source: Readiness Assessment Guide §6.

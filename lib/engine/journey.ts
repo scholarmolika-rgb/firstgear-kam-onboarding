@@ -151,9 +151,9 @@ export function evaluateJourney(ctx: JourneyContext): JourneyState {
     if (!r) {
       status = req.some(done) ? "IN_PROGRESS" : "NOT_STARTED";
       const learningLeft = left.filter((t) => t.owner_role === "KAM" && t.task_type !== "ASSESSMENT");
-      next = d10Below ? `Day-10 interim check ${d10}% is below ${cfg.day10PassThreshold}%. Review the weak topics with your mentor and retake it`
+      next = d10Below ? `Interim knowledge check ${d10}% is below ${cfg.day10PassThreshold}%. Review the weak topics with your mentor and retake it`
         : learningLeft.length ? `Complete ${learningLeft.length} remaining Day 1–15 task${learningLeft.length === 1 ? "" : "s"}, then take the Day-15 readiness assessment (≥ ${cfg.greenThreshold}%)`
-        : d10 === null ? "Take the Day-10 interim knowledge check"
+        : d10 === null ? "Take the interim knowledge check (Day 13)"
         : `Take the Day-15 readiness assessment (≥ ${cfg.greenThreshold}% to pass)`;
     } else if (r.band === "RED") { status = "FAILED"; decision = `RED (${r.overall}%) — Phase 2 paused`; next = "Complete the remediation plan, then re-assess"; }
     else if (r.band === "AMBER") {
@@ -319,7 +319,7 @@ export function evaluateJourney(ctx: JourneyContext): JourneyState {
         else if (t.task_type === "ASSESSMENT" && t.owner_role === "KAM" && assessmentReady(t)) { availability = "WAITING"; reason = assessmentReady(t); }
         else if (t.action_ref === "assessment:DAY15-READINESS" && (day10Pending || d10Below)) {
           availability = "WAITING";
-          reason = d10Below ? `Retake the Day-10 interim check first — ${d10}% is below ${cfg.day10PassThreshold}%` : "Take the Day-10 interim knowledge check first";
+          reason = d10Below ? `Retake the interim knowledge check first — ${d10}% is below ${cfg.day10PassThreshold}%` : "Take the interim knowledge check (Day 13) first";
         }
         else { availability = "AVAILABLE"; if (state?.status === "REJECTED") reason = "Changes requested by reviewer — update and resubmit"; }
       }
@@ -404,15 +404,12 @@ export function nextActionFor(state: JourneyState): NextAction {
   const overdue = kamTasks.find((t) => t.availability === "AVAILABLE" && t.overdue);
   const avail = overdue ?? kamTasks.find((t) => t.availability === "AVAILABLE");
   if (avail) {
-    const link = avail.action_ref?.startsWith("assessment:") ? "/assessments"
-      : avail.action_ref?.startsWith("scenario:") ? `/scenarios/${avail.action_ref.split(":")[1]}`
-      : avail.action_ref === "brief:SUBMIT" ? "/account-brief"
-      : `/journey/${avail.day_number}`;
+    const link = `/learn/${encodeURIComponent(avail.code)}`;
     const kind = avail.action_ref?.startsWith("assessment:") ? "ASSESSMENT" : avail.action_ref?.startsWith("scenario:") ? "SCENARIO" : "TASK";
     return { kind, title: avail.title, detail: `Day ${avail.day_number}${avail.overdue ? " · overdue" : ""} · ${avail.description ?? ""}`.trim(), taskId: avail.id, link };
   }
-  if (state.day10Available.available && state.day15Available.reason?.startsWith("Retake the Day-10")) {
-    return { kind: "ASSESSMENT", title: "Day-10 interim check retake", detail: state.day15Available.reason, link: "/assessments" };
+  if (state.day10Available.available && state.day15Available.reason?.startsWith("Retake the interim")) {
+    return { kind: "ASSESSMENT", title: "Interim knowledge check retake", detail: state.day15Available.reason, link: "/assessments" };
   }
   if (state.day15Available.available && state.day15Available.isRecheck) {
     return { kind: "ASSESSMENT", title: "Day-15 re-check", detail: "Your refresh is complete — take the re-check.", link: "/assessments" };

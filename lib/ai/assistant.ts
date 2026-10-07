@@ -74,7 +74,7 @@ function stateFacts(snap: Snapshot, intent: Intent): { facts: string; actions: A
       return { facts: `${band} Customer exposure: ${j.exposure.customer.toLowerCase()}. Pricing exposure: ${j.exposure.pricing.toLowerCase()}. Readiness for independent handling is decided by your Reporting Boss at the Day-30 panel — it is never automatic.`, actions: [{ kind: "link", label: "Open journey", href: "/journey" }, ASK_MENTOR] };
     }
     case "ASSESSMENT": {
-      const d10 = j.day10Available.available ? "The Day-10 knowledge check is available." : `Day-10 check: ${j.day10Available.reason}.`;
+      const d10 = j.day10Available.available ? "The interim knowledge check (Day 13) is available." : `Interim knowledge check: ${j.day10Available.reason}.`;
       const d15 = j.day15Available.available ? `The Day-15 ${j.day15Available.isRecheck ? "re-check" : "assessment"} is available.` : `Day-15 assessment: ${j.day15Available.reason}.`;
       return { facts: `${d10} ${d15}${m.assessmentScore !== null ? ` Latest Day-15 score: ${m.assessmentScore}% (${m.band}).` : ""}`, actions: [{ kind: "link", label: "Open assessments", href: "/assessments" }] };
     }

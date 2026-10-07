@@ -78,7 +78,7 @@ describe("gates follow evidence, not the calendar", () => {
     expect(view(ctx, "D05-07").availability).toBe("AVAILABLE");
   });
 
-  it("a Day-10 check below threshold is an interim checkpoint: retake before the Day-15 assessment", () => {
+  it("an interim check below threshold is a checkpoint: retake before the Day-15 assessment", () => {
     const ctx = freshContext({ today: 15 });
     complete(ctx, (t) => t.day_number <= 14);
     ctx.day10Best = 60;
@@ -86,8 +86,8 @@ describe("gates follow evidence, not the calendar", () => {
     expect(j.tasks.find((t) => t.code === "D11-01")!.availability).toBe("DONE");
     expect(j.day10Available.available).toBe(true);
     expect(j.day15Available).toMatchObject({ available: false });
-    expect(j.day15Available.reason).toMatch(/Day-10/);
-    expect(nextActionFor(j).title).toMatch(/Day-10/);
+    expect(j.day15Available.reason).toMatch(/interim/i);
+    expect(nextActionFor(j).title).toMatch(/interim/i);
     ctx.day10Best = 80;
     j = evaluateJourney(ctx);
     expect(j.day10Available.available).toBe(false);
@@ -263,24 +263,24 @@ describe("full 30-day journey simulation with edge cases", () => {
     const ctx = freshContext();
     const log: string[] = [];
 
-    // Days 1–5, but miss one task on Day 3 (edge case: missed task)
-    ctx.today = 5;
-    complete(ctx, (t) => t.day_number <= 5 && t.code !== "D03-04");
+    // Governance block (Days 1–4), but miss complaint handling on Day 3 (edge case: missed task)
+    ctx.today = 4;
+    complete(ctx, (t) => t.day_number <= 4 && t.code !== "D04-04");
     expect(gate(ctx, "G1").status).toBe("IN_PROGRESS");
-    expect(view(ctx, "D03-04").overdue).toBe(true);
-    expect(computeAlerts(evaluateJourney(ctx), progressFor(ctx), 5, ctx.config, []).some((a) => a.type === "OVERDUE")).toBe(true);
-    complete(ctx, (t) => t.code === "D03-04");
+    expect(view(ctx, "D04-04").overdue).toBe(true);
+    expect(computeAlerts(evaluateJourney(ctx), progressFor(ctx), 4, ctx.config, []).some((a) => a.type === "OVERDUE")).toBe(true);
+    complete(ctx, (t) => t.code === "D04-04");
 
-    // Days 6–10 + Day-10 interim check (no gate — Phase 1 stays open)
-    ctx.today = 10;
-    complete(ctx, kamManual(6, 10));
+    // People (5–7), Product (8–9) and Process (10–12) blocks, then the Day-13 interim check (no gate — Phase 1 stays open)
+    ctx.today = 13;
+    complete(ctx, kamManual(5, 13));
     complete(ctx, (t) => t.code === "D10-02" || t.code === "D10-04" || t.code === "D10-05");
     ctx.day10Best = 78;
     expect(gate(ctx, "G1").status).toBe("IN_PROGRESS");
 
-    // Days 11–14 + Day-15 assessment → AMBER
+    // Day 14 (commercial history and account brief) + Day-15 assessment → AMBER
     ctx.today = 15;
-    complete(ctx, (t) => t.day_number >= 11 && t.day_number <= 14);
+    complete(ctx, (t) => t.day_number <= 14);
     expect(evaluateJourney(ctx).day15Available.available).toBe(true);
     complete(ctx, (t) => t.code === "D15-01");
     ctx.day15Latest = { overall: 74, band: "AMBER", at: "2026-10-15T10:00:00Z", attempt_number: 1, weakPillars: ["PROCESS"] };

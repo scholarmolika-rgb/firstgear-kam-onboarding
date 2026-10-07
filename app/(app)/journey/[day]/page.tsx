@@ -26,6 +26,8 @@ export default async function DayDetail({ params }: { params: Promise<{ day: str
   const sessions = snap.sessions.filter((s) => s.day_number === dayN || s.scheduled_at.slice(0, 10) === dateForDay(snap.instance.start_date, dayN, snap.config.dayCounting));
   const seg = j.segments.find((s) => dayN >= s.from && dayN <= s.to);
   const evidence = tasks.filter((t) => t.state?.status === "COMPLETED" || t.state?.status === "SUBMITTED");
+  const kamSteps = tasks.filter((t) => t.owner_role === "KAM" && t.is_mandatory);
+  const startStep = kamSteps.find((t) => t.availability === "AVAILABLE") ?? kamSteps.find((t) => t.availability !== "DONE" && t.availability !== "AWAITING_REVIEW") ?? kamSteps[0];
 
   return (
     <>
@@ -40,6 +42,7 @@ export default async function DayDetail({ params }: { params: Promise<{ day: str
         eyebrow={`Phase ${day?.phase ?? (dayN <= 15 ? 1 : 2)} · ${day?.segment ?? ""} · ${fmtDate(dateForDay(snap.instance.start_date, dayN, snap.config.dayCounting))}`}
         title={<span className="flex flex-wrap items-center gap-3">Day {dayN} — {day?.title ?? "Additional day"} <StatusPill status={dv.status} /></span>}
         subtitle={(day?.pillars ?? []).map((p: string) => p.charAt(0) + p.slice(1).toLowerCase()).join(" · ")}
+        actions={startStep ? <Link prefetch={false} href={`/learn/${encodeURIComponent(startStep.code)}`} className="btn-primary">{kamSteps.every((t) => t.availability === "DONE") ? "Review" : "Start"} Day {dayN} training<ArrowRight size={15} /></Link> : undefined}
       />
       {seg && !seg.open && <div className="mb-6"><Notice tone={seg.blocked ? "bad" : "neutral"} title={seg.blocked ? "Blocked" : "Locked"}>{seg.reason}</Notice></div>}
       <div className="grid gap-6 lg:grid-cols-[1fr_340px]">

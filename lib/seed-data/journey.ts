@@ -62,7 +62,7 @@ export const SEGMENTS: { gate: string; from: number; to: number }[] = [
 ];
 
 export const GATES: SeedGate[] = [
-  { code: "G1", day: 15, name: "Day-15 gate — readiness score ≥ 80%", description: "Phase 1 (Days 1–15) learning across Governance, People, Process and Product complete, Day-10 interim check passed, Customer 360 and account brief reviewed by the Mentor, and a weighted four-pillar readiness score at or above the Green threshold (80%).", type: "ASSESSMENT", approver: "MENTOR", unlocks: ["PHASE_2"] },
+  { code: "G1", day: 15, name: "Day-15 gate — readiness score ≥ 80%", description: "Phase 1 (Days 1–15) learning across Governance, People, Process and Product complete, interim knowledge check passed, Customer 360 and account brief reviewed by the Mentor, and a weighted four-pillar readiness score at or above the Green threshold (80%).", type: "ASSESSMENT", approver: "MENTOR", unlocks: ["PHASE_2"] },
   { code: "G2", day: 21, name: "Scenario test", description: "RFQ response, price challenge, delivery risk and quality escalation scenarios scored against the Day-15 baseline and certified by the Mentor.", type: "SCENARIO", approver: "MENTOR", unlocks: ["PRICING_ELIGIBLE", "CUSTOMER_ELIGIBLE"] },
   { code: "G3", day: 30, name: "Readiness panel sign-off", description: "Reporting Boss, Mentor and HR panel. The Reporting Boss records the final, human-certified readiness decision.", type: "PANEL", approver: "REPORTING_BOSS", unlocks: ["INDEPENDENT_HANDLING"] },
 ];
@@ -70,20 +70,20 @@ export const GATES: SeedGate[] = [
 const r = (label: string, document_key: string) => ({ label, document_key });
 
 export const DAYS: SeedDay[] = [
-  { day: 1, phase: 1, segment: "Learn about the company", title: "Governance & people", pillars: ["GOVERNANCE", "PEOPLE"], objectives: ["Understand the business, values and code of conduct", "Complete HR orientation and onboarding setup", "Understand the KAM charter and manager expectations"], resources: [r("Company overview", "COMPANY-OVERVIEW"), r("Code of conduct", "CODE-OF-CONDUCT"), r("KAM charter", "KAM-CHARTER"), r("FAQ — Company, products & markets", "FAQ-COMPANY-PRODUCTS"), r("FAQ — Onboarding journey & app", "FAQ-ONBOARDING")] },
-  { day: 2, phase: 1, segment: "Learn about the company", title: "Products", pillars: ["PRODUCT"], objectives: ["Explain ICE, hybrid and BEV technology families", "Map products to vehicle segments and applications"], resources: [r("Product portfolio guide", "PRODUCT-PORTFOLIO"), r("FAQ — Company, products & markets", "FAQ-COMPANY-PRODUCTS")] },
-  { day: 3, phase: 1, segment: "Learn about the company", title: "Processes & plant", pillars: ["PROCESS"], objectives: ["Walk the plant and follow the manufacturing flow", "Understand critical operations, traceability and logistics", "Adopt the safety and quality mindset"], resources: [r("Manufacturing process overview", "MFG-PROCESS"), r("FAQ — Quality, programmes, delivery & escalation", "FAQ-QUALITY-DELIVERY")] },
-  { day: 4, phase: 1, segment: "Learn about the company", title: "Governance & quality", pillars: ["GOVERNANCE", "PROCESS"], objectives: ["Understand customer-specific quality expectations", "Explain APQP and PPAP at overview level", "Know complaint handling and engineering change control"], resources: [r("Quality governance manual", "QUALITY-GOVERNANCE")] },
-  { day: 5, phase: 1, segment: "Learn about the company", title: "Organisational navigation", pillars: ["PEOPLE"], objectives: ["Know who owns what across Engineering, NPD, Quality, SCM, Plant and Finance", "Know where approved knowledge lives"], resources: [r("Ownership map & knowledge sources", "ORG-NAVIGATION"), r("FAQ — Account ownership, governance & conduct", "FAQ-ACCOUNT-MANAGEMENT")] },
-  { day: 6, phase: 1, segment: "Learn about the company", title: "KAM charter", pillars: ["GOVERNANCE"], objectives: ["Understand the account ownership model", "Know the governance calendar, KPIs, approval authority and escalation map"], resources: [r("KAM charter", "KAM-CHARTER"), r("Approval authority matrix", "APPROVAL-MATRIX")] },
-  { day: 7, phase: 1, segment: "Learn about the company", title: "RFQ → quotation", pillars: ["PROCESS"], objectives: ["Follow an RFQ from intake to approved quotation", "Know the cross-functional inputs and approval chain"], resources: [r("RFQ to quotation SOP", "RFQ-SOP")] },
-  { day: 8, phase: 1, segment: "Learn about the company", title: "Costing & commercials (knowledge only)", pillars: ["PROCESS"], objectives: ["Explain cost build-up, tooling and margin logic", "Understand price-change and payment-term mechanics", "Prepare for negotiation — no live pricing decisions"], resources: [r("Costing & commercial mechanics", "COSTING-COMMERCIALS"), r("FAQ — RFQs, costing, pricing & approvals", "FAQ-COMMERCIAL")] },
-  { day: 9, phase: 1, segment: "Learn about the company", title: "Programme governance", pillars: ["GOVERNANCE"], objectives: ["Understand nomination-to-SOP governance", "Know APQP/PPAP touchpoints, engineering changes and the 8D interface"], resources: [r("Programme governance guide", "PROGRAMME-GOVERNANCE"), r("Quality governance manual", "QUALITY-GOVERNANCE")] },
-  { day: 10, phase: 1, segment: "Learn about the company", title: "Practice & check", pillars: ["PROCESS", "GOVERNANCE"], objectives: ["Run a mock RFQ and a pricing scenario", "Walk through a customer escalation", "Pass the interim knowledge check"], resources: [r("RFQ to quotation SOP", "RFQ-SOP"), r("Escalation playbook", "ESCALATION-PLAYBOOK")] },
-  { day: 11, phase: 1, segment: "Customer & business context", title: "Customer 360 — organisation & strategy", pillars: ["PEOPLE", "PRODUCT"], objectives: ["Map the OEM organisation and strategic context", "Document supplied parts and applications"], resources: [r("Customer 360 — Northwind Motors", "C360-NORTHWIND")] },
-  { day: 12, phase: 1, segment: "Customer & business context", title: "Customer 360 — programmes & pipeline", pillars: ["PRODUCT", "PROCESS"], objectives: ["Document programmes, volumes and pipeline"], resources: [r("Customer 360 — Northwind Motors", "C360-NORTHWIND")] },
-  { day: 13, phase: 1, segment: "Stakeholders & history", title: "Stakeholder map", pillars: ["PEOPLE"], objectives: ["Identify purchasing, engineering, quality and SCM/plant contacts"], resources: [r("Customer 360 — Northwind Motors", "C360-NORTHWIND")] },
-  { day: 14, phase: 1, segment: "Stakeholders & history", title: "Commercial history & lessons", pillars: ["GOVERNANCE", "PROCESS"], objectives: ["Understand pricing and commercial history", "Record past commitments and lessons learned", "Submit the account brief"], resources: [r("Customer 360 — Northwind Motors", "C360-NORTHWIND")] },
+  { day: 1, phase: 1, segment: "Governance", title: "Company, conduct & KAM charter", pillars: ["GOVERNANCE"], objectives: ["Understand the company: history, footprint, financials and strategy", "Know the code of conduct: gifts, anti-bribery, competition law, confidentiality", "Understand the KAM charter: purpose, scope and accountability"], resources: [r("Company overview", "COMPANY-OVERVIEW"), r("Code of conduct", "CODE-OF-CONDUCT"), r("KAM charter", "KAM-CHARTER"), r("FAQ — Company, products & markets", "FAQ-COMPANY-PRODUCTS"), r("FAQ — Onboarding journey & app", "FAQ-ONBOARDING")] },
+  { day: 2, phase: 1, segment: "Governance", title: "KAM charter, KPIs & approval authority", pillars: ["GOVERNANCE"], objectives: ["Understand the account ownership model", "Know the governance calendar and KAM KPIs", "Know the approval authority matrix and the escalation map"], resources: [r("KAM charter", "KAM-CHARTER"), r("Approval authority matrix", "APPROVAL-MATRIX"), r("Escalation playbook", "ESCALATION-PLAYBOOK"), r("FAQ — Account ownership, governance & conduct", "FAQ-ACCOUNT-MANAGEMENT")] },
+  { day: 3, phase: 1, segment: "Governance", title: "Quality & change governance", pillars: ["GOVERNANCE"], objectives: ["Understand customer-specific requirements (CSRs)", "Know complaint-handling timelines and engineering change control", "Walk through a historic customer escalation"], resources: [r("Quality governance manual", "QUALITY-GOVERNANCE"), r("Escalation playbook", "ESCALATION-PLAYBOOK"), r("FAQ — Quality, programmes, delivery & escalation", "FAQ-QUALITY-DELIVERY")] },
+  { day: 4, phase: 1, segment: "Governance", title: "Programme governance & customer commitments", pillars: ["GOVERNANCE"], objectives: ["Understand nomination-to-SOP governance and KAM touchpoints", "Know the APQP/PPAP, engineering-change and 8D interfaces", "Record the customer's strategic context and past commitments"], resources: [r("Programme governance guide", "PROGRAMME-GOVERNANCE"), r("Quality governance manual", "QUALITY-GOVERNANCE"), r("Customer 360 — Northwind Motors", "C360-NORTHWIND")] },
+  { day: 5, phase: 1, segment: "People", title: "Values, HR & your manager", pillars: ["PEOPLE"], objectives: ["Live the values: Integrity, Vitality, Frugality, Agility", "Complete HR orientation and onboarding setup", "Agree 30-day expectations with the Reporting Boss"], resources: [r("Company overview", "COMPANY-OVERVIEW"), r("FAQ — Onboarding journey & app", "FAQ-ONBOARDING")] },
+  { day: 6, phase: 1, segment: "People", title: "Meet the functions", pillars: ["PEOPLE"], objectives: ["Know who owns what across Engineering, NPD, Quality, SCM, Plant and Finance", "Know the hand-offs between each function and the KAM"], resources: [r("Ownership map & knowledge sources", "ORG-NAVIGATION"), r("FAQ — Account ownership, governance & conduct", "FAQ-ACCOUNT-MANAGEMENT")] },
+  { day: 7, phase: 1, segment: "People", title: "Ownership map & customer stakeholders", pillars: ["PEOPLE"], objectives: ["Build your internal ownership map", "Know where approved knowledge lives", "Map the customer organisation and stakeholders"], resources: [r("Ownership map & knowledge sources", "ORG-NAVIGATION"), r("Customer 360 — Northwind Motors", "C360-NORTHWIND"), r("FAQ — Account ownership, governance & conduct", "FAQ-ACCOUNT-MANAGEMENT")] },
+  { day: 8, phase: 1, segment: "Product", title: "Product portfolio", pillars: ["PRODUCT"], objectives: ["Explain the driveline, motor, sensor and railway product lines", "Map products to ICE, hybrid and BEV powertrains"], resources: [r("Product portfolio guide", "PRODUCT-PORTFOLIO"), r("FAQ — Company, products & markets", "FAQ-COMPANY-PRODUCTS")] },
+  { day: 9, phase: 1, segment: "Product", title: "Markets & customer products", pillars: ["PRODUCT"], objectives: ["Map products to segments and end markets", "Record the customer's supplied parts and programmes"], resources: [r("Product portfolio guide", "PRODUCT-PORTFOLIO"), r("Customer 360 — Northwind Motors", "C360-NORTHWIND")] },
+  { day: 10, phase: 1, segment: "Process", title: "Plant & manufacturing", pillars: ["PROCESS"], objectives: ["Walk the plant and follow the manufacturing flow", "Understand critical operations, traceability and logistics", "Adopt the safety and quality mindset"], resources: [r("Manufacturing process overview", "MFG-PROCESS"), r("FAQ — Quality, programmes, delivery & escalation", "FAQ-QUALITY-DELIVERY")] },
+  { day: 11, phase: 1, segment: "Process", title: "APQP, PPAP & RFQ to quotation", pillars: ["PROCESS"], objectives: ["Explain APQP phases and PPAP levels", "Follow an RFQ from intake to approved quotation"], resources: [r("Quality governance manual", "QUALITY-GOVERNANCE"), r("RFQ to quotation SOP", "RFQ-SOP"), r("FAQ — RFQs, costing, pricing & approvals", "FAQ-COMMERCIAL")] },
+  { day: 12, phase: 1, segment: "Process", title: "Costing & commercials (knowledge only)", pillars: ["PROCESS"], objectives: ["Explain cost build-up, tooling and margin logic", "Understand price-change and payment-term mechanics", "Prepare for negotiation — no live pricing decisions"], resources: [r("Costing & commercial mechanics", "COSTING-COMMERCIALS"), r("FAQ — RFQs, costing, pricing & approvals", "FAQ-COMMERCIAL")] },
+  { day: 13, phase: 1, segment: "Process", title: "Practice & interim check", pillars: ["PROCESS", "GOVERNANCE"], objectives: ["Run a mock RFQ and a pricing scenario", "Pass the interim knowledge check on all four pillars"], resources: [r("RFQ to quotation SOP", "RFQ-SOP"), r("Costing & commercial mechanics", "COSTING-COMMERCIALS"), r("Assessment guide", "ASSESSMENT-GUIDE")] },
+  { day: 14, phase: 1, segment: "Process", title: "Commercial history & account brief", pillars: ["PROCESS", "GOVERNANCE"], objectives: ["Record volumes, pipeline, pricing and commercial history from approved records", "Submit the account brief for mentor review"], resources: [r("Customer 360 — Northwind Motors", "C360-NORTHWIND"), r("Costing & commercial mechanics", "COSTING-COMMERCIALS")] },
   { day: 15, phase: 1, segment: "Day-15 gate", title: "Day-15 gate — readiness assessment", pillars: ["GOVERNANCE", "PEOPLE", "PROCESS", "PRODUCT"], objectives: ["Complete the four-pillar assessment", "Customer 360 and account brief reviewed by Mentor", "Readiness score ≥ 80% (Green) opens Phase 2"], resources: [r("Assessment guide", "ASSESSMENT-GUIDE"), r("FAQ — Onboarding journey & app", "FAQ-ONBOARDING")], gate: "G1" },
   { day: 16, phase: 2, segment: "Shadow reviews", title: "Shadow customer & internal reviews", pillars: ["PEOPLE", "PROCESS"], objectives: ["Observe reviews and prepare minutes and action trackers"], resources: [r("Escalation playbook", "ESCALATION-PLAYBOOK")] },
   { day: 17, phase: 2, segment: "Shadow reviews", title: "Draft (unsent) customer responses", pillars: ["PROCESS"], objectives: ["Draft responses for mentor review — nothing is sent"], resources: [] },
@@ -106,94 +106,100 @@ const t = (code: string, day: number, title: string, pillar: Pillar, type: TaskT
   ({ code, day, title, pillar, type, description, ...extra });
 
 export const TASKS: SeedTask[] = [
-  // Day 1 — Governance & people
+  // ── Governance block ──
+  // Day 1
   t("D01-01", 1, "Company profile", "GOVERNANCE", "LEARNING", "Read the company profile: history, businesses, 12 plants, FY2022-23 to FY2025-26 financials, order book, markets and the four strategic priorities.", { topic: "company" }),
-  t("D01-02", 1, "Company values", "PEOPLE", "LEARNING", "Review the values — Integrity, Vitality, Frugality, Agility — and how they show up in customer work.", { topic: "values" }),
   t("D01-03", 1, "Code of conduct", "GOVERNANCE", "LEARNING", "Read and acknowledge the code of conduct, including gifts, hospitality and confidentiality.", { topic: "conduct" }),
-  t("D01-04", 1, "HR orientation", "PEOPLE", "SESSION", "Attend HR orientation: policies, leave, benefits and ways of working."),
   t("D01-05", 1, "KAM charter introduction", "GOVERNANCE", "LEARNING", "Read the KAM charter introduction: purpose, scope and accountability.", { topic: "charter" }),
-  t("D01-06", 1, "Manager expectations", "PEOPLE", "SESSION", "Meet the Reporting Boss to agree expectations for the first 30 days."),
-  t("D01-07", 1, "Initial onboarding setup", "PEOPLE", "ACTIVITY", "Confirm your onboarding profile, mentor and session calendar in the Compass. (IT access is handled separately by IT.)"),
-  // Day 2 — Products
-  t("D02-01", 2, "Driveline and ICE products", "PRODUCT", "LEARNING", "Study differential bevel gears, differential assemblies and starter motors — the driveline and ICE core, and the company's global market shares.", { topic: "ICE" }),
-  t("D02-02", 2, "Hybrid products", "PRODUCT", "LEARNING", "Study micro-hybrid starter motors, belt starter generators and hybrid-platform differential assemblies, and where they differ from ICE.", { topic: "hybrid" }),
-  t("D02-03", 2, "BEV products", "PRODUCT", "LEARNING", "Study EV differential assemblies with final-drive gear, traction motors, controllers and active-suspension motor controllers, and why EV gears need tighter NVH.", { topic: "BEV" }),
-  t("D02-04", 2, "Segments and end markets", "PRODUCT", "LEARNING", "Map products to passenger, commercial, off-highway, electric 2W/3W and railway segments, and to the India / Europe / North America / Asia revenue mix.", { topic: "segments" }),
-  t("D02-05", 2, "Sensors, railway and new verticals", "PRODUCT", "LEARNING", "Understand radar sensors, railway systems and robotics, and the customer problems each product line solves.", { topic: "applications" }),
-  // Day 3 — Processes
-  t("D03-01", 3, "Plant walk", "PROCESS", "SESSION", "Walk the plant with the plant lead and follow one part from raw material to dispatch."),
-  t("D03-02", 3, "Manufacturing process flow", "PROCESS", "LEARNING", "Learn the end-to-end manufacturing flow.", { topic: "process flow" }),
-  t("D03-03", 3, "Critical operations", "PROCESS", "LEARNING", "Identify the critical operations and special characteristics.", { topic: "critical operations" }),
-  t("D03-04", 3, "Traceability", "PROCESS", "LEARNING", "Understand lot traceability and how it supports containment.", { topic: "traceability" }),
-  t("D03-05", 3, "Logistics", "PROCESS", "LEARNING", "Understand inbound and outbound logistics, packaging and schedules.", { topic: "logistics" }),
-  t("D03-06", 3, "Safety mindset", "PROCESS", "LEARNING", "Complete the safety induction and understand plant safety rules."),
-  t("D03-07", 3, "Quality mindset", "PROCESS", "LEARNING", "Understand the zero-defect mindset and the cost of poor quality."),
-  // Day 4 — Governance / quality
-  t("D04-01", 4, "Customer-specific quality mindset", "GOVERNANCE", "LEARNING", "Study customer-specific requirements (CSRs) for key OEMs.", { topic: "CSR" }),
-  t("D04-02", 4, "APQP overview", "PROCESS", "LEARNING", "Learn the five APQP phases and the KAM's touchpoints.", { topic: "APQP" }),
-  t("D04-03", 4, "PPAP overview", "PROCESS", "LEARNING", "Learn PPAP submission levels and elements.", { topic: "PPAP" }),
-  t("D04-04", 4, "Complaint handling", "GOVERNANCE", "LEARNING", "Understand the complaint-handling process and response timelines.", { topic: "complaints" }),
-  t("D04-05", 4, "Engineering change-control governance", "GOVERNANCE", "LEARNING", "Understand how engineering changes are requested, approved and communicated.", { topic: "engineering change" }),
-  // Day 5 — People / organisational navigation
-  t("D05-01", 5, "Meet Engineering", "PEOPLE", "SESSION", "Meet the engineering lead: responsibilities and hand-offs."),
-  t("D05-02", 5, "Meet NPD", "PEOPLE", "SESSION", "Meet NPD: programme launch responsibilities."),
-  t("D05-03", 5, "Meet Quality", "PEOPLE", "SESSION", "Meet Quality: customer quality, 8D and PPAP owners."),
-  t("D05-04", 5, "Meet SCM", "PEOPLE", "SESSION", "Meet SCM: planning, schedules and supplier risk."),
-  t("D05-05", 5, "Meet Plant", "PEOPLE", "SESSION", "Meet the plant head: capacity and delivery performance."),
-  t("D05-06", 5, "Meet Finance", "PEOPLE", "SESSION", "Meet Finance: costing, margin and credit."),
-  t("D05-07", 5, "Ownership mapping", "PEOPLE", "DELIVERABLE", "Build your internal ownership map: who owns which decision.", { dependsOn: ["D05-01", "D05-03", "D05-06"] }),
-  t("D05-08", 5, "Knowledge-source walkthrough", "PEOPLE", "LEARNING", "Learn where approved SOPs, policies and customer data live — and use the Ask FirstGear assistant once.", { topic: "knowledge sources" }),
-  // Day 6 — KAM charter
-  t("D06-01", 6, "Account ownership model", "GOVERNANCE", "LEARNING", "Understand what the KAM owns versus what functions own.", { topic: "ownership model" }),
-  t("D06-02", 6, "Governance calendar", "GOVERNANCE", "LEARNING", "Learn the account governance calendar: weekly, monthly and quarterly reviews."),
-  t("D06-03", 6, "KAM KPIs", "GOVERNANCE", "LEARNING", "Learn the KAM KPIs and how they are measured.", { topic: "KPIs" }),
-  t("D06-04", 6, "Approval authority", "GOVERNANCE", "LEARNING", "Study the approval authority matrix — who can approve prices, terms and commitments.", { topic: "approval authority" }),
-  t("D06-05", 6, "Escalation map", "GOVERNANCE", "LEARNING", "Learn the escalation map and response timelines.", { topic: "escalation" }),
-  // Day 7 — RFQ → quotation
-  t("D07-01", 7, "RFQ intake", "PROCESS", "LEARNING", "Learn how RFQs are logged, scoped and acknowledged.", { topic: "RFQ" }),
-  t("D07-02", 7, "Feasibility assessment", "PROCESS", "LEARNING", "Understand technical and capacity feasibility review.", { topic: "feasibility", dependsOn: ["D07-01"] }),
-  t("D07-03", 7, "Cross-functional inputs", "PROCESS", "LEARNING", "Know which inputs Engineering, SCM, Plant and Finance provide.", { dependsOn: ["D07-02"] }),
-  t("D07-04", 7, "Quotation workflow", "PROCESS", "LEARNING", "Follow the quotation workflow from cost model to submission.", { topic: "quotation", dependsOn: ["D07-03"] }),
-  t("D07-05", 7, "Approval chain", "GOVERNANCE", "LEARNING", "Learn the quotation approval chain and thresholds.", { topic: "approval chain", dependsOn: ["D07-04"] }),
-  // Day 8 — Costing & commercials (knowledge only)
-  t("D08-01", 8, "Cost build-up", "PROCESS", "LEARNING", "Understand material, conversion, overhead and logistics cost build-up. Knowledge only.", { topic: "cost build-up" }),
-  t("D08-02", 8, "Tooling & development cost", "PROCESS", "LEARNING", "Understand tooling and development cost recovery options.", { topic: "tooling" }),
-  t("D08-03", 8, "Margin logic", "PROCESS", "LEARNING", "Understand margin targets and floor logic. Knowledge only — no live pricing.", { topic: "margin" }),
-  t("D08-04", 8, "Price-change mechanics", "PROCESS", "LEARNING", "Understand index-linked adjustments, annual price-downs and claims.", { topic: "price change" }),
-  t("D08-05", 8, "Payment-term mechanics", "PROCESS", "LEARNING", "Understand payment terms and their working-capital impact.", { topic: "payment terms" }),
-  t("D08-06", 8, "Negotiation preparation", "PROCESS", "LEARNING", "Learn how to prepare a negotiation brief: BATNA, give-gets and approvals.", { topic: "negotiation" }),
-  // Day 9 — Programme governance
-  t("D09-01", 9, "Nomination-to-SOP governance", "GOVERNANCE", "LEARNING", "Understand programme governance from nomination to start of production.", { topic: "SOP" }),
-  t("D09-02", 9, "APQP/PPAP touchpoints", "GOVERNANCE", "LEARNING", "Identify where the KAM is accountable in APQP and PPAP.", { topic: "APQP" }),
-  t("D09-03", 9, "Engineering changes", "GOVERNANCE", "LEARNING", "Understand customer- and supplier-initiated change handling.", { topic: "engineering change" }),
-  t("D09-04", 9, "Complaint / 8D interface", "GOVERNANCE", "LEARNING", "Understand the 8D discipline and the KAM's role in customer communication.", { topic: "8D" }),
-  // Day 10 — Practice & check
-  t("D10-01", 10, "Mock RFQ", "PROCESS", "ACTIVITY", "Complete a mock RFQ response pack with your mentor.", { dependsOn: ["D07-05"] }),
-  t("D10-02", 10, "Pricing scenario (practice)", "PROCESS", "SCENARIO", "Attempt the costing-challenge practice scenario. Knowledge practice only.", { ref: "scenario:SCN-COSTING", dependsOn: ["D08-06"] }),
-  t("D10-03", 10, "Customer escalation walkthrough", "GOVERNANCE", "SESSION", "Walk through a historic customer escalation with your mentor."),
-  t("D10-04", 10, "Structured mentor feedback", "PEOPLE", "REVIEW", "Mentor records structured feedback on Days 1–10.", { owner: "MENTOR" }),
-  t("D10-05", 10, "Interim knowledge check", "GOVERNANCE", "ASSESSMENT", "Take the Day-10 interim knowledge check.", { ref: "assessment:DAY10-CHECK", dependsOn: ["D10-01"] }),
-  // Days 11–12 — Customer 360
-  t("D11-01", 11, "OEM organisation", "PEOPLE", "DELIVERABLE", "Document the customer's organisation in Customer 360.", { topic: "customer organisation" }),
-  t("D11-02", 11, "Strategic context", "GOVERNANCE", "DELIVERABLE", "Document the customer's strategy, electrification plans and supplier strategy.", { topic: "strategy" }),
-  t("D11-03", 11, "Supplied parts & applications", "PRODUCT", "DELIVERABLE", "Document supplied parts and their applications.", { topic: "supplied parts" }),
-  t("D12-01", 12, "Programmes", "PRODUCT", "DELIVERABLE", "Document active and upcoming programmes.", { topic: "programmes" }),
-  t("D12-02", 12, "Volumes & pipeline", "PROCESS", "DELIVERABLE", "Document volumes and the opportunity pipeline.", { topic: "pipeline" }),
-  t("D12-03", 12, "Customer 360 mentor check-in", "PEOPLE", "SESSION", "Review your Customer 360 draft with your mentor."),
-  // Days 13–14 — Stakeholders & history
-  t("D13-01", 13, "Purchasing contacts", "PEOPLE", "DELIVERABLE", "Add purchasing stakeholders to the stakeholder map."),
-  t("D13-02", 13, "Engineering contacts", "PEOPLE", "DELIVERABLE", "Add engineering stakeholders."),
-  t("D13-03", 13, "Quality contacts", "PEOPLE", "DELIVERABLE", "Add quality stakeholders."),
-  t("D13-04", 13, "SCM / plant contacts", "PEOPLE", "DELIVERABLE", "Add SCM and plant stakeholders."),
+  // Day 2
+  t("D06-01", 2, "Account ownership model", "GOVERNANCE", "LEARNING", "Understand what the KAM owns versus what functions own.", { topic: "ownership model" }),
+  t("D06-02", 2, "Governance calendar", "GOVERNANCE", "LEARNING", "Learn the account governance calendar: weekly, monthly and quarterly reviews."),
+  t("D06-03", 2, "KAM KPIs", "GOVERNANCE", "LEARNING", "Learn the KAM KPIs and how they are measured.", { topic: "KPIs" }),
+  t("D06-04", 2, "Approval authority", "GOVERNANCE", "LEARNING", "Study the approval authority matrix — who can approve prices, terms and commitments.", { topic: "approval authority" }),
+  t("D06-05", 2, "Escalation map", "GOVERNANCE", "LEARNING", "Learn the escalation map and response timelines.", { topic: "escalation" }),
+  // Day 3
+  t("D04-01", 3, "Customer-specific quality mindset", "GOVERNANCE", "LEARNING", "Study customer-specific requirements (CSRs) for key OEMs.", { topic: "CSR" }),
+  t("D04-04", 3, "Complaint handling", "GOVERNANCE", "LEARNING", "Understand the complaint-handling process and response timelines.", { topic: "complaints" }),
+  t("D04-05", 3, "Engineering change-control governance", "GOVERNANCE", "LEARNING", "Understand how engineering changes are requested, approved and communicated.", { topic: "engineering change" }),
+  t("D10-03", 3, "Customer escalation walkthrough", "GOVERNANCE", "SESSION", "Walk through a historic customer escalation with your mentor."),
+  // Day 4
+  t("D09-01", 4, "Nomination-to-SOP governance", "GOVERNANCE", "LEARNING", "Understand programme governance from nomination to start of production.", { topic: "SOP" }),
+  t("D09-02", 4, "APQP/PPAP touchpoints", "GOVERNANCE", "LEARNING", "Identify where the KAM is accountable in APQP and PPAP.", { topic: "APQP" }),
+  t("D09-03", 4, "Engineering changes", "GOVERNANCE", "LEARNING", "Understand customer- and supplier-initiated change handling.", { topic: "engineering change" }),
+  t("D09-04", 4, "Complaint / 8D interface", "GOVERNANCE", "LEARNING", "Understand the 8D discipline and the KAM's role in customer communication.", { topic: "8D" }),
+  t("D11-02", 4, "Strategic context", "GOVERNANCE", "DELIVERABLE", "Document the customer's strategy, electrification plans and supplier strategy.", { topic: "strategy" }),
+  t("D14-03", 4, "Past commitments", "GOVERNANCE", "DELIVERABLE", "Record open and past commitments with owners."),
+  // ── People block ──
+  // Day 5
+  t("D01-02", 5, "Company values", "PEOPLE", "LEARNING", "Review the values — Integrity, Vitality, Frugality, Agility — and how they show up in customer work.", { topic: "values" }),
+  t("D01-04", 5, "HR orientation", "PEOPLE", "SESSION", "Attend HR orientation: policies, leave, benefits and ways of working."),
+  t("D01-06", 5, "Manager expectations", "PEOPLE", "SESSION", "Meet the Reporting Boss to agree expectations for the first 30 days."),
+  t("D01-07", 5, "Initial onboarding setup", "PEOPLE", "ACTIVITY", "Confirm your onboarding profile, mentor and session calendar in the Compass. (IT access is handled separately by IT.)"),
+  // Day 6
+  t("D05-01", 6, "Meet Engineering", "PEOPLE", "SESSION", "Meet the engineering lead: responsibilities and hand-offs."),
+  t("D05-02", 6, "Meet NPD", "PEOPLE", "SESSION", "Meet NPD: programme launch responsibilities."),
+  t("D05-03", 6, "Meet Quality", "PEOPLE", "SESSION", "Meet Quality: customer quality, 8D and PPAP owners."),
+  t("D05-04", 6, "Meet SCM", "PEOPLE", "SESSION", "Meet SCM: planning, schedules and supplier risk."),
+  t("D05-05", 6, "Meet Plant", "PEOPLE", "SESSION", "Meet the plant head: capacity and delivery performance."),
+  t("D05-06", 6, "Meet Finance", "PEOPLE", "SESSION", "Meet Finance: costing, margin and credit."),
+  // Day 7
+  t("D05-07", 7, "Ownership mapping", "PEOPLE", "DELIVERABLE", "Build your internal ownership map: who owns which decision.", { dependsOn: ["D05-01", "D05-03", "D05-06"] }),
+  t("D05-08", 7, "Knowledge-source walkthrough", "PEOPLE", "LEARNING", "Learn where approved SOPs, policies and customer data live — and use the Ask FirstGear assistant once.", { topic: "knowledge sources" }),
+  t("D11-01", 7, "OEM organisation", "PEOPLE", "DELIVERABLE", "Document the customer's organisation in Customer 360.", { topic: "customer organisation" }),
+  t("D13-01", 7, "Purchasing contacts", "PEOPLE", "DELIVERABLE", "Add purchasing stakeholders to the stakeholder map."),
+  t("D13-02", 7, "Engineering contacts", "PEOPLE", "DELIVERABLE", "Add engineering stakeholders."),
+  t("D13-03", 7, "Quality contacts", "PEOPLE", "DELIVERABLE", "Add quality stakeholders."),
+  t("D13-04", 7, "SCM / plant contacts", "PEOPLE", "DELIVERABLE", "Add SCM and plant stakeholders."),
+  t("D12-03", 7, "Customer 360 mentor check-in", "PEOPLE", "SESSION", "Review your Customer 360 draft with your mentor."),
+  // ── Product block ──
+  // Day 8
+  t("D02-01", 8, "Driveline and ICE products", "PRODUCT", "LEARNING", "Study differential bevel gears, differential assemblies and starter motors — the driveline and ICE core, and the company's global market shares.", { topic: "ICE" }),
+  t("D02-02", 8, "Hybrid products", "PRODUCT", "LEARNING", "Study micro-hybrid starter motors, belt starter generators and hybrid-platform differential assemblies, and where they differ from ICE.", { topic: "hybrid" }),
+  t("D02-03", 8, "BEV products", "PRODUCT", "LEARNING", "Study EV differential assemblies with final-drive gear, traction motors, controllers and active-suspension motor controllers, and why EV gears need tighter NVH.", { topic: "BEV" }),
+  // Day 9
+  t("D02-04", 9, "Segments and end markets", "PRODUCT", "LEARNING", "Map products to passenger, commercial, off-highway, electric 2W/3W and railway segments, and to the India / Europe / North America / Asia revenue mix.", { topic: "segments" }),
+  t("D02-05", 9, "Sensors, railway and new verticals", "PRODUCT", "LEARNING", "Understand radar sensors, railway systems and robotics, and the customer problems each product line solves.", { topic: "applications" }),
+  t("D11-03", 9, "Supplied parts & applications", "PRODUCT", "DELIVERABLE", "Document supplied parts and their applications.", { topic: "supplied parts" }),
+  t("D12-01", 9, "Programmes", "PRODUCT", "DELIVERABLE", "Document active and upcoming programmes.", { topic: "programmes" }),
+  // ── Process block ──
+  // Day 10
+  t("D03-01", 10, "Plant walk", "PROCESS", "SESSION", "Walk the plant with the plant lead and follow one part from raw material to dispatch."),
+  t("D03-02", 10, "Manufacturing process flow", "PROCESS", "LEARNING", "Learn the end-to-end manufacturing flow.", { topic: "process flow" }),
+  t("D03-03", 10, "Critical operations", "PROCESS", "LEARNING", "Identify the critical operations and special characteristics.", { topic: "critical operations" }),
+  t("D03-04", 10, "Traceability", "PROCESS", "LEARNING", "Understand lot traceability and how it supports containment.", { topic: "traceability" }),
+  t("D03-05", 10, "Logistics", "PROCESS", "LEARNING", "Understand inbound and outbound logistics, packaging and schedules.", { topic: "logistics" }),
+  t("D03-06", 10, "Safety mindset", "PROCESS", "LEARNING", "Complete the safety induction and understand plant safety rules."),
+  t("D03-07", 10, "Quality mindset", "PROCESS", "LEARNING", "Understand the zero-defect mindset and the cost of poor quality."),
+  // Day 11
+  t("D04-02", 11, "APQP overview", "PROCESS", "LEARNING", "Learn the five APQP phases and the KAM's touchpoints.", { topic: "APQP" }),
+  t("D04-03", 11, "PPAP overview", "PROCESS", "LEARNING", "Learn PPAP submission levels and elements.", { topic: "PPAP" }),
+  t("D07-01", 11, "RFQ intake", "PROCESS", "LEARNING", "Learn how RFQs are logged, scoped and acknowledged.", { topic: "RFQ" }),
+  t("D07-02", 11, "Feasibility assessment", "PROCESS", "LEARNING", "Understand technical and capacity feasibility review.", { topic: "feasibility", dependsOn: ["D07-01"] }),
+  t("D07-03", 11, "Cross-functional inputs", "PROCESS", "LEARNING", "Know which inputs Engineering, SCM, Plant and Finance provide.", { dependsOn: ["D07-02"] }),
+  t("D07-04", 11, "Quotation workflow", "PROCESS", "LEARNING", "Follow the quotation workflow from cost model to submission.", { topic: "quotation", dependsOn: ["D07-03"] }),
+  t("D07-05", 11, "Approval chain", "GOVERNANCE", "LEARNING", "Learn the quotation approval chain and thresholds.", { topic: "approval chain", dependsOn: ["D07-04"] }),
+  // Day 12
+  t("D08-01", 12, "Cost build-up", "PROCESS", "LEARNING", "Understand material, conversion, overhead and logistics cost build-up. Knowledge only.", { topic: "cost build-up" }),
+  t("D08-02", 12, "Tooling & development cost", "PROCESS", "LEARNING", "Understand tooling and development cost recovery options.", { topic: "tooling" }),
+  t("D08-03", 12, "Margin logic", "PROCESS", "LEARNING", "Understand margin targets and floor logic. Knowledge only — no live pricing.", { topic: "margin" }),
+  t("D08-04", 12, "Price-change mechanics", "PROCESS", "LEARNING", "Understand index-linked adjustments, annual price-downs and claims.", { topic: "price change" }),
+  t("D08-05", 12, "Payment-term mechanics", "PROCESS", "LEARNING", "Understand payment terms and their working-capital impact.", { topic: "payment terms" }),
+  t("D08-06", 12, "Negotiation preparation", "PROCESS", "LEARNING", "Learn how to prepare a negotiation brief: BATNA, give-gets and approvals.", { topic: "negotiation" }),
+  // Day 13
+  t("D10-01", 13, "Mock RFQ", "PROCESS", "ACTIVITY", "Complete a mock RFQ response pack with your mentor.", { dependsOn: ["D07-05"] }),
+  t("D10-02", 13, "Pricing scenario (practice)", "PROCESS", "SCENARIO", "Attempt the costing-challenge practice scenario. Knowledge practice only.", { ref: "scenario:SCN-COSTING", dependsOn: ["D08-06"] }),
+  t("D10-04", 13, "Structured mentor feedback", "PEOPLE", "REVIEW", "Mentor records structured feedback on Phase-1 learning so far.", { owner: "MENTOR" }),
+  t("D10-05", 13, "Interim knowledge check", "GOVERNANCE", "ASSESSMENT", "Take the interim knowledge check on Governance, People, Product and Process.", { ref: "assessment:DAY10-CHECK", dependsOn: ["D10-01"] }),
+  // Day 14
+  t("D12-02", 14, "Volumes & pipeline", "PROCESS", "DELIVERABLE", "Document volumes and the opportunity pipeline.", { topic: "pipeline" }),
   t("D14-01", 14, "Pricing history", "PROCESS", "DELIVERABLE", "Record pricing history from approved records only.", { topic: "pricing history" }),
   t("D14-02", 14, "Commercial history", "PROCESS", "DELIVERABLE", "Record commercial history: claims, terms, disputes."),
-  t("D14-03", 14, "Past commitments", "GOVERNANCE", "DELIVERABLE", "Record open and past commitments with owners."),
   t("D14-04", 14, "Lessons learned & submit account brief", "GOVERNANCE", "DELIVERABLE", "Record lessons learned and submit the account brief for mentor review.", { ref: "brief:SUBMIT", dependsOn: ["D11-01", "D11-02", "D11-03", "D12-01", "D12-02", "D14-01", "D14-02", "D14-03"] }),
-  // Day 15 — Readiness assessment
+  // ── Day-15 gate ──
+  // Day 15
   t("D15-01", 15, "Four-pillar readiness assessment", "GOVERNANCE", "ASSESSMENT", "Take the Day-15 four-pillar assessment. Weighted: Governance 25%, People 20%, Process 30%, Product 25% (configurable).", { ref: "assessment:DAY15-READINESS" }),
   t("D15-02", 15, "Customer 360 review", "PEOPLE", "REVIEW", "Mentor reviews the Customer 360 and stakeholder map.", { ref: "review:CUSTOMER_360", owner: "MENTOR", dependsOn: ["D14-04"] }),
   t("D15-03", 15, "Account brief review", "GOVERNANCE", "REVIEW", "Mentor reviews and approves the account brief.", { ref: "review:ACCOUNT_BRIEF", owner: "MENTOR", dependsOn: ["D14-04"] }),
-  // Days 16–17 — Shadow & prepare
   t("D16-01", 16, "Observe customer review", "PEOPLE", "ACTIVITY", "Join a customer review as an observer.", { exposure: "CUSTOMER" }),
   t("D16-02", 16, "Observe internal review", "PEOPLE", "ACTIVITY", "Join an internal account review as an observer."),
   t("D16-03", 16, "Prepare minutes", "PROCESS", "DELIVERABLE", "Prepare the minutes of the observed reviews."),
@@ -253,7 +259,7 @@ export const SETTINGS: SeedSetting[] = [
   { key: "PRODUCT_WEIGHT", value: 25, category: "scoring", label: "Product weight (%)", description: "Day-15 pillar weight.", type: "number" },
   { key: "DAY15_GREEN_THRESHOLD", value: 80, category: "gates", label: "Day-15 Green threshold (%)", description: "Score at or above this is Green.", type: "number" },
   { key: "DAY15_AMBER_THRESHOLD", value: 60, category: "gates", label: "Day-15 Amber threshold (%)", description: "Score at or above this (and below Green) is Amber; below is Red.", type: "number" },
-  { key: "DAY10_PASS_THRESHOLD", value: 70, category: "gates", label: "Day-10 knowledge check pass (%)", description: "Minimum interim knowledge-check score required before the Day-15 assessment.", type: "number" },
+  { key: "DAY10_PASS_THRESHOLD", value: 70, category: "gates", label: "Interim knowledge check pass (%)", description: "Minimum interim knowledge-check score required before the Day-15 assessment.", type: "number" },
   { key: "DAY21_PASS_THRESHOLD", value: 75, category: "gates", label: "Day-21 scenario test pass (%)", description: "Minimum average certification score. Mentors cannot approve below this.", type: "number" },
   { key: "DAY21_REQUIRED", value: true, category: "gates", label: "Day-21 scenario test required", description: "Gate 2 (Day-21 scenario test) must pass before pricing or customer ownership.", type: "boolean" },
   { key: "PRICING_GATE_REQUIRED", value: true, category: "gates", label: "Pricing gate required", description: "Pricing exposure needs a Green Day-15 score and Reporting Boss approval.", type: "boolean" },

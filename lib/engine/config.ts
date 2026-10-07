@@ -113,7 +113,7 @@ export function validateConfig(c: ProgrammeConfig): string[] {
   if (!pct(c.greenThreshold) || !pct(c.amberThreshold)) e.push("Day-15 thresholds must be between 0 and 100.");
   if (c.amberThreshold >= c.greenThreshold) e.push("Amber threshold must be lower than the Green threshold.");
   if (c.amberThreshold <= 0) e.push("Amber threshold must be above 0, otherwise no score could be Red.");
-  if (!pct(c.day10PassThreshold) || c.day10PassThreshold === 0) e.push("Day-10 pass threshold must be between 1 and 100.");
+  if (!pct(c.day10PassThreshold) || c.day10PassThreshold === 0) e.push("Interim knowledge check pass threshold must be between 1 and 100.");
   if (!pct(c.day21PassThreshold) || c.day21PassThreshold === 0) e.push("Day-21 pass threshold must be between 1 and 100.");
   if (!Number.isInteger(c.duration) || c.duration < 15 || c.duration > 120) e.push("Programme duration must be a whole number of days between 15 and 120.");
   if (!Number.isInteger(c.startOffsetDays) || c.startOffsetDays < 0 || c.startOffsetDays > 60) e.push("Onboarding start offset must be 0–60 days.");

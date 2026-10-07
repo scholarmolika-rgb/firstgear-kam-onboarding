@@ -49,7 +49,7 @@ export function ConfigForm({ initial }: { initial: ProgrammeConfig }) {
         <div className="grid gap-3 md:grid-cols-4">
           <Num label="Day-15 Green ≥ (%)" value={c.greenThreshold} onChange={num((v) => ({ ...c, greenThreshold: v }))} />
           <Num label="Day-15 Amber ≥ (%)" value={c.amberThreshold} onChange={num((v) => ({ ...c, amberThreshold: v }))} hint="Below this is Red" />
-          <Num label="Day-10 check pass (%)" value={c.day10PassThreshold} onChange={num((v) => ({ ...c, day10PassThreshold: v }))} />
+          <Num label="Interim check pass (%)" value={c.day10PassThreshold} onChange={num((v) => ({ ...c, day10PassThreshold: v }))} />
           <Num label="Day-21 certification pass (%)" value={c.day21PassThreshold} onChange={num((v) => ({ ...c, day21PassThreshold: v }))} />
           <Num label="Amber refresh (days, 3–5)" value={c.amberRefreshDays} onChange={num((v) => ({ ...c, amberRefreshDays: v }))} />
           <Num label="Red proposed extension (days)" value={c.redExtensionDays} onChange={num((v) => ({ ...c, redExtensionDays: v }))} />

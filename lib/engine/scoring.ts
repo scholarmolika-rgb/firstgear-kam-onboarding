@@ -138,7 +138,7 @@ export function scoreAttempt(
   return { pillars, overall, band, weakPillars, results };
 }
 
-/** Simple percentage score (Day-10 check, practice) — unweighted by pillar. */
+/** Simple percentage score (interim check, practice) — unweighted by pillar. */
 export function scorePercent(questions: ScorableQuestion[], answers: Record<string, AnswerValue>) {
   const results = questions.map((q) => scoreQuestion(q, answers[q.id]));
   const earned = results.reduce((s, r) => s + r.score, 0);

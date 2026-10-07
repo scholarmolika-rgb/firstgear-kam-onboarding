@@ -5,6 +5,7 @@ import { Card, PageHeader, Stat, StatusPill, Notice, fmtDate, scoreTone, bandTon
 import { PillarBars, GateTimeline, Ring, DependencyBars } from "@/components/charts";
 import { TaskList } from "@/components/kam/TaskList";
 import { AlertCards, JourneyStrip } from "@/components/kam/Widgets";
+import { trainingSteps, resumeStep } from "@/lib/engine/training";
 import { phaseLabel } from "@/lib/report/build";
 
 export const metadata = { title: "Dashboard" };
@@ -26,6 +27,8 @@ export default async function KamDashboard() {
   const todayDone = todays.filter((t) => t.availability === "DONE").length;
   const nextSession = snap.sessions.find((s) => !["CANCELLED", "COMPLETED"].includes(s.status) && Date.parse(s.scheduled_at) >= Date.now() - 3_600_000);
   const gate = j.currentGate;
+  const resume = resumeStep({ steps: trainingSteps(snap.journey) });
+  const trainingHref = resume ? `/learn/${encodeURIComponent(resume.code)}` : "/learn";
   const kamAlerts = snap.alerts.filter((a) => a.audience.includes("KAM"));
   const dayLabel = snap.day < 1 ? `Starts ${fmtDate(snap.instance.start_date)}` : snap.day > cfg.duration ? `Day ${snap.day} (beyond Day ${cfg.duration})` : `Day ${snap.day} of ${cfg.duration}`;
 
@@ -37,7 +40,8 @@ export default async function KamDashboard() {
         subtitle={<>{dayLabel} · Current status <strong className="font-semibold text-ink">{PHASE_STATUS[j.phase]}</strong> · Overall readiness <strong className="font-semibold text-ink">{m.overallReadiness}%</strong></>}
         actions={<>
           <Link href="/assistant" className="btn-secondary"><MessageSquareText size={15} />Ask FirstGear</Link>
-          <Link href="/journey" className="btn-primary">Open journey<ArrowRight size={15} /></Link>
+          <Link href="/journey" className="btn-secondary">Open journey</Link>
+          <Link prefetch={false} href={trainingHref} className="btn-primary">Continue training<ArrowRight size={15} /></Link>
         </>}
       />
 
@@ -49,7 +53,7 @@ export default async function KamDashboard() {
         <Stat label="Tasks" value={`${todayDone}/${todays.length}`} sub={<>today{m.overdueCount ? <span className="ml-1 font-medium text-bad">· {m.overdueCount} overdue</span> : null}</>} />
         <Stat label="Next session" value={<span className="text-base">{nextSession ? nextSession.title : "—"}</span>} sub={nextSession ? fmtDate(nextSession.scheduled_at, true) : "Nothing scheduled"} />
         <Stat label="Current gate" value={<span className="text-base">{gate ? `Day ${gate.day}` : "All cleared"}</span>} sub={gate ? <StatusPill status={gate.status} /> : "Sign-off recorded"} />
-        <Stat label="Knowledge score" value={m.knowledgeScore !== null ? `${m.knowledgeScore}%` : "—"} sub={m.knowledgeScoreSource === "DAY15" ? <>Day-15 · <StatusPill status={m.band ?? ""} /></> : m.knowledgeScoreSource === "DAY10" ? "Day-10 check" : "Not assessed yet"} tone={m.knowledgeScoreSource === "DAY15" ? bandTone(m.band) : undefined} />
+        <Stat label="Knowledge score" value={m.knowledgeScore !== null ? `${m.knowledgeScore}%` : "—"} sub={m.knowledgeScoreSource === "DAY15" ? <>Day-15 · <StatusPill status={m.band ?? ""} /></> : m.knowledgeScoreSource === "DAY10" ? "Interim check" : "Not assessed yet"} tone={m.knowledgeScoreSource === "DAY15" ? bandTone(m.band) : undefined} />
         <Stat label="Scenario score" value={m.scenarioScore !== null ? `${m.scenarioScore}%` : "—"} sub={m.scenarioScore !== null ? "Day-21 certification" : m.practiceScenarioScore !== null ? `Practice avg ${m.practiceScenarioScore}%` : "Not attempted"} tone={m.scenarioScore !== null ? scoreTone(m.scenarioScore, cfg.day21PassThreshold, 60) : undefined} />
       </div>
 
@@ -64,7 +68,7 @@ export default async function KamDashboard() {
                   <div className="text-xs text-ink-muted">{snap.nextAction.detail}</div>
                 </div>
               </div>
-              {snap.nextAction.kind !== "DONE" && <Link href={snap.nextAction.link} className="btn-primary btn-sm shrink-0">{snap.nextAction.kind === "WAIT" ? "View" : "Start"}<ArrowRight size={13} /></Link>}
+              {snap.nextAction.kind !== "DONE" && <Link prefetch={false} href={snap.nextAction.link} className="btn-primary btn-sm shrink-0">{snap.nextAction.kind === "WAIT" ? "View" : "Start step"}<ArrowRight size={13} /></Link>}
             </div>
           </Card>
 

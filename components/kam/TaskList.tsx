@@ -23,7 +23,7 @@ export function TaskList({ tasks, employeeId, viewerRole, relation, empty = "No 
   };
   return (
     <ul className="divide-y divide-line">
-      {tasks.map((t) => <TaskRow key={t.id} task={toRow(t)} employeeId={employeeId} canTick={can(t)} viewer={viewerRole} />)}
+      {tasks.map((t) => <TaskRow key={t.id} task={toRow(t)} employeeId={employeeId} canTick={can(t)} viewer={viewerRole} learnHref={relation === "SELF" && t.owner_role === "KAM" && t.is_mandatory ? `/learn/${encodeURIComponent(t.code)}` : undefined} />)}
     </ul>
   );
 }

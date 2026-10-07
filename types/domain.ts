@@ -58,6 +58,7 @@ export interface TaskDef {
   exposure: Exposure;
   gate_code: string | null;
   action_ref: string | null;
+  knowledge_topic?: string | null;
   is_active: boolean;
   instance_id?: string | null;
   sort_order?: number;

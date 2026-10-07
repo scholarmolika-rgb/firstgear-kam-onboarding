@@ -41,7 +41,7 @@ const OWNER: Record<string, string> = { KAM: "You", MENTOR: "Mentor", REPORTING_
  * updated state. Optimistic, with rollback and a visible error if the server
  * rejects the change. Survives refresh because the database is the state.
  */
-export function TaskRow({ task, employeeId, canTick, viewer = "KAM" }: { task: TaskRowData; employeeId: string; canTick: boolean; viewer?: string }) {
+export function TaskRow({ task, employeeId, canTick, viewer = "KAM", learnHref }: { task: TaskRowData; employeeId: string; canTick: boolean; viewer?: string; learnHref?: string }) {
   const router = useRouter();
   const [pending, start] = useTransition();
   const [optimistic, setOptimistic] = useState<string | null>(null);
@@ -93,7 +93,9 @@ export function TaskRow({ task, employeeId, canTick, viewer = "KAM" }: { task: T
       </button>
       <div className="min-w-0 flex-1">
         <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
-          <span className={cn("text-sm font-medium", done ? "text-ink-muted line-through decoration-ink-faint" : "text-ink")}>{task.title}</span>
+          {learnHref
+            ? <Link prefetch={false} href={learnHref} className={cn("text-sm font-medium hover:underline", done ? "text-ink-muted line-through decoration-ink-faint" : "text-ink")}>{task.title}</Link>
+            : <span className={cn("text-sm font-medium", done ? "text-ink-muted line-through decoration-ink-faint" : "text-ink")}>{task.title}</span>}
           {!task.is_mandatory && <span className="text-[10px] uppercase tracking-wide text-ink-faint">optional</span>}
           {task.overdue && !done && <span className="rounded bg-bad-soft px-1.5 py-0.5 text-[10px] font-semibold text-bad">Overdue · due Day {task.due_day}</span>}
           {task.exposure !== "NONE" && <span className="rounded bg-accent-soft px-1.5 py-0.5 text-[10px] font-semibold text-accent">{task.exposure === "PRICING" ? "Pricing — guided" : "Customer exposure"}</span>}

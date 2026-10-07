@@ -66,7 +66,7 @@ export function splitSections(body: string): Section[] {
     if (text) out.push({ heading, text, page });
     buf = [];
   };
-  for (const line of body.split("\n")) {
+  for (const line of body.split(/\r?\n/)) {
     const marker = line.match(/^\s*\[page (\d+)\]\s*$/i);
     const nextPage: number | null = marker ? Number(marker[1]) : line.includes("\f") ? (page ?? 1) + 1 : null;
     if (nextPage !== null) { flush(); page = nextPage; continue; }
