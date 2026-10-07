@@ -69,7 +69,7 @@ describe("API validation", () => {
 
 describe("rate limiting", () => {
   it("throttles bursts and refills", async () => {
-    const rl = new MemoryRateLimiter(2, 1000);
+    const rl = new MemoryRateLimiter(2, 1 / 60); // slow refill, so the test does not depend on timing
     expect((await rl.take("u")).ok).toBe(true);
     expect((await rl.take("u")).ok).toBe(true);
     const third = await rl.take("u");
