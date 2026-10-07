@@ -216,3 +216,60 @@ describe("row level security", () => {
     }
   });
 });
+
+describe("KAM support chat (KAM ↔ Mentor ↔ HR)", () => {
+  let threadId: string;
+  const send = (d: PGlite, sender: string, role: string, body: string, emp = employeeId, thread = threadId) =>
+    d.query(`insert into public.chat_messages (thread_id, employee_id, sender_id, sender_role, body) values ($1,$2,$3,$4,$5)`, [thread, emp, sender, role, body]);
+
+  beforeAll(async () => {
+    threadId = (await one<{ id: string }>(`insert into public.chat_threads (employee_id) values ($1) returning id`, [employeeId])).id;
+  });
+
+  it("the KAM, their Mentor and HR can all post and read the thread", async () => {
+    await asUser(db, KAM, (d) => send(d, KAM, "KAM", "Where do I find the approval matrix?"));
+    await asUser(db, MENTOR, (d) => send(d, MENTOR, "MENTOR", "Day 2 resources — Approval authority matrix."));
+    await asUser(db, HR, (d) => send(d, HR, "HR_ADMIN", "HR here: ping me for any access issues."));
+    for (const who of [KAM, MENTOR, HR]) {
+      await asUser(db, who, async (d) => {
+        const r = await d.query<{ n: number }>("select count(*)::int n from public.chat_messages where thread_id = $1", [threadId]);
+        expect(r.rows[0].n).toBe(3);
+      });
+    }
+  });
+
+  it("another KAM and the Reporting Boss cannot read or post", async () => {
+    for (const who of [OTHER_KAM, BOSS]) {
+      await asUser(db, who, async (d) => {
+        const r = await d.query<{ n: number }>("select count(*)::int n from public.chat_messages");
+        expect(r.rows[0].n).toBe(0);
+        expect((await d.query("select id from public.chat_threads")).rows).toEqual([]);
+        await expect(send(d, who, who === BOSS ? "REPORTING_BOSS" : "KAM", "hello")).rejects.toThrow();
+      });
+    }
+  });
+
+  it("nobody can post as someone else or claim another role", async () => {
+    await asUser(db, KAM, async (d) => {
+      await expect(send(d, MENTOR, "MENTOR", "spoofed")).rejects.toThrow();
+      await expect(send(d, KAM, "MENTOR", "wrong role")).rejects.toThrow();
+    });
+  });
+
+  it("messages cannot be edited or deleted by users", async () => {
+    await asUser(db, KAM, async (d) => {
+      const u = await d.query("update public.chat_messages set body = 'edited' where sender_id = $1", [KAM]);
+      expect(u.affectedRows ?? 0).toBe(0);
+      const del = await d.query("delete from public.chat_messages where sender_id = $1", [KAM]);
+      expect(del.affectedRows ?? 0).toBe(0);
+    });
+  });
+
+  it("each user tracks only their own read position", async () => {
+    await asUser(db, MENTOR, (d) => d.query("insert into public.chat_reads (thread_id, user_id) values ($1, $2)", [threadId, MENTOR]));
+    await asUser(db, KAM, async (d) => {
+      await expect(d.query("insert into public.chat_reads (thread_id, user_id) values ($1, $2)", [threadId, MENTOR])).rejects.toThrow();
+      expect((await d.query("select * from public.chat_reads")).rows).toEqual([]);
+    });
+  });
+});

@@ -3,6 +3,9 @@ import { createServerSupabase } from "@/lib/supabase/server";
 import { loadCohort, pendingFor } from "@/lib/services/cohort";
 import { Card, PageHeader, Stat } from "@/components/ui";
 import { CohortTable } from "@/components/staff/CohortTable";
+import { StaffAssistant } from "@/components/assistant/StaffAssistant";
+import { helpText } from "@/lib/ai/staff/guide";
+import { staffSuggestions } from "@/lib/ai/staff/suggestions";
 
 export const metadata = { title: "Readiness dashboard" };
 export const dynamic = "force-dynamic";
@@ -23,7 +26,10 @@ export default async function ManagerDashboard() {
         <Stat label="Amber" value={bands.AMBER} tone={bands.AMBER ? "warn" : undefined} />
         <Stat label="Red" value={bands.RED} tone={bands.RED ? "bad" : undefined} />
       </div>
+      <div className="grid gap-6 xl:grid-cols-[1fr_380px]">
       <Card title="Decisions waiting on you">{decisions.length ? <ul className="divide-y divide-line">{decisions.map((p, i) => <li key={i} className="flex items-center justify-between py-2 text-sm"><span><span className="font-medium">{p.kam}</span> — {p.label}</span><a href={`/people/${p.id}#decisions`} className="btn-primary btn-sm">Review evidence</a></li>)}</ul> : <p className="text-sm text-ink-muted">No decisions pending.</p>}</Card>
+      <Card title="Ask Compass" subtitle="Status, decisions and how-to in one question"><StaffAssistant compact suggestions={await staffSuggestions("REPORTING_BOSS")} intro={helpText("REPORTING_BOSS")} /></Card>
+      </div>
       <div className="mt-6"><Card title="Assigned KAMs — readiness"><CohortTable rows={cohort} pending={(c) => pendingFor(c, "REPORTING_BOSS")} showExposure /></Card></div>
     </>
   );

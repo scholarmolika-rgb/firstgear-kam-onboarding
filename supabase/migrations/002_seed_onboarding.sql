@@ -29,6 +29,7 @@ insert into public.app_settings (key, value, category, label, description, value
   ('AMBER_REFRESH_DAYS', '4'::jsonb, 'remediation', 'Amber refresh length (days)', 'Targeted refresh length for Amber (3–5).', 'number'),
   ('RED_EXTENSION_DAYS', '10'::jsonb, 'remediation', 'Red extension (days)', 'Proposed onboarding extension for Red.', 'number'),
   ('READINESS_WEIGHTS', '{"tasks":30,"knowledge":30,"scenario":25,"gates":15}'::jsonb, 'scoring', 'Overall readiness composition (%)', 'How the dashboard ''overall readiness'' combines task completion, knowledge score, scenario score and gate progress. Must total 100.', 'json'),
+  ('SUPPORT_CHAT_DAYS', '15'::jsonb, 'notifications', 'KAM support chat window (days)', 'Days from Day 1 during which a KAM can message their Mentor and HR in the Compass. The thread stays readable afterwards.', 'number'),
   ('REMINDER_LEAD_DAYS', '1'::jsonb, 'notifications', 'Reminder lead time (days)', 'How far ahead sessions, assessments and gates are flagged.', 'number'),
   ('SESSION_TYPES', '["HR Orientation","Mentor Check-in","Product Training","Process Training","Plant Walk","Customer 360 Review","Manager Review","Assessment","Scenario Certification","Readiness Panel"]'::jsonb, 'sessions', 'Session types', 'Session types available when scheduling.', 'json'),
   ('KNOWLEDGE_CATEGORIES', '["Company","Products","Customers","Sales","Processes","Training","Policies","Quality","Governance","Account"]'::jsonb, 'knowledge', 'Knowledge categories', 'Categories available for knowledge documents.', 'json'),

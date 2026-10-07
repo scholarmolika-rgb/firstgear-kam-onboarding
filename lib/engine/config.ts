@@ -23,6 +23,7 @@ export const DEFAULT_CONFIG: ProgrammeConfig = {
   redExtensionDays: 10,
   readinessWeights: { tasks: 30, knowledge: 30, scenario: 25, gates: 15 },
   reminderLeadDays: 1,
+  supportChatDays: 15,
   sessionTypes: [],
   knowledgeCategories: [],
   ragTopK: 6,
@@ -65,6 +66,7 @@ export function parseConfig(rows: SettingRow[]): ProgrammeConfig {
       gates: num(rw.gates, d.readinessWeights.gates),
     },
     reminderLeadDays: num(m.get("REMINDER_LEAD_DAYS"), d.reminderLeadDays),
+    supportChatDays: num(m.get("SUPPORT_CHAT_DAYS"), d.supportChatDays),
     sessionTypes: list(m.get("SESSION_TYPES"), d.sessionTypes),
     knowledgeCategories: list(m.get("KNOWLEDGE_CATEGORIES"), d.knowledgeCategories),
     ragTopK: num(m.get("RAG_TOP_K"), d.ragTopK),
@@ -94,6 +96,7 @@ export function configToSettings(c: ProgrammeConfig): SettingRow[] {
     { key: "RED_EXTENSION_DAYS", value: c.redExtensionDays },
     { key: "READINESS_WEIGHTS", value: c.readinessWeights },
     { key: "REMINDER_LEAD_DAYS", value: c.reminderLeadDays },
+    { key: "SUPPORT_CHAT_DAYS", value: c.supportChatDays },
     { key: "SESSION_TYPES", value: c.sessionTypes },
     { key: "KNOWLEDGE_CATEGORIES", value: c.knowledgeCategories },
     { key: "RAG_TOP_K", value: c.ragTopK },
@@ -124,6 +127,7 @@ export function validateConfig(c: ProgrammeConfig): string[] {
   if ([rw.tasks, rw.knowledge, rw.scenario, rw.gates].some((v) => !pct(v))) e.push("Readiness composition weights must be between 0 and 100.");
   if (Math.abs(rwTotal - 100) > 0.001) e.push(`Overall readiness composition must total 100% (currently ${rwTotal}%).`);
   if (!Number.isInteger(c.reminderLeadDays) || c.reminderLeadDays < 0 || c.reminderLeadDays > 14) e.push("Reminder lead time must be 0–14 days.");
+  if (!Number.isInteger(c.supportChatDays) || c.supportChatDays < 0 || c.supportChatDays > c.duration) e.push(`Support chat window must be 0–${c.duration} days.`);
   if (c.ragTopK < 1 || c.ragTopK > 20) e.push("Retrieved passages must be 1–20.");
   if (c.ragMinSimilarity < 0 || c.ragMinSimilarity > 1) e.push("Minimum retrieval similarity must be between 0 and 1.");
   if (!c.programmeName.trim()) e.push("Programme name is required.");

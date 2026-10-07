@@ -267,6 +267,7 @@ export const SETTINGS: SeedSetting[] = [
   { key: "AMBER_REFRESH_DAYS", value: 4, category: "remediation", label: "Amber refresh length (days)", description: "Targeted refresh length for Amber (3–5).", type: "number" },
   { key: "RED_EXTENSION_DAYS", value: 10, category: "remediation", label: "Red extension (days)", description: "Proposed onboarding extension for Red.", type: "number" },
   { key: "READINESS_WEIGHTS", value: { tasks: 30, knowledge: 30, scenario: 25, gates: 15 }, category: "scoring", label: "Overall readiness composition (%)", description: "How the dashboard 'overall readiness' combines task completion, knowledge score, scenario score and gate progress. Must total 100.", type: "json" },
+  { key: "SUPPORT_CHAT_DAYS", value: 15, category: "notifications", label: "KAM support chat window (days)", description: "Days from Day 1 during which a KAM can message their Mentor and HR in the Compass. The thread stays readable afterwards.", type: "number" },
   { key: "REMINDER_LEAD_DAYS", value: 1, category: "notifications", label: "Reminder lead time (days)", description: "How far ahead sessions, assessments and gates are flagged.", type: "number" },
   { key: "SESSION_TYPES", value: SESSION_TYPES, category: "sessions", label: "Session types", description: "Session types available when scheduling.", type: "json" },
   { key: "KNOWLEDGE_CATEGORIES", value: KNOWLEDGE_CATEGORIES, category: "knowledge", label: "Knowledge categories", description: "Categories available for knowledge documents.", type: "json" },

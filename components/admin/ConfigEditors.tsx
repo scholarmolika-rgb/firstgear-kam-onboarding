@@ -35,6 +35,7 @@ export function ConfigForm({ initial }: { initial: ProgrammeConfig }) {
           <Num label="Duration (days)" value={c.duration} onChange={num((v) => ({ ...c, duration: v }))} />
           <Num label="Start offset from joining (days)" value={c.startOffsetDays} onChange={num((v) => ({ ...c, startOffsetDays: v }))} />
           <Field label="Day counting"><select className="input" value={c.dayCounting} onChange={(e) => setC({ ...c, dayCounting: e.target.value as "CALENDAR" | "BUSINESS" })}><option value="CALENDAR">Calendar days</option><option value="BUSINESS">Business days</option></select></Field>
+          <Num label="Support chat window (days)" value={c.supportChatDays} onChange={num((v) => ({ ...c, supportChatDays: v }))} />
           <Num label="Reminder lead time (days)" value={c.reminderLeadDays} onChange={num((v) => ({ ...c, reminderLeadDays: v }))} />
         </div>
       </section>

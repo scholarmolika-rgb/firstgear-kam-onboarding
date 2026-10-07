@@ -110,6 +110,7 @@ export interface ProgrammeConfig {
   redExtensionDays: number;
   readinessWeights: { tasks: number; knowledge: number; scenario: number; gates: number };
   reminderLeadDays: number;
+  supportChatDays: number;
   sessionTypes: string[];
   knowledgeCategories: string[];
   ragTopK: number;

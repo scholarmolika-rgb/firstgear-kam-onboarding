@@ -1,12 +1,14 @@
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
-import { ArrowLeft, ArrowRight, BookOpen, CalendarDays, Route } from "lucide-react";
+import { ArrowLeft, ArrowRight, BookOpen, CalendarDays, MessagesSquare, Route } from "lucide-react";
 import { kamSnapshot } from "@/lib/services/page";
 import { createServerSupabase } from "@/lib/supabase/server";
 import { trainingPath, blockOf, relevantSections } from "@/lib/engine/training";
 import { Card, Notice, StatusPill, cn } from "@/components/ui";
 import { DocText } from "@/components/kam/DocText";
 import { StepAction } from "@/components/kam/Training";
+import { createAdminClient } from "@/lib/supabase/server";
+import { chatWindow } from "@/lib/services/chat";
 
 export const dynamic = "force-dynamic";
 export const metadata = { title: "Training" };
@@ -42,6 +44,7 @@ export default async function TrainingStep({ params, searchParams }: { params: P
   const nextHref = next ? `/learn/${encodeURIComponent(next.code)}` : "/journey";
   const completed = path.steps.filter((s) => done(s.availability)).length;
   const t = `t=${encodeURIComponent(step.code)}`;
+  const chat = await chatWindow(createAdminClient(), snap.employee.id).catch(() => null);
 
   const nav = (
     <div className="flex items-center justify-between gap-3">
@@ -120,6 +123,13 @@ export default async function TrainingStep({ params, searchParams }: { params: P
             <StepAction code={step.code} taskId={step.id} employeeId={snap.employee.id} availability={step.availability} reason={step.reason}
               requiresApproval={step.requires_approval} actionRef={step.action_ref} taskType={step.task_type} nextHref={nextHref} />
           </Card>
+
+          {chat?.open && (
+            <Card title="Stuck on this step?">
+              <p className="mb-3 text-sm text-ink-soft">Ask your Mentor and HR — your message is linked to this step. Open for your first {chat.lastDay} days.</p>
+              <Link prefetch={false} href={`/chat?${t}`} className="btn-secondary w-full justify-center"><MessagesSquare size={15} />Ask Mentor &amp; HR</Link>
+            </Card>
+          )}
 
           <Card title={`Day ${step.day_number} plan`} subtitle={`${dayPlan.filter((s) => done(s.availability)).length} of ${dayPlan.length} done`}>
             <ol className="space-y-1">

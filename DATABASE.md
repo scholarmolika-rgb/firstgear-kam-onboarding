@@ -27,6 +27,7 @@ Regenerate 002/003 after editing the defaults: `npx tsx scripts/generate-seed-sq
 | Account | `account_briefs`, `stakeholder_maps` |
 | Knowledge | `knowledge_documents` (versioned by `document_key` + `version`), `knowledge_chunks` (`vector(384)`, generated `tsvector`, denormalised metadata) |
 | Conversation | `conversation_sessions`, `conversation_messages` (intent, grounding, citations, actions) |
+| Support chat | `chat_threads` (one per KAM), `chat_messages` (KAM ↔ Mentor ↔ HR; RLS via `is_chat_participant`; Realtime), `chat_reads` (per-user read position). Sending is open for `SUPPORT_CHAT_DAYS` (default 15) |
 | Ops | `notifications`, `audit_logs` |
 
 Every employee-specific table carries `employee_id` with a foreign key and an index.

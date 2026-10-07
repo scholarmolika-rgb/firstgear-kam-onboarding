@@ -16,6 +16,7 @@
     "seed": "tsx scripts/seed.ts",
     "ingest": "tsx scripts/ingest-knowledge.ts",
     "db:three-gates": "tsx scripts/apply-three-gates.ts",
+    "db:migrate": "tsx scripts/run-migration.ts",
     "generate:intents": "tsx scripts/generate-intent-dataset.ts"
   },
   "engines": {
@@ -39,12 +40,14 @@
     "@electric-sql/pglite": "^0.4.6",
     "@playwright/test": "^1.63.0",
     "@types/node": "^22.20.4",
+    "@types/pg": "^8.23.1",
     "@types/react": "^19.3.0",
     "@types/react-dom": "^19.3.0",
     "autoprefixer": "^10.6.1",
     "dotenv": "^18.0.5",
     "eslint": "^9.39.5",
     "eslint-config-next": "^15.5.27",
+    "pg": "^8.23.1",
     "postcss": "^8.5.28",
     "tailwindcss": "^3.4.17",
     "tsx": "^4.23.15",

@@ -4,7 +4,7 @@ import { usePathname } from "next/navigation";
 import { useState } from "react";
 import {
   LayoutDashboard, Route, ListChecks, MessageSquareText, CalendarDays, ClipboardCheck, Swords, Building2, FileText,
-  BookOpen, BarChart3, Settings, Users, SlidersHorizontal, FileCog, Library, ScrollText, Menu, X, Gauge, GraduationCap,
+  BookOpen, BarChart3, Settings, Users, SlidersHorizontal, FileCog, Library, ScrollText, Menu, X, Gauge, GraduationCap, MessagesSquare, Bot,
 } from "lucide-react";
 import { cn } from "@/components/ui";
 import type { Role } from "@/types/domain";
@@ -19,6 +19,7 @@ export const NAV: Record<Role, { section?: string; items: Item[] }[]> = {
       { href: "/journey", label: "30-day journey", icon: Route },
       { href: "/tasks", label: "Tasks", icon: ListChecks },
       { href: "/assistant", label: "Ask FirstGear", icon: MessageSquareText },
+      { href: "/chat", label: "Mentor & HR chat", icon: MessagesSquare },
       { href: "/sessions", label: "Sessions", icon: CalendarDays },
     ] },
     { section: "Readiness", items: [
@@ -35,18 +36,23 @@ export const NAV: Record<Role, { section?: string; items: Item[] }[]> = {
   MENTOR: [
     { items: [
       { href: "/mentor", label: "Mentor dashboard", icon: GraduationCap },
+      { href: "/messages", label: "Messages", icon: MessagesSquare },
+      { href: "/copilot", label: "Ask Compass", icon: Bot },
       { href: "/knowledge", label: "Knowledge", icon: BookOpen },
     ] },
   ],
   REPORTING_BOSS: [
     { items: [
       { href: "/manager", label: "Readiness dashboard", icon: Gauge },
+      { href: "/copilot", label: "Ask Compass", icon: Bot },
       { href: "/knowledge", label: "Knowledge", icon: BookOpen },
     ] },
   ],
   HR_ADMIN: [
     { items: [
       { href: "/hr", label: "HR dashboard", icon: LayoutDashboard },
+      { href: "/messages", label: "Messages", icon: MessagesSquare },
+      { href: "/copilot", label: "Ask Compass", icon: Bot },
       { href: "/admin/employees", label: "Employees", icon: Users },
     ] },
     { section: "Programme", items: [
