@@ -40,6 +40,7 @@ const CLOSERS: Record<string, string[]> = {
   KNOWLEDGE: ["Would you like to explore anything related? A few ideas are below.", "Anything else you'd like to check? Here are some related questions.", "Happy to dig deeper — just pick a question below or ask your own."],
   KNOWLEDGE_NONE: ["Anything else I can help you with?", "Is there anything else you'd like to know?"],
   PROGRESS: ["You're building a solid foundation — keep going! Want to see your next step?", "Nice momentum. Shall we look at what's next?"],
+  PROGRESS_BEHIND: ["No pressure — let's catch up one step at a time. Shall I show you the next one?", "You can catch up quickly — the training player takes you through each step. Want to start with the next one?"],
   TASK_STATUS: ["Shall I open it for you? I'm right here if you get stuck along the way.", "You've got this — open it whenever you're ready, and ask me anything as you go."],
   GATE_STATUS: ["If any requirement is unclear, just ask — or your Mentor is a message away.", "One step at a time — I can explain any of these requirements."],
   READINESS: ["Every completed step counts towards it. Want me to show what to focus on next?"],

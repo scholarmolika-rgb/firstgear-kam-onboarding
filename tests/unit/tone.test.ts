@@ -43,3 +43,13 @@ describe("assistant tone — warm and suggestive, facts untouched", () => {
     expect(firstNameOf("Riya Sharma")).toBe("Riya");
   });
 });
+
+describe("encouragement matches reality", () => {
+  it("a KAM who is behind gets support, not praise", () => {
+    for (const seed of ["a", "b", "c"]) {
+      const c = closer("STATE", "PROGRESS_BEHIND", seed);
+      expect(c).not.toMatch(/momentum|solid foundation/i);
+      expect(c).toMatch(/catch up/i);
+    }
+  });
+});

@@ -241,7 +241,9 @@ export async function handleAssistantMessage(ctx: ActionContext, message: string
   const tone: ToneKind = routed.guard === "OUT_OF_SCOPE_IT" ? "OUT_OF_SCOPE" : routed.guard === "PRICING_AUTHORITY" ? "PRICING"
     : grounding === "INSUFFICIENT" ? "INSUFFICIENT" : grounding === "COMPANY_KNOWLEDGE" ? "KNOWLEDGE"
     : ["TASK_COMPLETE", "MENTOR_REQUEST", "MANAGER_REQUEST"].includes(routed.intent) ? "ACTION" : "STATE";
-  if (!model) text = warmText(text, { kind: tone, intent: routed.intent, firstName: firstNameOf(snap.employee.full_name), seed: message, hasSuggestions: suggestions.length > 0 });
+  // Encouragement must match reality: a KAM who is behind gets support, not praise.
+  const toneIntent = routed.intent === "PROGRESS" && snap.metrics.overdueCount > 0 ? "PROGRESS_BEHIND" : routed.intent;
+  if (!model) text = warmText(text, { kind: tone, intent: toneIntent, firstName: firstNameOf(snap.employee.full_name), seed: message, hasSuggestions: suggestions.length > 0 });
   actions = [...actions, ...suggestions.map((q): AssistantAction => ({ kind: "suggest", label: q }))];
 
   const { data: saved } = await ctx.admin.from("conversation_messages").insert({
