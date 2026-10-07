@@ -11,7 +11,7 @@ import { JourneyStrip } from "@/components/kam/Widgets";
 import { TaskList } from "@/components/kam/TaskList";
 import { DecisionForm, FeedbackForm, SupportEventForm, ScenarioReviewForm, TaskReviewButtons } from "@/components/staff/Decisions";
 import { ScheduleForm, SessionRow } from "@/components/kam/Sessions";
-import { BRIEF_SECTIONS } from "@/components/kam/Account";
+import { BRIEF_SECTIONS } from "@/components/kam/briefSections";
 import { phaseLabel } from "@/lib/report/build";
 
 export const dynamic = "force-dynamic";
