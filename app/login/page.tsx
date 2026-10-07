@@ -21,7 +21,7 @@ export default async function LoginPage({ searchParams }: { searchParams: Promis
             A guided, evidence-based 30-day readiness journey for Key Account Managers. Gates — not the calendar — decide when you take on customers and pricing. Readiness is a human decision.
           </p>
           <dl className="mt-10 grid grid-cols-3 gap-6 text-sm">
-            {[["4", "capability pillars"], ["5", "readiness gates"], ["30", "day journey"]].map(([n, l]) => (
+            {[["4", "capability pillars"], ["3", "readiness gates"], ["30", "day journey"]].map(([n, l]) => (
               <div key={l}><dt className="text-2xl font-semibold">{n}</dt><dd className="text-white/65">{l}</dd></div>
             ))}
           </dl>

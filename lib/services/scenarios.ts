@@ -93,20 +93,20 @@ export async function reviewScenario(ctx: ActionContext, attemptId: string, revi
   return syncEmployeeState(a.employee_id, ctx.actor);
 }
 
-/** Mentor certification decision on Gate 4. Rules still apply: below threshold cannot be approved. */
+/** Mentor certification decision on Gate 2 (Day-21 scenario test). Rules still apply: below threshold cannot be approved. */
 export async function decideCertification(ctx: ActionContext, employeeId: string, decision: "APPROVED" | "REJECTED" | "CHANGES_REQUESTED", comments: string) {
   const emp = await requireEmployeeAccess(ctx, employeeId);
-  if (!mayDecide("G4_CERTIFICATION", ctx.actor, emp)) throw new ServiceError("Only the assigned Mentor can certify Day-21 scenarios.");
+  if (!mayDecide("SCENARIO_CERTIFICATION", ctx.actor, emp)) throw new ServiceError("Only the assigned Mentor can certify Day-21 scenarios.");
   const snap = await loadSnapshot(ctx.admin, employeeId);
-  const g4 = snap.journey.gates.find((g) => g.code === "G4")!;
-  if (!["SUBMITTED", "FAILED"].includes(g4.status) || (g4.status === "FAILED" && decision === "APPROVED")) {
-    if (decision === "APPROVED") throw new ServiceError(g4.status === "FAILED" ? `Cannot certify: ${g4.decision ?? "score below threshold"}.` : "All four certification scenarios must be submitted first.");
+  const certGate = snap.journey.gates.find((g) => g.code === "G2")!;
+  if (!["SUBMITTED", "FAILED"].includes(certGate.status) || (certGate.status === "FAILED" && decision === "APPROVED")) {
+    if (decision === "APPROVED") throw new ServiceError(certGate.status === "FAILED" ? `Cannot certify: ${certGate.decision ?? "score below threshold"}.` : "All four certification scenarios must be submitted first.");
   }
   if (!comments.trim()) throw new ServiceError("Add a comment explaining the decision.");
   const inst = await activeInstance(ctx.admin, employeeId);
-  await ctx.admin.from("mentor_reviews").insert({ employee_id: employeeId, instance_id: inst.id, mentor_id: ctx.actor.id, review_type: "GATE", entity_id: g4.id, decision, comments });
-  await ctx.admin.from("gate_results").update({ assessor_id: ctx.actor.id, comments }).eq("instance_id", inst.id).eq("gate_id", g4.id);
-  if (decision === "APPROVED") await completeSystemTasks(ctx.admin, inst.id, "gate:G4", ctx.actor, employeeId);
-  await audit(ctx.admin, { employeeId, actor: ctx.actor, event: "MENTOR_REVIEWED", entityType: "gate", entityId: g4.id, next: { gate: "G4", decision, comments, score: g4.score } });
+  await ctx.admin.from("mentor_reviews").insert({ employee_id: employeeId, instance_id: inst.id, mentor_id: ctx.actor.id, review_type: "GATE", entity_id: certGate.id, decision, comments });
+  await ctx.admin.from("gate_results").update({ assessor_id: ctx.actor.id, comments }).eq("instance_id", inst.id).eq("gate_id", certGate.id);
+  if (decision === "APPROVED") await completeSystemTasks(ctx.admin, inst.id, "gate:G2", ctx.actor, employeeId);
+  await audit(ctx.admin, { employeeId, actor: ctx.actor, event: "MENTOR_REVIEWED", entityType: "gate", entityId: certGate.id, next: { gate: "G2", decision, comments, score: certGate.score } });
   return syncEmployeeState(employeeId, ctx.actor);
 }

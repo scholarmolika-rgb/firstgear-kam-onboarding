@@ -106,7 +106,7 @@ const GATE_ICON: Record<string, React.ReactNode> = {
   IN_PROGRESS: <CircleDot size={16} className="text-accent" />, NOT_STARTED: <Circle size={16} className="text-ink-faint" />,
 };
 
-/** Gate timeline: Day 5 ● Day 10 ● Day 15 ● Day 21 ○ Day 30 ○ */
+/** Gate timeline: Day 15 ● Day 21 ○ Day 30 ○ */
 export function GateTimeline({ gates, compact }: { gates: { code: string; name: string; day: number; status: string; score: number | null; nextAction?: string }[]; compact?: boolean }) {
   return (
     <ol className={cn("relative", compact ? "flex items-start justify-between gap-1" : "space-y-4")}>

@@ -92,7 +92,7 @@ function stateFacts(snap: Snapshot, intent: Intent): { facts: string; actions: A
     default: {
       const lead = today.length ? `You have completed ${todayDone} of today's ${today.length} required activities.` : `There are no required activities scheduled for Day ${snap.day}.`;
       const next = na.kind === "DONE" ? "All gates are cleared." : na.kind === "WAIT" ? `Next: ${na.title} — ${na.detail}.` : `Next: ${na.title} (Day ${nextTask?.day_number ?? snap.day}).`;
-      const gateLine = gate ? ` Your ${gate.code === "G5" ? "Day-30 panel" : `Day-${gate.day} gate`} is ${gateWhen}.` : "";
+      const gateLine = gate ? ` Your ${gate.code === "G3" ? "Day-30 panel" : `Day-${gate.day} gate`} is ${gateWhen}.` : "";
       return { facts: `${lead} ${next}${gateLine}${m.overdueCount ? ` ${m.overdueCount} task${m.overdueCount === 1 ? " is" : "s are"} overdue.` : ""}`, actions };
     }
   }

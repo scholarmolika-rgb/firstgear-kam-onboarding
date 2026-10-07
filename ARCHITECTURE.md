@@ -69,6 +69,6 @@ tests/          unit/, integration/ (30-day simulation), db/ (PGlite migrations+
 
 - **Gates, not dates.** Segments unlock when gates clear; the calendar only drives due/overdue. A KAM may work ahead inside an unlocked segment.
 - **Server-only scoring.** Scores, gate results, snapshots and audit are written with the service role *after* authorisation; RLS denies those writes to users.
-- **Template + instance tasks.** Refresh/remediation tasks are instance-specific rows linked to Gate 3, so the gate naturally waits for them.
+- **Template + instance tasks.** Refresh/remediation tasks are instance-specific rows linked to Gate 1 (Day 15), so the gate naturally waits for them.
 - **System-driven tasks** (`action_ref`) — assessments, scenarios, reviews and panel steps tick themselves when the linked action happens; they can't be ticked by hand.
 - **Extensibility.** New intents, document categories, session types, tasks, questions and rubrics are data, not code. Calendar and notification channels are provider interfaces.

@@ -18,7 +18,7 @@ export default async function JourneyPage() {
 
   return (
     <>
-      <PageHeader eyebrow={`Day ${Math.max(snap.day, 0)} of ${snap.config.duration}`} title="30-day journey" subtitle="Phase 1 (Days 1–15) builds knowledge with no live pricing and no unsupervised customer exposure. Phase 2 (Days 16–30) is guided ownership, unlocked by readiness gates." />
+      <PageHeader eyebrow={`Day ${Math.max(snap.day, 0)} of ${snap.config.duration}`} title="30-day journey" subtitle="Phase 1 (Days 1–15) builds knowledge with no live pricing and no customer exposure. Phase 2 (Days 16–30) is practise, then own — unlocked by three gates: Day 15 readiness (≥ 80%), Day 21 scenario test and Day 30 panel sign-off. Customer access is earned by passing gates, not by days passing." />
       <div className="grid gap-6 lg:grid-cols-[1fr_340px]">
         <div className="space-y-6">
           <Card title="Days"><JourneyStrip days={j.days.slice(0, snap.config.duration)} gateDays={j.gates.map((g) => g.day)} /></Card>

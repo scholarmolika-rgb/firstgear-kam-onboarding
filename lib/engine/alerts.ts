@@ -53,13 +53,13 @@ export function computeAlerts(
     }
   }
 
-  const cert = journey.gates.find((g) => g.code === "G4");
-  const g3 = journey.gates.find((g) => g.code === "G3");
-  if (cert && g3 && !["PASSED", "APPROVED"].includes(g3.status) && today >= 19) {
-    a.push({ type: "GATE_BLOCKED", severity: "ATTENTION", title: "Your Day-21 scenario certification is blocked until the Day-15 gate is cleared.", body: g3.nextAction, link: "/journey/15", dedupeKey: `cert-blocked-${g3.status}`, audience: ["KAM"] });
+  const cert = journey.gates.find((g) => g.code === "G2");
+  const d15Gate = journey.gates.find((g) => g.code === "G1");
+  if (cert && d15Gate && !["PASSED", "APPROVED"].includes(d15Gate.status) && today >= 19) {
+    a.push({ type: "GATE_BLOCKED", severity: "ATTENTION", title: "Your Day-21 scenario test is blocked until the Day-15 gate is cleared.", body: d15Gate.nextAction, link: "/journey/15", dedupeKey: `cert-blocked-${d15Gate.status}`, audience: ["KAM"] });
   }
 
-  const d15 = journey.gates.find((g) => g.code === "G3");
+  const d15 = journey.gates.find((g) => g.code === "G1");
   if (journey.day15Available.available && !journey.day15Available.isRecheck && d15 && d15.day - today <= lead && d15.day - today >= 0) {
     a.push({ type: "ASSESSMENT_UPCOMING", severity: "INFO", title: d15.day === today ? "Your Day-15 assessment is today." : "Your Day-15 assessment is tomorrow.", body: "Four-pillar, weighted assessment.", link: "/assessments", dedupeKey: `d15-upcoming-${today}`, audience: ["KAM"] });
   }
@@ -82,8 +82,8 @@ export function computeAlerts(
   const mentorTasks = journey.tasks.filter((t) => t.owner_role === "MENTOR" && t.availability === "AVAILABLE" && !t.systemDriven);
   if (mentorTasks.length) a.push({ type: "MENTOR_ACTION", severity: "INFO", title: `${mentorTasks.length} mentor action${mentorTasks.length === 1 ? "" : "s"} open`, body: mentorTasks.map((t) => t.title).join(" · "), link: "/mentor", dedupeKey: `mentor-actions-${mentorTasks.map((t) => t.code).join(",")}`, audience: ["MENTOR"] });
 
-  const g5 = journey.gates.find((g) => g.code === "G5");
-  if (g5?.status === "SUBMITTED") a.push({ type: "MANAGER_SIGNOFF_REQUIRED", severity: "ATTENTION", title: "Day-30 readiness sign-off required", body: "Mentor and HR panel inputs are in.", link: "/manager", dedupeKey: "g5-signoff", audience: ["REPORTING_BOSS"] });
+  const panelGate = journey.gates.find((g) => g.code === "G3");
+  if (panelGate?.status === "SUBMITTED") a.push({ type: "MANAGER_SIGNOFF_REQUIRED", severity: "ATTENTION", title: "Day-30 readiness sign-off required", body: "Mentor and HR panel inputs are in.", link: "/manager", dedupeKey: "panel-signoff", audience: ["REPORTING_BOSS"] });
 
   return a;
 }

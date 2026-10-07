@@ -3,7 +3,10 @@
  *
  * Given the employee's recorded evidence (task states, assessment results,
  * scenario results, human decisions) it derives:
- *   • the status of each of the five gates
+ *   • the status of each of the three gates
+ *       G1 — Day 15: Phase-1 learning complete + readiness score ≥ Green
+ *       G2 — Day 21: scenario test (certification)
+ *       G3 — Day 30: readiness panel sign-off
  *   • which segments of the journey are unlocked, locked or blocked
  *   • every task's availability (available / locked / blocked / waiting / awaiting review / done)
  *   • each day's status, the journey phase and the exposure flags
@@ -35,8 +38,8 @@ export interface JourneyContext {
   day10Best: number | null;
   day15Latest: Day15Result | null;
   certification: CertResult[];      // latest attempt per certification scenario
-  certificationCodes: string[];     // which scenarios make up the Day-21 certification
-  gateDecisions: GateDecision[];    // mentor decisions on G4 (and overrides)
+  certificationCodes: string[];     // which scenarios make up the Day-21 scenario test
+  gateDecisions: GateDecision[];    // mentor decisions on G2 (and overrides)
   managerReviews: ManagerDecisionState[];
   mentorReviews: MentorReviewState[];
 }
@@ -74,7 +77,7 @@ export type DayStatus = "COMPLETED" | "CURRENT" | "AVAILABLE" | "LOCKED" | "BLOC
 
 export interface DayView { day: number; status: DayStatus; isToday: boolean; total: number; done: number; segmentKey: SegmentKey }
 
-export type SegmentKey = "S1" | "S2" | "S3" | "P2A" | "CERT" | "PRICING" | "CUSTOMER" | "PANEL";
+export type SegmentKey = "P1" | "P2A" | "CERT" | "PRICING" | "CUSTOMER" | "PANEL";
 export interface SegmentState { key: SegmentKey; from: number; to: number; open: boolean; blocked: boolean; reason: string | null }
 
 export type JourneyPhase = "LEARN" | "PRACTICE" | "GUIDED_OWNERSHIP" | "READY_FOR_PANEL" | "REMEDIATION" | "SIGNED_OFF_READY" | "EXTENDED" | "NOT_READY";
@@ -95,9 +98,7 @@ export interface JourneyState {
 /* ── Helpers ───────────────────────────────────────────────────────── */
 
 const SEGMENT_DEFS: { key: SegmentKey; from: number; to: number }[] = [
-  { key: "S1", from: 1, to: 5 },
-  { key: "S2", from: 6, to: 10 },
-  { key: "S3", from: 11, to: 15 },
+  { key: "P1", from: 1, to: 15 },
   { key: "P2A", from: 16, to: 20 },
   { key: "CERT", from: 21, to: 21 },
   { key: "PRICING", from: 22, to: 25 },
@@ -134,54 +135,27 @@ export function evaluateJourney(ctx: JourneyContext): JourneyState {
     return { code, id: d?.id ?? code, name: d?.name ?? code, day: d?.day_number ?? 0, approverRole: d?.approver_role ?? null, ...v };
   };
   const remaining = (ts: TaskDef[]) => ts.filter((t) => !done(t));
+  const d10 = ctx.day10Best;
+  const d10Below = d10 !== null && d10 < cfg.day10PassThreshold;
+  const day10Pending = d10 === null && active.some((t) => t.action_ref === "assessment:DAY10-CHECK");
 
-  // G1 — tasks
+  // G1 — Day-15 gate: all Phase-1 (Days 1–15) work + four-pillar readiness ≥ Green
   {
     const req = mandatoryFor("G1");
     const left = remaining(req);
-    const status: GateStatus = left.length === 0 ? "PASSED" : req.some(done) ? "IN_PROGRESS" : "NOT_STARTED";
-    gates.G1 = mk("G1", {
-      status, score: null, band: null, requiredTasks: reqList(req),
-      evidence: { completed: req.length - left.length, required: req.length },
-      decision: status === "PASSED" ? "All Day 1–5 requirements complete" : null,
-      nextAction: status === "PASSED" ? "Proceed to Days 6–10" : `Complete ${left.length} remaining Day 1–5 task${left.length === 1 ? "" : "s"}`,
-    });
-  }
-
-  // G2 — tasks + Day-10 interim check
-  {
-    const req = mandatoryFor("G2");
-    const left = remaining(req);
-    const open = isCleared(gates.G1!.status);
-    let status: GateStatus;
-    let next: string;
-    const score = ctx.day10Best;
-    if (!open) { status = "NOT_STARTED"; next = "Unlocks when Gate 1 passes"; }
-    else if (score === null) { status = req.some(done) ? "IN_PROGRESS" : "NOT_STARTED"; next = left.length > 1 ? `Complete ${left.length} remaining Day 6–10 items, including the interim knowledge check` : "Take the Day-10 interim knowledge check"; }
-    else if (score < cfg.day10PassThreshold) { status = "FAILED"; next = `Interim check ${score}% is below ${cfg.day10PassThreshold}%. Review the weak topics with your mentor and retake.`; }
-    else if (left.length > 0) { status = "IN_PROGRESS"; next = `Check passed (${score}%). Complete ${left.length} remaining Day 6–10 task${left.length === 1 ? "" : "s"}`; }
-    else { status = "PASSED"; next = "Proceed to Customer 360 (Days 11–15)"; }
-    gates.G2 = mk("G2", {
-      status, score, band: null, requiredTasks: reqList(req),
-      evidence: { day10_best: score, pass_threshold: cfg.day10PassThreshold, completed: req.length - left.length, required: req.length },
-      decision: status === "PASSED" ? `Interim check ${score}% ≥ ${cfg.day10PassThreshold}%` : null,
-      nextAction: next,
-    });
-  }
-
-  // G3 — Day-15 four-pillar readiness
-  {
-    const req = mandatoryFor("G3");
-    const left = remaining(req);
-    const open = isCleared(gates.G2!.status);
     const r = ctx.day15Latest;
     const progression = mgr("PROGRESSION");
     let status: GateStatus;
     let next: string;
     let decision: string | null = null;
-    if (!open) { status = "NOT_STARTED"; next = "Unlocks when Gate 2 passes"; }
-    else if (!r) { status = req.some(done) ? "IN_PROGRESS" : "NOT_STARTED"; next = "Complete Customer 360 and the account brief, then take the Day-15 assessment"; }
-    else if (r.band === "RED") { status = "FAILED"; decision = `RED (${r.overall}%) — Phase 2 paused`; next = "Complete the remediation plan, then re-assess"; }
+    if (!r) {
+      status = req.some(done) ? "IN_PROGRESS" : "NOT_STARTED";
+      const learningLeft = left.filter((t) => t.owner_role === "KAM" && t.task_type !== "ASSESSMENT");
+      next = d10Below ? `Day-10 interim check ${d10}% is below ${cfg.day10PassThreshold}%. Review the weak topics with your mentor and retake it`
+        : learningLeft.length ? `Complete ${learningLeft.length} remaining Day 1–15 task${learningLeft.length === 1 ? "" : "s"}, then take the Day-15 readiness assessment (≥ ${cfg.greenThreshold}%)`
+        : d10 === null ? "Take the Day-10 interim knowledge check"
+        : `Take the Day-15 readiness assessment (≥ ${cfg.greenThreshold}% to pass)`;
+    } else if (r.band === "RED") { status = "FAILED"; decision = `RED (${r.overall}%) — Phase 2 paused`; next = "Complete the remediation plan, then re-assess"; }
     else if (r.band === "AMBER") {
       status = "REQUIRES_REVIEW";
       decision = `AMBER (${r.overall}%) — supervised Phase-2 shadowing only; pricing blocked`;
@@ -190,50 +164,53 @@ export function evaluateJourney(ctx: JourneyContext): JourneyState {
       status = "SUBMITTED";
       decision = `GREEN (${r.overall}%)`;
       const reviews = left.filter((t) => t.owner_role !== "KAM");
-      next = reviews.length ? `Awaiting ${reviews.map((t) => t.title.toLowerCase()).join(" and ")} by the Mentor` : `Complete ${left.length} remaining Day 11–15 task${left.length === 1 ? "" : "s"}`;
-    } else { status = "PASSED"; decision = `GREEN (${r.overall}%) — proceed to Phase 2`; next = "Begin Phase 2: shadow & prepare"; }
-    if (open && r && progression?.decision === "DEFERRED" && (!r.at || progression.created_at >= r.at)) {
+      next = reviews.length ? `Awaiting ${reviews.map((t) => t.title.toLowerCase()).join(" and ")} by the Mentor` : `Complete ${left.length} remaining Day 1–15 task${left.length === 1 ? "" : "s"}`;
+    } else { status = "PASSED"; decision = `GREEN (${r.overall}%) — proceed to Phase 2`; next = "Begin Phase 2: shadow reviews"; }
+    if (r && progression?.decision === "DEFERRED" && (!r.at || progression.created_at >= r.at)) {
       status = "BLOCKED";
       decision = "Progression deferred by Reporting Boss";
       next = "Reporting Boss has deferred progression — see manager comments";
     }
-    gates.G3 = mk("G3", {
+    gates.G1 = mk("G1", {
       status, score: r?.overall ?? null, band: r?.band ?? null, requiredTasks: reqList(req),
-      evidence: { attempt: r?.attempt_number ?? 0, weak_pillars: r?.weakPillars ?? [], green: cfg.greenThreshold, amber: cfg.amberThreshold },
+      evidence: {
+        attempt: r?.attempt_number ?? 0, weak_pillars: r?.weakPillars ?? [], green: cfg.greenThreshold, amber: cfg.amberThreshold,
+        day10_best: d10, day10_pass_threshold: cfg.day10PassThreshold, completed: req.length - left.length, required: req.length,
+      },
       decision, nextAction: next,
     });
   }
 
-  // G4 — scenario certification
+  // G2 — Day-21 scenario test (certification)
   {
-    const g3 = gates.G3!.status;
-    const open = isCleared(g3);
-    const req = mandatoryFor("G4");
+    const g1 = gates.G1!.status;
+    const open = isCleared(g1);
+    const req = mandatoryFor("G2");
     const certs = ctx.certificationCodes.map((code) => ctx.certification.find((c) => c.scenario_code === code));
     const attempted = certs.filter(Boolean) as CertResult[];
     const eff = (c: CertResult) => c.reviewer_score ?? c.score;
     const score = attempted.length ? Math.round((attempted.reduce((s, c) => s + eff(c), 0) / ctx.certificationCodes.length) * 100) / 100 : null;
     const lastAt = attempted.map((c) => c.at).sort().at(-1) ?? "";
-    const dec = ctx.gateDecisions.filter((d) => d.code === "G4" && d.at >= lastAt).sort((a, b) => b.at.localeCompare(a.at))[0];
-    const nonCertLeft = remaining(req.filter((t) => t.task_type !== "SCENARIO" && t.action_ref !== "gate:G4"));
+    const dec = ctx.gateDecisions.filter((d) => d.code === "G2" && d.at >= lastAt).sort((a, b) => b.at.localeCompare(a.at))[0];
+    const nonCertLeft = remaining(req.filter((t) => t.task_type !== "SCENARIO" && t.action_ref !== "gate:G2"));
     let status: GateStatus;
     let next: string;
     let decision: string | null = null;
     if (!cfg.day21Required) { status = "PASSED"; decision = "Not required by programme configuration"; next = "—"; }
     else if (!open) {
-      status = g3 === "FAILED" || g3 === "BLOCKED" ? "BLOCKED" : "NOT_STARTED";
+      status = g1 === "FAILED" || g1 === "BLOCKED" ? "BLOCKED" : "NOT_STARTED";
       next = "Blocked until the Day-15 gate is cleared";
     } else if (attempted.length < ctx.certificationCodes.length) {
       status = attempted.length || req.some(done) ? "IN_PROGRESS" : "NOT_STARTED";
-      next = `Complete ${ctx.certificationCodes.length - attempted.length} remaining certification scenario${ctx.certificationCodes.length - attempted.length === 1 ? "" : "s"}`;
+      next = `Complete ${ctx.certificationCodes.length - attempted.length} remaining test scenario${ctx.certificationCodes.length - attempted.length === 1 ? "" : "s"}`;
     } else if (dec?.decision === "REJECTED") { status = "FAILED"; decision = "Mentor did not certify"; next = "Retake the scenarios the mentor flagged"; }
-    else if (dec?.decision === "EXTENDED") { status = "EXTENDED"; decision = "Certification extended by Mentor"; next = "Additional practice agreed with your mentor"; }
+    else if (dec?.decision === "EXTENDED") { status = "EXTENDED"; decision = "Scenario test extended by Mentor"; next = "Additional practice agreed with your mentor"; }
     else if ((score ?? 0) < cfg.day21PassThreshold) { status = "FAILED"; decision = `Average ${score}% below ${cfg.day21PassThreshold}%`; next = "Retake the lowest-scoring scenarios"; }
     else if (dec?.decision === "APPROVED") {
       if (nonCertLeft.length) { status = "SUBMITTED"; next = `Complete ${nonCertLeft.length} remaining Days 16–21 task${nonCertLeft.length === 1 ? "" : "s"}`; decision = "Certified by Mentor"; }
       else { status = "PASSED"; decision = `Certified by Mentor (${score}%)`; next = "Eligible for guided pricing and customer ownership — subject to Reporting Boss approval"; }
     } else { status = "SUBMITTED"; decision = `Rules score ${score}%`; next = "Awaiting Mentor certification review"; }
-    gates.G4 = mk("G4", {
+    gates.G2 = mk("G2", {
       status, score, band: null, requiredTasks: reqList(req),
       evidence: {
         scenarios: ctx.certificationCodes.map((code) => {
@@ -248,17 +225,17 @@ export function evaluateJourney(ctx: JourneyContext): JourneyState {
     });
   }
 
-  // Exposure eligibility (needed for G5 prerequisites and segment locks)
-  const g4Cleared = isCleared(gates.G4!.status);
+  // Exposure eligibility (needed for G3 prerequisites and segment locks)
+  const certCleared = isCleared(gates.G2!.status);
   const pricingDecision = mgr("PRICING_EXPOSURE");
   const customerDecision = mgr("CUSTOMER_OWNERSHIP");
   const day15Green = ctx.day15Latest?.band === "GREEN";
-  const pricingOpen = g4Cleared && (!cfg.pricingGateRequired || (day15Green && pricingDecision?.decision === "APPROVED"));
-  const customerOpen = g4Cleared && (!cfg.customerOwnershipGateRequired || customerDecision?.decision === "APPROVED");
+  const pricingOpen = certCleared && (!cfg.pricingGateRequired || (day15Green && pricingDecision?.decision === "APPROVED"));
+  const customerOpen = certCleared && (!cfg.customerOwnershipGateRequired || customerDecision?.decision === "APPROVED");
 
-  // G5 — readiness panel
+  // G3 — Day-30 readiness panel sign-off
   {
-    const req = mandatoryFor("G5");
+    const req = mandatoryFor("G3");
     const panelTasks = req.filter((t) => t.action_ref?.startsWith("panel:"));
     const workTasks = req.filter((t) => !t.action_ref?.startsWith("panel:")).filter((t) => {
       if (t.exposure === "PRICING") return pricingOpen;
@@ -271,45 +248,43 @@ export function evaluateJourney(ctx: JourneyContext): JourneyState {
     let status: GateStatus;
     let next: string;
     let decision: string | null = null;
-    if (!g4Cleared) { status = "NOT_STARTED"; next = "Unlocks after scenario certification (Gate 4)"; }
+    if (!certCleared) { status = "NOT_STARTED"; next = "Unlocks after the Day-21 scenario test (Gate 2)"; }
     else if (ctx.finalDecision === "READY") { status = "APPROVED"; decision = "READY — signed off by Reporting Boss"; next = "Independent account handling within approved authority"; }
     else if (ctx.finalDecision === "EXTENDED") { status = "EXTENDED"; decision = "Onboarding extended by Reporting Boss"; next = "Follow the agreed development actions"; }
     else if (ctx.finalDecision === "NOT_READY") { status = "FAILED"; decision = "Not ready — Reporting Boss decision"; next = "Follow the agreed development plan"; }
     else if (workLeft.length) { status = "IN_PROGRESS"; next = `Complete ${workLeft.length} remaining Phase-2 task${workLeft.length === 1 ? "" : "s"} before the panel`; }
     else if (!mentorInput || !hrInput) { status = "IN_PROGRESS"; next = `Awaiting panel input from ${[!mentorInput && "Mentor", !hrInput && "HR"].filter(Boolean).join(" and ")}`; }
     else { status = "SUBMITTED"; next = "Awaiting Reporting Boss final decision"; }
-    gates.G5 = mk("G5", {
+    gates.G3 = mk("G3", {
       status, score: null, band: null, requiredTasks: reqList([...workTasks, ...panelTasks]),
       evidence: { mentor_input: !!mentorInput, hr_input: !!hrInput, pricing_exposure: pricingOpen, customer_ownership: customerOpen },
       decision, nextAction: next,
     });
   }
 
-  const gateList = (["G1", "G2", "G3", "G4", "G5"] as GateCode[]).map((c) => gates[c]!);
+  const gateList = (["G1", "G2", "G3"] as GateCode[]).map((c) => gates[c]!);
 
   /* ── Segments ── */
-  const g3s = gates.G3!.status;
+  const g1s = gates.G1!.status;
   const seg = (key: SegmentKey, open: boolean, blocked: boolean, reason: string | null): SegmentState => {
     const d = SEGMENT_DEFS.find((s) => s.key === key)!;
     return { key, from: d.from, to: d.to, open, blocked, reason: open ? null : reason };
   };
-  const phase2Blocked = g3s === "FAILED" || g3s === "BLOCKED";
+  const phase2Blocked = g1s === "FAILED" || g1s === "BLOCKED";
   const segments: SegmentState[] = [
-    seg("S1", true, false, null),
-    seg("S2", isCleared(gates.G1!.status), false, "Unlocks when Gate 1 (Day 5) passes"),
-    seg("S3", isCleared(gates.G2!.status), gates.G2!.status === "FAILED", gates.G2!.status === "FAILED" ? "Blocked: Day-10 check below threshold — retake to unlock" : "Unlocks when Gate 2 (Day 10) passes"),
-    seg("P2A", isCleared(g3s) || g3s === "REQUIRES_REVIEW", phase2Blocked,
-      g3s === "FAILED" ? "Phase 2 paused: Day-15 band RED — remediation plan in progress" : g3s === "BLOCKED" ? "Phase 2 deferred by Reporting Boss" : "Unlocks when the Day-15 gate is cleared"),
-    seg("CERT", isCleared(g3s) || !cfg.day21Required, phase2Blocked,
-      g3s === "REQUIRES_REVIEW" ? "Blocked until the Day-15 re-check reaches Green" : phase2Blocked ? "Blocked until the Day-15 gate is cleared" : "Unlocks when the Day-15 gate is cleared"),
+    seg("P1", true, false, null),
+    seg("P2A", isCleared(g1s) || g1s === "REQUIRES_REVIEW", phase2Blocked,
+      g1s === "FAILED" ? "Phase 2 paused: Day-15 band RED — remediation plan in progress" : g1s === "BLOCKED" ? "Phase 2 deferred by Reporting Boss" : `Unlocks when the Day-15 gate is cleared (readiness ≥ ${cfg.greenThreshold}%)`),
+    seg("CERT", isCleared(g1s) || !cfg.day21Required, phase2Blocked,
+      g1s === "REQUIRES_REVIEW" ? "Blocked until the Day-15 re-check reaches Green" : phase2Blocked ? "Blocked until the Day-15 gate is cleared" : "Unlocks when the Day-15 gate is cleared"),
     seg("PRICING", pricingOpen, pricingDecision?.decision === "DEFERRED" || phase2Blocked,
-      !g4Cleared ? "Requires scenario certification (Gate 4)" :
+      !certCleared ? "Requires the Day-21 scenario test (Gate 2)" :
       !day15Green ? `Pricing stays blocked until the Day-15 re-check reaches ${cfg.greenThreshold}%` :
       pricingDecision?.decision === "DEFERRED" ? "Pricing exposure deferred by Reporting Boss" : "Requires Reporting Boss approval for guided pricing exposure"),
     seg("CUSTOMER", customerOpen, customerDecision?.decision === "DEFERRED" || phase2Blocked,
-      !g4Cleared ? "Requires scenario certification (Gate 4)" :
+      !certCleared ? "Requires the Day-21 scenario test (Gate 2)" :
       customerDecision?.decision === "DEFERRED" ? "Customer ownership deferred by Reporting Boss" : "Requires Reporting Boss approval for guided customer ownership"),
-    seg("PANEL", g4Cleared, phase2Blocked, "Unlocks after scenario certification (Gate 4)"),
+    seg("PANEL", certCleared, phase2Blocked, "Unlocks after the Day-21 scenario test (Gate 2)"),
   ];
   const segState = (day: number) => segments.find((s) => s.key === segmentOf(day))!;
 
@@ -322,7 +297,7 @@ export function evaluateJourney(ctx: JourneyContext): JourneyState {
     // An assessment opens once the learning before it in its segment is done.
     const prior = active.filter((x) => x.gate_code === t.gate_code && x.is_mandatory && x.owner_role === "KAM" && x.day_number < t.day_number && x.task_type !== "ASSESSMENT");
     const left = prior.filter((x) => !done(x));
-    return left.length ? `Complete ${left.length} earlier task${left.length === 1 ? "" : "s"} in this segment first` : null;
+    return left.length ? `Complete ${left.length} earlier task${left.length === 1 ? "" : "s"} in this phase first` : null;
   };
 
   const tasks: TaskView[] = active
@@ -342,6 +317,10 @@ export function evaluateJourney(ctx: JourneyContext): JourneyState {
         const unmet = (depsOf.get(t.id) ?? []).map((id) => byId.get(id)).filter((d): d is TaskDef => !!d && !done(d));
         if (unmet.length) { availability = "WAITING"; reason = `Waiting for: ${unmet.map((d) => d.title).join(", ")}`; }
         else if (t.task_type === "ASSESSMENT" && t.owner_role === "KAM" && assessmentReady(t)) { availability = "WAITING"; reason = assessmentReady(t); }
+        else if (t.action_ref === "assessment:DAY15-READINESS" && (day10Pending || d10Below)) {
+          availability = "WAITING";
+          reason = d10Below ? `Retake the Day-10 interim check first — ${d10}% is below ${cfg.day10PassThreshold}%` : "Take the Day-10 interim knowledge check first";
+        }
         else { availability = "AVAILABLE"; if (state?.status === "REJECTED") reason = "Changes requested by reviewer — update and resubmit"; }
       }
       const late = t.due_day < ctx.today && availability !== "DONE";
@@ -377,15 +356,15 @@ export function evaluateJourney(ctx: JourneyContext): JourneyState {
   if (ctx.finalDecision === "READY") phase = "SIGNED_OFF_READY";
   else if (ctx.finalDecision === "EXTENDED") phase = "EXTENDED";
   else if (ctx.finalDecision === "NOT_READY") phase = "NOT_READY";
-  else if (g3s === "FAILED" || gates.G4!.status === "FAILED") phase = "REMEDIATION";
-  else if (["SUBMITTED", "IN_PROGRESS"].includes(gates.G5!.status) && g4Cleared && gates.G5!.nextAction.startsWith("Awaiting")) phase = "READY_FOR_PANEL";
-  else if (g4Cleared) phase = "GUIDED_OWNERSHIP";
-  else if (isCleared(g3s) || g3s === "REQUIRES_REVIEW") phase = "PRACTICE";
+  else if (g1s === "FAILED" || gates.G2!.status === "FAILED") phase = "REMEDIATION";
+  else if (["SUBMITTED", "IN_PROGRESS"].includes(gates.G3!.status) && certCleared && gates.G3!.nextAction.startsWith("Awaiting")) phase = "READY_FOR_PANEL";
+  else if (certCleared) phase = "GUIDED_OWNERSHIP";
+  else if (isCleared(g1s) || g1s === "REQUIRES_REVIEW") phase = "PRACTICE";
   else phase = "LEARN";
 
   const exposure: JourneyState["exposure"] = {
     pricing: pricingOpen ? "GUIDED" : pricingDecision?.decision === "DEFERRED" ? "DEFERRED" : "BLOCKED",
-    customer: customerOpen ? "GUIDED" : customerDecision?.decision === "DEFERRED" ? "DEFERRED" : (isCleared(g3s) || g3s === "REQUIRES_REVIEW") ? "SHADOW" : "BLOCKED",
+    customer: customerOpen ? "GUIDED" : customerDecision?.decision === "DEFERRED" ? "DEFERRED" : (isCleared(g1s) || g1s === "REQUIRES_REVIEW") ? "SHADOW" : "BLOCKED",
   };
 
   const currentGate = gateList.find((g) => !isCleared(g.status)) ?? null;
@@ -393,25 +372,22 @@ export function evaluateJourney(ctx: JourneyContext): JourneyState {
   const day10Task = active.find((t) => t.action_ref === "assessment:DAY10-CHECK");
   const day15Task = active.find((t) => t.action_ref === "assessment:DAY15-READINESS");
   const tv = (t?: TaskDef) => tasks.find((x) => x.id === t?.id);
-  const d10 = tv(day10Task);
-  const d15 = tv(day15Task);
+  const d10v = tv(day10Task);
+  const d15v = tv(day15Task);
 
-  // Re-check after AMBER/RED: refresh/remediation tasks for G3 must be done first.
+  // Re-check after AMBER/RED: refresh/remediation tasks for G1 must be done first.
   const latestBand = ctx.day15Latest?.band ?? null;
-  const refreshLeft = active.filter((t) => t.gate_code === "G3" && (t.task_type === "REFRESH" || t.task_type === "REMEDIATION") && t.owner_role === "KAM" && !done(t));
+  const refreshLeft = active.filter((t) => t.gate_code === "G1" && (t.task_type === "REFRESH" || t.task_type === "REMEDIATION") && t.owner_role === "KAM" && !done(t));
   let day15Available: JourneyState["day15Available"];
-  if (!isCleared(gates.G2!.status)) day15Available = { available: false, reason: "Unlocks when Gate 2 passes", isRecheck: false };
-  else if (latestBand === "GREEN") day15Available = { available: false, reason: "Already Green — no re-assessment needed", isRecheck: false };
+  if (latestBand === "GREEN") day15Available = { available: false, reason: "Already Green — no re-assessment needed", isRecheck: false };
   else if (latestBand && refreshLeft.length) day15Available = { available: false, reason: `Complete ${refreshLeft.length} refresh/remediation task${refreshLeft.length === 1 ? "" : "s"} before the re-check`, isRecheck: true };
   else if (latestBand) day15Available = { available: true, reason: null, isRecheck: true };
-  else if (d15 && d15.availability === "WAITING") day15Available = { available: false, reason: d15.reason, isRecheck: false };
+  else if (d15v && d15v.availability === "WAITING") day15Available = { available: false, reason: d15v.reason, isRecheck: false };
   else day15Available = { available: true, reason: null, isRecheck: false };
-  if (gates.G3!.status === "BLOCKED") day15Available = { available: false, reason: "Progression deferred by Reporting Boss", isRecheck: !!latestBand };
+  if (g1s === "BLOCKED") day15Available = { available: false, reason: "Progression deferred by Reporting Boss", isRecheck: !!latestBand };
 
-  const day10Available = !isCleared(gates.G1!.status)
-    ? { available: false, reason: "Unlocks when Gate 1 passes" }
-    : d10 && d10.availability === "WAITING" ? { available: false, reason: d10.reason }
-    : isCleared(gates.G2!.status) ? { available: false, reason: "Gate 2 already passed" }
+  const day10Available = d10v && d10v.availability === "WAITING" ? { available: false, reason: d10v.reason }
+    : d10 !== null && !d10Below ? { available: false, reason: `Interim check already passed (${d10}%)` }
     : { available: true, reason: null };
 
   const certSeg = segments.find((s) => s.key === "CERT")!;
@@ -434,6 +410,9 @@ export function nextActionFor(state: JourneyState): NextAction {
       : `/journey/${avail.day_number}`;
     const kind = avail.action_ref?.startsWith("assessment:") ? "ASSESSMENT" : avail.action_ref?.startsWith("scenario:") ? "SCENARIO" : "TASK";
     return { kind, title: avail.title, detail: `Day ${avail.day_number}${avail.overdue ? " · overdue" : ""} · ${avail.description ?? ""}`.trim(), taskId: avail.id, link };
+  }
+  if (state.day10Available.available && state.day15Available.reason?.startsWith("Retake the Day-10")) {
+    return { kind: "ASSESSMENT", title: "Day-10 interim check retake", detail: state.day15Available.reason, link: "/assessments" };
   }
   if (state.day15Available.available && state.day15Available.isRecheck) {
     return { kind: "ASSESSMENT", title: "Day-15 re-check", detail: "Your refresh is complete — take the re-check.", link: "/assessments" };

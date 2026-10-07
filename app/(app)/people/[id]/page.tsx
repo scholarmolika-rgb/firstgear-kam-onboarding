@@ -35,7 +35,7 @@ export default async function PersonPage({ params }: { params: Promise<{ id: str
   const titleById = new Map(snap.scenarioAttempts.map((a) => [a.id, a.title]));
   const awaiting = j.tasks.filter((t) => t.availability === "AWAITING_REVIEW");
   const myTasks = j.tasks.filter((t) => (rel === "HR_ADMIN" ? t.owner_role === "HR_ADMIN" : t.owner_role === rel) && t.availability !== "DONE");
-  const g4ok = ["PASSED", "APPROVED"].includes(g("G4").status);
+  const certOk = ["PASSED", "APPROVED"].includes(g("G2").status);
   const hasDecision = (t: string) => snap.managerReviews.filter((r) => r.review_type === t).at(-1);
 
   return (
@@ -49,7 +49,7 @@ export default async function PersonPage({ params }: { params: Promise<{ id: str
         <div className="card card-pad flex items-center gap-3"><Ring value={m.overallReadiness} size={64} label="Overall readiness" /><div className="label">Overall readiness</div></div>
         <Stat label="Task completion" value={fmtPct(m.taskCompletionPct)} sub={`${m.overdueCount} overdue`} />
         <Stat label="Day-15" value={fmtPct(m.assessmentScore, 1)} sub={m.band ? <StatusPill status={m.band} /> : "Not assessed"} />
-        <Stat label="Day-21 scenarios" value={fmtPct(m.scenarioScore, 1)} sub={`Δ vs Day-15: ${(g("G4").evidence.delta_vs_day15 as number | null) ?? "—"}`} />
+        <Stat label="Day-21 scenarios" value={fmtPct(m.scenarioScore, 1)} sub={`Δ vs Day-15: ${(g("G2").evidence.delta_vs_day15 as number | null) ?? "—"}`} />
         <Stat label="Current gate" value={<span className="text-base">{j.currentGate ? `Day ${j.currentGate.day}` : "Cleared"}</span>} sub={j.currentGate ? <StatusPill status={j.currentGate.status} /> : null} />
         <Stat label="Dependency" value={<span className="text-base">{m.dependency.direction.replace("_", " ").toLowerCase()}</span>} sub={`${m.dependency.totalEvents} recorded events`} />
       </div>
@@ -62,18 +62,18 @@ export default async function PersonPage({ params }: { params: Promise<{ id: str
                 <div className="space-y-4">
                   <DecisionForm kind="BRIEF" employeeId={id} title="Account brief review (Day 15)" help={brief ? `Status: ${brief.status} · version ${brief.version}` : undefined} disabledReason={!brief ? "No account brief yet." : brief.status === "DRAFT" ? "The KAM has not submitted the brief yet." : brief.status === "APPROVED" ? "Approved." : null} />
                   <DecisionForm kind="C360" employeeId={id} title="Customer 360 & stakeholder map review (Day 15)" help={`${stakeholders?.length ?? 0} stakeholders mapped`} disabledReason={j.tasks.find((t) => t.action_ref === "review:CUSTOMER_360")?.availability === "DONE" ? "Approved." : null} />
-                  <DecisionForm kind="G4" employeeId={id} title="Day-21 scenario certification (Gate 4)" help={`Rules average ${fmtPct(g("G4").score, 1)} · pass threshold ${snap.config.day21PassThreshold}%. You cannot certify below the threshold.`} disabledReason={["SUBMITTED", "FAILED"].includes(g("G4").status) ? null : g4ok ? "Certified." : g("G4").nextAction} />
-                  <DecisionForm kind="PANEL" employeeId={id} title="Day-30 readiness panel — mentor input" disabledReason={!g4ok ? "Opens after Gate 4." : snap.mentorReviews.some((r) => r.review_type === "PANEL") ? "Your panel input is recorded." : null} />
+                  <DecisionForm kind="CERT" employeeId={id} title="Day-21 scenario test (Gate 2)" help={`Rules average ${fmtPct(g("G2").score, 1)} · pass threshold ${snap.config.day21PassThreshold}%. You cannot certify below the threshold.`} disabledReason={["SUBMITTED", "FAILED"].includes(g("G2").status) ? null : certOk ? "Certified." : g("G2").nextAction} />
+                  <DecisionForm kind="PANEL" employeeId={id} title="Day-30 readiness panel — mentor input" disabledReason={!certOk ? "Opens after the Day-21 scenario test (Gate 2)." : snap.mentorReviews.some((r) => r.review_type === "PANEL") ? "Your panel input is recorded." : null} />
                 </div>
               </Card>
             )}
             {rel === "REPORTING_BOSS" && (
               <Card title="Reporting Boss decisions" subtitle="You are the final decision-maker for independent account handling">
                 <div className="space-y-4">
-                  <DecisionForm kind="PROGRESSION" employeeId={id} title="Phase-2 progression" help={`Day-15 gate: ${g("G3").status.replace(/_/g, " ").toLowerCase()} — ${g("G3").decision ?? g("G3").nextAction}`} disabledReason={!snap.day15Pillars ? "Available after the Day-15 assessment." : null} />
-                  <DecisionForm kind="PRICING_EXPOSURE" employeeId={id} title="Guided pricing exposure (Days 22–25)" help={`Requires Gate 4 and a Green Day-15 result. Latest: ${m.band ?? "not assessed"}.${hasDecision("PRICING_EXPOSURE") ? ` Last decision: ${hasDecision("PRICING_EXPOSURE")!.decision}.` : ""}`} disabledReason={!g4ok ? "Available after scenario certification (Gate 4)." : null} />
-                  <DecisionForm kind="CUSTOMER_OWNERSHIP" employeeId={id} title="Guided customer ownership (Days 26–29)" help={hasDecision("CUSTOMER_OWNERSHIP") ? `Last decision: ${hasDecision("CUSTOMER_OWNERSHIP")!.decision}.` : undefined} disabledReason={!g4ok ? "Available after scenario certification (Gate 4)." : null} />
-                  <DecisionForm kind="SIGNOFF" employeeId={id} title="Day-30 readiness sign-off (final)" help="Readiness is a human-certified decision based on the evidence below — never on elapsed days." disabledReason={g("G5").status === "SUBMITTED" ? null : snap.instance.final_decision ? `Recorded: ${snap.instance.final_decision} on ${fmtDate(snap.instance.final_decision_at)}` : g("G5").nextAction} />
+                  <DecisionForm kind="PROGRESSION" employeeId={id} title="Phase-2 progression" help={`Day-15 gate: ${g("G1").status.replace(/_/g, " ").toLowerCase()} — ${g("G1").decision ?? g("G1").nextAction}`} disabledReason={!snap.day15Pillars ? "Available after the Day-15 assessment." : null} />
+                  <DecisionForm kind="PRICING_EXPOSURE" employeeId={id} title="Guided pricing exposure (Days 22–25)" help={`Requires Gate 2 (scenario test) and a Green Day-15 result. Latest: ${m.band ?? "not assessed"}.${hasDecision("PRICING_EXPOSURE") ? ` Last decision: ${hasDecision("PRICING_EXPOSURE")!.decision}.` : ""}`} disabledReason={!certOk ? "Available after the Day-21 scenario test (Gate 2)." : null} />
+                  <DecisionForm kind="CUSTOMER_OWNERSHIP" employeeId={id} title="Guided customer ownership (Days 26–29)" help={hasDecision("CUSTOMER_OWNERSHIP") ? `Last decision: ${hasDecision("CUSTOMER_OWNERSHIP")!.decision}.` : undefined} disabledReason={!certOk ? "Available after the Day-21 scenario test (Gate 2)." : null} />
+                  <DecisionForm kind="SIGNOFF" employeeId={id} title="Day-30 readiness sign-off (final)" help="Readiness is a human-certified decision based on the evidence below — never on elapsed days." disabledReason={g("G3").status === "SUBMITTED" ? null : snap.instance.final_decision ? `Recorded: ${snap.instance.final_decision} on ${fmtDate(snap.instance.final_decision_at)}` : g("G3").nextAction} />
                   <DecisionForm kind="DEV_ACTION" employeeId={id} title="Record development actions" />
                 </div>
               </Card>
@@ -81,7 +81,7 @@ export default async function PersonPage({ params }: { params: Promise<{ id: str
             {rel === "HR_ADMIN" && (
               <Card title="HR actions">
                 <div className="space-y-4">
-                  <DecisionForm kind="PANEL" employeeId={id} title="Day-30 readiness panel — HR input" disabledReason={!g4ok ? "Opens after Gate 4." : snap.managerReviews.some((r) => r.review_type === "HR_PANEL_INPUT") ? "HR input recorded." : null} />
+                  <DecisionForm kind="PANEL" employeeId={id} title="Day-30 readiness panel — HR input" disabledReason={!certOk ? "Opens after the Day-21 scenario test (Gate 2)." : snap.managerReviews.some((r) => r.review_type === "HR_PANEL_INPUT") ? "HR input recorded." : null} />
                   <p className="text-xs text-ink-muted">Assignments, resets and reassignment are in <Link className="link" href="/admin/employees">Employee management</Link>.</p>
                 </div>
               </Card>

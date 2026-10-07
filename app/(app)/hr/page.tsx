@@ -17,7 +17,7 @@ export default async function HrDashboard() {
   for (const c of cohort) if (c.metrics.band) bands[c.metrics.band]++;
   const avg = (xs: (number | null)[]) => { const v = xs.filter((x): x is number => x !== null); return v.length ? Math.round((v.reduce((a, b) => a + b, 0) / v.length) * 10) / 10 : null; };
   const pillarAvg = Object.fromEntries(PILLARS.map((p) => [p, avg(cohort.map((c) => c.day15Pillars?.[p] ?? null))]));
-  const gateCounts = ["G1", "G2", "G3", "G4", "G5"].map((code) => ({ code, cleared: cohort.filter((c) => ["PASSED", "APPROVED"].includes(c.journey.gates.find((g) => g.code === code)?.status ?? "")).length }));
+  const gateCounts = ["G1", "G2", "G3"].map((code) => ({ code, cleared: cohort.filter((c) => ["PASSED", "APPROVED"].includes(c.journey.gates.find((g) => g.code === code)?.status ?? "")).length }));
   const depTrend = cohort.reduce((acc, c) => { acc[c.metrics.dependency.direction] = (acc[c.metrics.dependency.direction] ?? 0) + 1; return acc; }, {} as Record<string, number>);
   const { count: docCount } = await db.from("knowledge_documents").select("id", { count: "exact", head: true }).eq("is_current", true).eq("approved", true);
   return (

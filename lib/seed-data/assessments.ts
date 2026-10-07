@@ -31,8 +31,8 @@ export interface SeedQuestion {
 const o = (...texts: string[]) => texts.map((text, i) => ({ id: String.fromCharCode(97 + i), text }));
 
 export const ASSESSMENTS = [
-  { code: "DAY10-CHECK", title: "Day-10 interim knowledge check", stage: "DAY10_CHECK" as const, gate: "G2", from: 6, minutes: 20, description: "Interim check on Days 1–10: governance, products, plant, quality, RFQ and costing knowledge." },
-  { code: "DAY15-READINESS", title: "Day-15 four-pillar readiness assessment", stage: "DAY15_READINESS" as const, gate: "G3", from: 11, minutes: 45, description: "Weighted Governance / People / Process / Product assessment that decides the readiness band." },
+  { code: "DAY10-CHECK", title: "Day-10 interim knowledge check", stage: "DAY10_CHECK" as const, gate: "G1", from: 6, minutes: 20, description: "Interim check on Days 1–10: governance, products, plant, quality, RFQ and costing knowledge." },
+  { code: "DAY15-READINESS", title: "Day-15 four-pillar readiness assessment", stage: "DAY15_READINESS" as const, gate: "G1", from: 11, minutes: 45, description: "Weighted Governance / People / Process / Product assessment that decides the readiness band." },
   { code: "PRACTICE", title: "Practice quiz", stage: "PRACTICE" as const, gate: null, from: 1, minutes: null, description: "Unscored practice on any topic. Does not affect gates." },
 ];
 

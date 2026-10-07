@@ -4,8 +4,8 @@
 -- ════════════════════════════════════════════════════════════════════
 
 insert into public.assessments (code, title, description, stage, gate_code, available_from_day, time_limit_minutes) values
-  ('DAY10-CHECK', 'Day-10 interim knowledge check', 'Interim check on Days 1–10: governance, products, plant, quality, RFQ and costing knowledge.', 'DAY10_CHECK', 'G2', 6, 20),
-  ('DAY15-READINESS', 'Day-15 four-pillar readiness assessment', 'Weighted Governance / People / Process / Product assessment that decides the readiness band.', 'DAY15_READINESS', 'G3', 11, 45),
+  ('DAY10-CHECK', 'Day-10 interim knowledge check', 'Interim check on Days 1–10: governance, products, plant, quality, RFQ and costing knowledge.', 'DAY10_CHECK', 'G1', 6, 20),
+  ('DAY15-READINESS', 'Day-15 four-pillar readiness assessment', 'Weighted Governance / People / Process / Product assessment that decides the readiness band.', 'DAY15_READINESS', 'G1', 11, 45),
   ('PRACTICE', 'Practice quiz', 'Unscored practice on any topic. Does not affect gates.', 'PRACTICE', null, 1, null)
 on conflict (code) do nothing;
 

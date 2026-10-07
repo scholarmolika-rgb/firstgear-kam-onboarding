@@ -71,7 +71,7 @@ As Riya: header shows **Day 1 of 30**, status **LEARN**, overall readiness, six 
 4. As HR, open **Audit log** → `TASK_COMPLETED` and `TASK_REOPENED` entries with actor and timestamps.
 
 ## 15. Test an assessment
-Assessments → **Practice quiz** → answer → Submit → results with explanations and sources. The Day-10 check unlocks after Gate 1 + Days 6–9; the Day-15 assessment after Gate 2 + Days 11–14 (you can tick ahead within an unlocked segment to try the flow).
+Assessments → **Practice quiz** → answer → Submit → results with explanations and sources. The Day-10 check unlocks after Days 1–9; the Day-15 assessment after Days 1–14 and a passed Day-10 check (you can tick ahead within an unlocked segment to try the flow).
 
 ## 16. Test RAG
 Ask FirstGear → "What is the RFQ process?" → answer with **Source: RFQ to Quotation SOP · Section 3.2 · Version 4.1**. Ask "What is the canteen menu?" → "couldn't find enough evidence…" with an **Ask Mentor** button. Ask "Create my SAP account" → politely declined.

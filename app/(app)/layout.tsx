@@ -4,6 +4,7 @@ import { createServerSupabase } from "@/lib/supabase/server";
 import { SideNav } from "@/components/layout/SideNav";
 import { NotificationBell } from "@/components/layout/NotificationBell";
 import { RealtimeRefresher } from "@/components/layout/RealtimeRefresher";
+import { PageStepper } from "@/components/layout/PageStepper";
 import { ROLE_LABEL } from "@/types/domain";
 import { LogOut } from "lucide-react";
 
@@ -42,7 +43,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
       <div className="flex flex-1">
         <div className="hidden lg:block"><SideNav role={profile.role} /></div>
         <main className="min-w-0 flex-1 px-4 py-6 lg:px-8 lg:py-8">
-          <div className="mx-auto max-w-[1240px]">{children}</div>
+          <div className="mx-auto max-w-[1240px]">{children}<PageStepper role={profile.role} /></div>
         </main>
       </div>
       <RealtimeRefresher employeeId={employeeId} userId={profile.id} />

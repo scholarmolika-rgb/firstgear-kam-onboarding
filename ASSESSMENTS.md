@@ -20,9 +20,9 @@ A pillar with no questions scores 0 — it is never dropped. The weights and thr
 
 | Band | Rule (default) | Effect |
 |---|---|---|
-| **Green** | ≥ 80 | Gate 3 passes once the Mentor approves Customer 360 + account brief → Phase 2 |
-| **Amber** | 60–79 | Gate 3 `REQUIRES_REVIEW`; 3–5-day targeted refresh tasks for the weakest pillars; supervised shadowing allowed; certification and pricing blocked until a re-check reaches Green |
-| **Red** | < 60 | Gate 3 `FAILED`; Phase 2 paused; remediation plan (1:1 coaching, repeat modules, extra mentor pairing, additional assessment); proposed extension for the Reporting Boss |
+| **Green** | ≥ 80 | Gate 1 (Day 15) passes once the Mentor approves Customer 360 + account brief → Phase 2 |
+| **Amber** | 60–79 | Gate 1 `REQUIRES_REVIEW`; 3–5-day targeted refresh tasks for the weakest pillars; supervised shadowing allowed; certification and pricing blocked until a re-check reaches Green |
+| **Red** | < 60 | Gate 1 `FAILED`; Phase 2 paused; remediation plan (1:1 coaching, repeat modules, extra mentor pairing, additional assessment); proposed extension for the Reporting Boss |
 
 Stored per attempt: pillar scores (raw, weight, weighted), overall, band, attempt number, timestamps, assessor (system), evidence, feedback, confidence (1–5 self-rating), knowledge-source attribution.
 
@@ -30,11 +30,11 @@ Stored per attempt: pillar scores (raw, weight, weighted), overall, band, attemp
 
 | Gate | Day | Passes when | Decided by |
 |---|---|---|---|
-| G1 Organisational readiness | 5 | All mandatory Day 1–5 tasks complete | rules |
-| G2 Knowledge & practice | 10 | Days 6–10 complete and Day-10 check ≥ 70 % | rules |
-| G3 Four-pillar readiness | 15 | Green band + mentor reviews complete | rules + Mentor; Reporting Boss may defer |
-| G4 Scenario certification | 21 | 4 certification scenarios, average ≥ 75 %, Days 16–20 done | Mentor (cannot certify below threshold) |
-| G5 Readiness panel | 30 | Phase-2 work done; Mentor and HR inputs | **Reporting Boss** final decision |
+| G1 Day-15 gate | 15 | All Phase-1 (Days 1–15) tasks done, Day-10 interim check ≥ 70 %, readiness score ≥ 80 % (Green) and mentor reviews complete | rules + Mentor; Reporting Boss may defer |
+| G2 Scenario test | 21 | 4 certification scenarios, average ≥ 75 %, Days 16–20 done | Mentor (cannot certify below threshold) |
+| G3 Readiness panel sign-off | 30 | Phase-2 work done; Mentor and HR inputs | **Reporting Boss** final decision |
+
+The Day-10 interim knowledge check is a checkpoint inside Phase 1, not a gate: Days 1–15 stay open throughout, but the Day-15 assessment waits until the check has been passed.
 
 Guided **pricing exposure** additionally needs a Green latest Day-15 result and Reporting Boss approval; guided **customer ownership** needs Reporting Boss approval. Thirty elapsed days never produce READY.
 

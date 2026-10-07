@@ -21,7 +21,7 @@ An AI-enabled, evidence-based 30-day onboarding and readiness platform for new o
 - **Mentor**: assigned KAMs, review queue, weak pillars, account-brief and Customer-360 reviews, pre-send reviews, scenario reviews, Day-21 certification decision, coaching notes, support-event logging, panel input.
 - **Reporting Boss**: readiness dashboard, progression / pricing-exposure / customer-ownership decisions, development actions, the final Day-30 sign-off.
 - **HR / Admin**: cohort dashboard, employee management (create, assign mentor & boss, reset/reassign), programme configuration (weights, thresholds, tasks, dependencies, session types, categories…), assessment management (question bank + scenario rubrics), knowledge management (upload, version, approve, re-index), append-only audit log.
-- **Engines** (pure TypeScript, unit-tested): task orchestration, five gates, Day-15 weighted scoring and Green/Amber/Red bands, Amber refresh / Red remediation planning, scenario rubric evaluation, 15 progress metrics, dependency trend, proactive alerts.
+- **Engines** (pure TypeScript, unit-tested): task orchestration, three gates (Day 15 readiness · Day 21 scenario test · Day 30 panel sign-off), Day-15 weighted scoring and Green/Amber/Red bands, Amber refresh / Red remediation planning, scenario rubric evaluation, 15 progress metrics, dependency trend, proactive alerts.
 
 ## Quick start (Windows PowerShell)
 

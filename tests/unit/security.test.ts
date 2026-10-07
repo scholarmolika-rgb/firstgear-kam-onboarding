@@ -36,7 +36,7 @@ describe("role access (mirrors RLS)", () => {
     expect(mayDecide("DAY30_SIGNOFF", MENTOR, emp)).toBe(false);
     expect(mayDecide("DAY30_SIGNOFF", HR, emp)).toBe(false);
     expect(mayDecide("PRICING_EXPOSURE", OTHER_BOSS, emp)).toBe(false);
-    expect(mayDecide("G4_CERTIFICATION", MENTOR, emp)).toBe(true);
+    expect(mayDecide("SCENARIO_CERTIFICATION", MENTOR, emp)).toBe(true);
     expect(mayDecide("ACCOUNT_BRIEF_REVIEW", KAM, emp)).toBe(false);
     expect(mayDecide("PANEL_HR_INPUT", HR, emp)).toBe(true);
   });

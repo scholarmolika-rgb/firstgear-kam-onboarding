@@ -35,24 +35,20 @@ decides *due* and *overdue*.
 
 | Days | Segment | Unlocked when |
 |---|---|---|
-| 1–5 | Foundations | instance active |
-| 6–10 | KAM charter, RFQ, costing (knowledge only) | Gate 1 PASSED |
-| 11–15 | Customer 360, stakeholders, Day‑15 assessment | Gate 2 PASSED |
-| 16–20 | Shadow, low-risk actions, lead internal review | Gate 3 PASSED (GREEN) or REQUIRES_REVIEW (AMBER, supervised only) |
-| 21 | Scenario certification | Gate 3 PASSED |
-| 22–25 | Guided pricing exposure | Gate 4 PASSED **and** latest Day‑15 score ≥ green threshold **and** Reporting Boss approved pricing exposure |
-| 26–29 | Guided customer ownership | Gate 4 PASSED **and** Reporting Boss approved customer ownership |
-| 30 | Readiness panel | Gate 4 PASSED and Phase‑2 mandatory unlocked work complete |
+| 1–15 | Phase 1 — learn about the company (Governance, People, Process, Product). No pricing, no customer exposure | instance active |
+| 16–17 · 18–19 · 20 | Shadow reviews · own low-risk queries · lead an internal review | Gate 1 PASSED (GREEN) or REQUIRES_REVIEW (AMBER, supervised only) |
+| 21 | Scenario test (gate) | Gate 1 PASSED |
+| 22–25 | Guided pricing | Gate 2 PASSED **and** latest Day‑15 score ≥ green threshold **and** Reporting Boss approved pricing exposure |
+| 26–29 | Own the account | Gate 2 PASSED **and** Reporting Boss approved customer ownership |
+| 30 | Readiness panel sign-off | Gate 2 PASSED and Phase‑2 mandatory unlocked work complete |
 
 Gates:
 
-* **G1 (Day 5)** — rules: all required Day 1–5 tasks complete → PASSED.
-* **G2 (Day 10)** — rules: required tasks complete and interim knowledge check ≥ `DAY10_PASS_THRESHOLD` → PASSED; below → FAILED (retake allowed).
-* **G3 (Day 15)** — weighted four-pillar score. GREEN → PASSED once the mentor's Customer‑360 and account-brief reviews are recorded. AMBER → REQUIRES_REVIEW, a 3–5 day targeted refresh is generated for the weakest pillar(s), pricing stays blocked until a re-check reaches the green threshold. RED → FAILED, Phase 2 paused, remediation plan generated.
-* **G4 (Day 21)** — four certification scenarios (RFQ, price challenge, delivery risk, quality escalation). Rules compute the score; a Mentor must review. The mentor cannot approve a score below `DAY21_PASS_THRESHOLD`.
-* **G5 (Day 30)** — panel: Mentor input + HR input are required before the Reporting Boss can record the final decision (READY / EXTENDED / NOT_READY). Thirty elapsed days never set READY.
+* **G1 (Day 15)** — all Phase‑1 tasks complete, the Day‑10 interim check ≥ `DAY10_PASS_THRESHOLD` (a checkpoint, retake allowed — the Day‑15 assessment waits for it), then the weighted four-pillar readiness score. GREEN → PASSED once the mentor's Customer‑360 and account-brief reviews are recorded. AMBER → REQUIRES_REVIEW, a 3–5 day targeted refresh is generated for the weakest pillar(s), pricing stays blocked until a re-check reaches the green threshold. RED → FAILED, Phase 2 paused, remediation plan generated.
+* **G2 (Day 21)** — scenario test: four certification scenarios (RFQ, price challenge, delivery risk, quality escalation). Rules compute the score; a Mentor must review. The mentor cannot approve a score below `DAY21_PASS_THRESHOLD`.
+* **G3 (Day 30)** — readiness panel sign-off: Mentor input + HR input are required before the Reporting Boss can record the final decision (READY / EXTENDED / NOT_READY). Thirty elapsed days never set READY.
 
-Reporting Boss overrides: may **defer** progression (G3 → BLOCKED), defer pricing, or extend onboarding — always with a recorded comment.
+Reporting Boss overrides: may **defer** progression (G1 → BLOCKED), defer pricing, or extend onboarding — always with a recorded comment.
 
 ## 4. Decisions taken where the spec was open
 

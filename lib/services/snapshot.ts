@@ -176,7 +176,7 @@ export async function loadSnapshot(db: SupabaseClient, employeeId: string, opts:
     config, journey, today: day, day10Best,
     day15Latest: d15Latest ? { overall: d15Latest.overall_score!, band: d15Latest.band!, pillars: day15Pillars ?? {}, confidence: d15Latest.confidence } : null,
     day15Attempts: day15.length,
-    scenarioAverages: { certification: (journey.gates.find((g) => g.code === "G4")?.score ?? null), practice: avg(practiceScores) },
+    scenarioAverages: { certification: (journey.gates.find((g) => g.code === "G2")?.score ?? null), practice: avg(practiceScores) },
     supportEvents: (supportRes.data ?? []) as SupportEvent[],
     mentorRatings: mentorReviews.filter((r) => r.rating && ratingTypes.has(r.review_type)).map((r) => r.rating!),
     knowledgeUsage: {

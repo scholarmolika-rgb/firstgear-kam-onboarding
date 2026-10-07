@@ -42,7 +42,7 @@ beforeAll(async () => {
 });
 
 describe("migrations & seed data", () => {
-  it("seeds 30 days, 5 gates, 40+ tasks, 20+ questions, 10 scenarios", async () => {
+  it("seeds 30 days, 3 gates, 40+ tasks, 20+ questions, 10 scenarios", async () => {
     const c = await one<Record<string, number>>(`select
       (select count(*)::int from public.onboarding_days) days,
       (select count(*)::int from public.gate_definitions) gates,
@@ -51,7 +51,7 @@ describe("migrations & seed data", () => {
       (select count(*)::int from public.scenario_templates) scenarios,
       (select count(distinct pillar)::int from public.tasks) pillars`);
     expect(c.days).toBe(30);
-    expect(c.gates).toBe(5);
+    expect(c.gates).toBe(3);
     expect(c.tasks).toBeGreaterThanOrEqual(40);
     expect(c.q15).toBeGreaterThanOrEqual(20);
     expect(c.scenarios).toBe(10);
@@ -137,7 +137,7 @@ describe("row level security", () => {
   });
 
   it("a KAM cannot write scores, gate results or audit entries", async () => {
-    const gate = await one<{ id: string }>(`select id from public.gate_definitions where code = 'G3'`);
+    const gate = await one<{ id: string }>(`select id from public.gate_definitions where code = 'G1'`);
     await asUser(db, KAM, async (d) => {
       await expect(d.query(`insert into public.gate_results (employee_id, instance_id, gate_id, status) values ($1,$2,$3,'PASSED')`,
         [employeeId, instanceId, gate.id])).rejects.toThrow();

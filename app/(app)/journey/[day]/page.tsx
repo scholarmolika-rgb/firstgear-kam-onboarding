@@ -97,6 +97,14 @@ export default async function DayDetail({ params }: { params: Promise<{ day: str
           </Card>
         </div>
       </div>
+      <nav aria-label="Day navigation" className="no-print mt-10 flex items-center justify-between gap-3 border-t border-line pt-5">
+        {dayN > 1
+          ? <Link href={`/journey/${dayN - 1}`} className="btn-secondary btn-sm"><ArrowLeft size={13} />Day {dayN - 1}</Link>
+          : <Link href="/journey" className="btn-secondary btn-sm"><ArrowLeft size={13} />Journey overview</Link>}
+        {dayN < j.days.length
+          ? <Link href={`/journey/${dayN + 1}`} className="btn-primary btn-sm">Next: Day {dayN + 1}<ArrowRight size={13} /></Link>
+          : <Link href="/tasks" className="btn-primary btn-sm">Next: Tasks<ArrowRight size={13} /></Link>}
+      </nav>
     </>
   );
 }

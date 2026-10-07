@@ -20,21 +20,21 @@ export function pendingFor(s: Snapshot, role: "MENTOR" | "REPORTING_BOSS" | "HR_
     for (const t of j.tasks.filter((t) => t.availability === "AWAITING_REVIEW")) items.push({ label: `Review: ${t.title}`, kind: "TASK_REVIEW" });
     for (const t of j.tasks.filter((t) => t.owner_role === "MENTOR" && t.availability === "AVAILABLE")) items.push({ label: t.title, kind: t.action_ref ?? "MENTOR_TASK" });
     for (const a of s.scenarioAttempts.filter((a) => a.status === "REVIEW_REQUIRED")) items.push({ label: `Scenario review: ${a.title}`, kind: "SCENARIO" });
-    const g4 = j.gates.find((g) => g.code === "G4");
-    if (g4?.status === "SUBMITTED" && g4.nextAction.includes("Mentor")) items.push({ label: "Day-21 certification decision", kind: "G4" });
+    const certGate = j.gates.find((g) => g.code === "G2");
+    if (certGate?.status === "SUBMITTED" && certGate.nextAction.includes("Mentor")) items.push({ label: "Day-21 certification decision", kind: "CERT" });
   }
   if (role === "REPORTING_BOSS") {
-    const g4 = j.gates.find((g) => g.code === "G4");
-    const g4ok = g4 && ["PASSED", "APPROVED"].includes(g4.status);
+    const certGate = j.gates.find((g) => g.code === "G2");
+    const certOk = certGate && ["PASSED", "APPROVED"].includes(certGate.status);
     const has = (t: string) => s.managerReviews.some((r) => r.review_type === t);
-    if (g4ok && !has("PRICING_EXPOSURE") && s.metrics.band === "GREEN") items.push({ label: "Decide guided pricing exposure", kind: "PRICING" });
-    if (g4ok && !has("CUSTOMER_OWNERSHIP")) items.push({ label: "Decide guided customer ownership", kind: "CUSTOMER" });
-    if (j.gates.find((g) => g.code === "G5")?.status === "SUBMITTED") items.push({ label: "Day-30 readiness sign-off", kind: "SIGNOFF" });
+    if (certOk && !has("PRICING_EXPOSURE") && s.metrics.band === "GREEN") items.push({ label: "Decide guided pricing exposure", kind: "PRICING" });
+    if (certOk && !has("CUSTOMER_OWNERSHIP")) items.push({ label: "Decide guided customer ownership", kind: "CUSTOMER" });
+    if (j.gates.find((g) => g.code === "G3")?.status === "SUBMITTED") items.push({ label: "Day-30 readiness sign-off", kind: "SIGNOFF" });
     for (const t of j.tasks.filter((t) => t.owner_role === "REPORTING_BOSS" && t.availability === "AVAILABLE" && !t.systemDriven)) items.push({ label: t.title, kind: "BOSS_TASK" });
   }
   if (role === "HR_ADMIN") {
-    const g5 = j.gates.find((g) => g.code === "G5");
-    if (g5 && g5.nextAction.includes("HR")) items.push({ label: "HR panel input", kind: "PANEL_HR" });
+    const panelGate = j.gates.find((g) => g.code === "G3");
+    if (panelGate && panelGate.nextAction.includes("HR")) items.push({ label: "HR panel input", kind: "PANEL_HR" });
   }
   return items;
 }

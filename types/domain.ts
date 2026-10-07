@@ -19,7 +19,7 @@ export const GATE_STATUSES = [
   "BLOCKED", "REQUIRES_REVIEW", "APPROVED", "EXTENDED",
 ] as const;
 export type GateStatus = (typeof GATE_STATUSES)[number];
-export type GateCode = "G1" | "G2" | "G3" | "G4" | "G5";
+export type GateCode = "G1" | "G2" | "G3";
 
 export type QuestionType =
   | "MULTIPLE_CHOICE" | "MULTI_SELECT" | "TRUE_FALSE" | "SHORT_ANSWER"

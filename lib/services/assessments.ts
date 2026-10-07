@@ -141,7 +141,7 @@ export async function submitAttempt(ctx: ActionContext, attemptId: string, answe
       for (const t of plan.tasks) {
         const { data: created } = await ctx.admin.from("tasks").insert({
           instance_id: inst.id, code: t.code, day_number: t.day_number, due_day: t.due_day, title: t.title, description: t.description,
-          pillar: t.pillar, task_type: t.task_type, owner_role: t.owner_role, gate_code: "G3", is_mandatory: true, sort_order: 900,
+          pillar: t.pillar, task_type: t.task_type, owner_role: t.owner_role, gate_code: "G1", is_mandatory: true, sort_order: 900,
         }).select("id").single();
         if (created) await ctx.admin.from("task_completions").upsert({ instance_id: inst.id, employee_id: employeeId, task_id: created.id }, { onConflict: "instance_id,task_id", ignoreDuplicates: true });
       }

@@ -70,10 +70,10 @@ export async function submitPanelInput(ctx: ActionContext, employeeId: string, i
   const emp = await requireEmployeeAccess(ctx, employeeId);
   const rel = relationTo(ctx.actor, emp);
   const snap = await loadSnapshot(ctx.admin, employeeId);
-  const g5 = snap.journey.gates.find((g) => g.code === "G5")!;
-  const g4 = snap.journey.gates.find((g) => g.code === "G4")!;
-  if (!["PASSED", "APPROVED"].includes(g4.status)) throw new ServiceError("The readiness panel opens after scenario certification (Gate 4).");
-  if (["APPROVED", "EXTENDED", "FAILED"].includes(g5.status) && snap.instance.final_decision) throw new ServiceError("The final decision has already been recorded.");
+  const panelGate = snap.journey.gates.find((g) => g.code === "G3")!;
+  const certGate = snap.journey.gates.find((g) => g.code === "G2")!;
+  if (!["PASSED", "APPROVED"].includes(certGate.status)) throw new ServiceError("The readiness panel opens after the Day-21 scenario test (Gate 2).");
+  if (["APPROVED", "EXTENDED", "FAILED"].includes(panelGate.status) && snap.instance.final_decision) throw new ServiceError("The final decision has already been recorded.");
   if (!input.comments.trim()) throw new ServiceError("Panel input needs written evidence-based comments.");
   const inst = snap.instance;
   if (rel === "MENTOR") {
@@ -97,9 +97,9 @@ export async function managerDecision(ctx: ActionContext, employeeId: string, ty
   if (!mayDecide(authority, ctx.actor, emp)) throw new ServiceError("Only the assigned Reporting Boss can make this decision.");
   if (!comments.trim()) throw new ServiceError("Record the reason for this decision.");
   const snap = await loadSnapshot(ctx.admin, employeeId);
-  const g4 = snap.journey.gates.find((g) => g.code === "G4")!;
-  if (decision === "APPROVED" && (type === "PRICING_EXPOSURE" || type === "CUSTOMER_OWNERSHIP") && !["PASSED", "APPROVED"].includes(g4.status) && snap.config.day21Required) {
-    throw new ServiceError("Guided exposure can only be approved after scenario certification (Gate 4) passes.");
+  const certGate = snap.journey.gates.find((g) => g.code === "G2")!;
+  if (decision === "APPROVED" && (type === "PRICING_EXPOSURE" || type === "CUSTOMER_OWNERSHIP") && !["PASSED", "APPROVED"].includes(certGate.status) && snap.config.day21Required) {
+    throw new ServiceError("Guided exposure can only be approved after the Day-21 scenario test (Gate 2) passes.");
   }
   if (decision === "APPROVED" && type === "PRICING_EXPOSURE" && snap.config.pricingGateRequired && snap.metrics.band !== "GREEN") {
     throw new ServiceError(`Pricing exposure requires a Green Day-15 result (latest: ${snap.metrics.band ?? "not assessed"}). A re-check must reach ${snap.config.greenThreshold}% first.`);
@@ -117,8 +117,8 @@ export async function finalSignOff(ctx: ActionContext, employeeId: string, decis
   if (!mayDecide("DAY30_SIGNOFF", ctx.actor, emp)) throw new ServiceError("Only the assigned Reporting Boss can record the Day-30 readiness decision.");
   if (!comments.trim()) throw new ServiceError("The final decision needs written justification.");
   const snap = await loadSnapshot(ctx.admin, employeeId);
-  const g5 = snap.journey.gates.find((g) => g.code === "G5")!;
-  if (g5.status !== "SUBMITTED") throw new ServiceError(`The panel is not ready for a decision: ${g5.nextAction}.`);
+  const panelGate = snap.journey.gates.find((g) => g.code === "G3")!;
+  if (panelGate.status !== "SUBMITTED") throw new ServiceError(`The panel is not ready for a decision: ${panelGate.nextAction}.`);
   if (decision === "EXTENDED" && (extensionDays < 1 || extensionDays > 60)) throw new ServiceError("Extension must be 1–60 days.");
   const { error } = await ctx.db.from("manager_reviews").insert({ employee_id: employeeId, instance_id: snap.instance.id, manager_id: ctx.actor.id, review_type: "DAY30_SIGNOFF", decision, comments, development_actions: developmentActions });
   if (error) throw new ServiceError("The database rejected this decision.");
@@ -129,7 +129,7 @@ export async function finalSignOff(ctx: ActionContext, employeeId: string, decis
     extension_days: decision === "EXTENDED" ? snap.instance.extension_days + extensionDays : snap.instance.extension_days,
     independent_since: decision === "READY" ? snap.todayDate : null,
   }).eq("id", snap.instance.id);
-  await ctx.admin.from("gate_results").update({ assessor_id: ctx.actor.id, comments }).eq("instance_id", snap.instance.id).eq("gate_id", g5.id);
+  await ctx.admin.from("gate_results").update({ assessor_id: ctx.actor.id, comments }).eq("instance_id", snap.instance.id).eq("gate_id", panelGate.id);
   await completeSystemTasks(ctx.admin, snap.instance.id, "panel:SIGNOFF", ctx.actor, employeeId);
   await audit(ctx.admin, { employeeId, actor: ctx.actor, event: "FINAL_DECISION", entityType: "onboarding_instance", entityId: snap.instance.id, previous: { final_decision: snap.instance.final_decision }, next: { decision, comments, developmentActions, extensionDays } });
   return syncEmployeeState(employeeId, ctx.actor);

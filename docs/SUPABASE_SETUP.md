@@ -19,9 +19,10 @@ notepad .env.local
 | File | What it does |
 |---|---|
 | `001_initial_schema.sql` | pgvector, all tables, indexes, triggers, retrieval functions |
-| `002_seed_onboarding.sql` | roles, settings, KAM-30 template, 30 days, 5 gates, 100 tasks, dependencies |
+| `002_seed_onboarding.sql` | roles, settings, KAM-30 template, 30 days, 3 gates, 100 tasks, dependencies |
 | `003_assessments.sql` | 3 assessments, 37 questions, 10 scenarios with rubrics |
 | `004_rls.sql` | Row Level Security, guard triggers, append-only audit, Realtime publication |
+| `005_three_gates.sql` | Upgrades an existing project from five gates to three (Day 15 · Day 21 · Day 30). No-op on a fresh install |
 
 CLI: `npx supabase link --project-ref <ref>` then `npx supabase db push`.
 Dashboard: **SQL Editor → New query** → paste each file → **Run**, in order.

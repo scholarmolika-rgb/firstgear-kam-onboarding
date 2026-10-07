@@ -46,7 +46,7 @@ export function canTickTask(actor: Actor, e: EmployeeAccessRow, task: { owner_ro
 export const DECISION_AUTHORITY: Record<string, ("MENTOR" | "REPORTING_BOSS" | "HR_ADMIN")[]> = {
   ACCOUNT_BRIEF_REVIEW: ["MENTOR"],
   CUSTOMER_360_REVIEW: ["MENTOR"],
-  G4_CERTIFICATION: ["MENTOR"],
+  SCENARIO_CERTIFICATION: ["MENTOR"],
   SCENARIO_REVIEW: ["MENTOR", "REPORTING_BOSS"],
   TASK_APPROVAL: ["MENTOR", "REPORTING_BOSS"],
   PANEL_MENTOR_INPUT: ["MENTOR"],

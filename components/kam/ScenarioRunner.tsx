@@ -40,7 +40,7 @@ export function ScenarioRunner({ code, isCertificationWindow, isCertificationSce
             </div>
           </div>
           <p className="mt-3 text-sm text-ink-soft">{e.feedback}</p>
-          {result.isCertification && <p className="mt-2 text-xs text-warn">Certification attempts are reviewed by your Mentor before Gate 4 can pass.</p>}
+          {result.isCertification && <p className="mt-2 text-xs text-warn">Certification attempts are reviewed by your Mentor before Gate 2 (scenario test) can pass.</p>}
         </div>
         {e.red_flags.length > 0 && (
           <div className="flex gap-3 rounded-md border border-bad/30 bg-bad-soft px-4 py-3 text-sm text-bad">

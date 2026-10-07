@@ -11,7 +11,7 @@ import type { Role } from "@/types/domain";
 
 type Item = { href: string; label: string; icon: React.ComponentType<{ size?: number; className?: string }> };
 
-const NAV: Record<Role, { section?: string; items: Item[] }[]> = {
+export const NAV: Record<Role, { section?: string; items: Item[] }[]> = {
   KAM: [
     { items: [
       { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },

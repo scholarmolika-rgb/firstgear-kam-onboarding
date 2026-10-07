@@ -42,7 +42,7 @@ export async function saveTemplateTask(ctx: ActionContext, templateId: string, t
   requireHr(ctx);
   const cfg = await getConfig(ctx.admin);
   if (t.day_number < 1 || t.day_number > cfg.duration || t.due_day < t.day_number) throw new ServiceError(`Day must be 1–${cfg.duration} and the due day cannot be before it.`);
-  const gate = t.day_number <= 5 ? "G1" : t.day_number <= 10 ? "G2" : t.day_number <= 15 ? "G3" : t.day_number <= 21 ? "G4" : "G5";
+  const gate = t.day_number <= 15 ? "G1" : t.day_number <= 21 ? "G2" : "G3";
   const row = {
     template_id: templateId, code: t.code.trim().toUpperCase(), day_number: t.day_number, due_day: t.due_day, title: t.title.trim(),
     description: t.description.trim(), pillar: t.pillar, task_type: t.task_type, owner_role: t.owner_role, is_mandatory: t.is_mandatory,

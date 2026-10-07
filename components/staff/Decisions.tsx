@@ -8,12 +8,12 @@ import {
 } from "@/app/actions/onboarding";
 import { Field, cn } from "@/components/ui";
 
-export type DecisionKind = "BRIEF" | "C360" | "G4" | "PANEL" | "PROGRESSION" | "PRICING_EXPOSURE" | "CUSTOMER_OWNERSHIP" | "DEV_ACTION" | "SIGNOFF";
+export type DecisionKind = "BRIEF" | "C360" | "CERT" | "PANEL" | "PROGRESSION" | "PRICING_EXPOSURE" | "CUSTOMER_OWNERSHIP" | "DEV_ACTION" | "SIGNOFF";
 
 const OPTIONS: Record<DecisionKind, { value: string; label: string; tone?: "ok" | "warn" | "bad" }[]> = {
   BRIEF: [{ value: "APPROVED", label: "Approve brief", tone: "ok" }, { value: "CHANGES_REQUESTED", label: "Request changes", tone: "bad" }],
   C360: [{ value: "APPROVED", label: "Approve Customer 360", tone: "ok" }, { value: "CHANGES_REQUESTED", label: "Request changes", tone: "bad" }],
-  G4: [{ value: "APPROVED", label: "Certify", tone: "ok" }, { value: "CHANGES_REQUESTED", label: "Extend practice", tone: "warn" }, { value: "REJECTED", label: "Do not certify", tone: "bad" }],
+  CERT: [{ value: "APPROVED", label: "Certify", tone: "ok" }, { value: "CHANGES_REQUESTED", label: "Extend practice", tone: "warn" }, { value: "REJECTED", label: "Do not certify", tone: "bad" }],
   PANEL: [{ value: "READY", label: "Recommend ready", tone: "ok" }, { value: "EXTEND", label: "Recommend extension", tone: "warn" }, { value: "NOT_READY", label: "Not ready", tone: "bad" }],
   PROGRESSION: [{ value: "APPROVED", label: "Approve progression", tone: "ok" }, { value: "DEFERRED", label: "Defer progression", tone: "warn" }],
   PRICING_EXPOSURE: [{ value: "APPROVED", label: "Approve guided pricing", tone: "ok" }, { value: "DEFERRED", label: "Defer pricing exposure", tone: "warn" }],
@@ -43,7 +43,7 @@ export function DecisionForm({ kind, employeeId, title, help, disabledReason }: 
       switch (kind) {
         case "BRIEF": r = await reviewBriefAction(employeeId, "ACCOUNT_BRIEF", choice as "APPROVED", comments, rating); break;
         case "C360": r = await reviewBriefAction(employeeId, "CUSTOMER_360", choice as "APPROVED", comments, rating); break;
-        case "G4": r = await decideCertificationAction(employeeId, choice as "APPROVED", comments); break;
+        case "CERT": r = await decideCertificationAction(employeeId, choice as "APPROVED", comments); break;
         case "PANEL": r = await panelInputAction(employeeId, choice as "READY", comments, rating); break;
         case "DEV_ACTION": r = await managerDecisionAction(employeeId, "DEVELOPMENT_ACTION", "APPROVED", comments, dev); break;
         case "SIGNOFF": r = await finalSignOffAction(employeeId, choice as "READY", comments, dev, choice === "EXTENDED" ? ext : 0); break;
