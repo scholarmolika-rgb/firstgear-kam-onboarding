@@ -24,7 +24,6 @@ export interface ProgressReport {
   sessions: { title: string; type: string; when: string; status: string }[];
   mentorFeedback: { date: string; text: string }[];
   bossFeedback: { date: string; text: string }[];
-  dependency: { direction: string; latestIndex: number | null; events: number; series: { label: string; index: number | null }[] };
   knowledgeUsage: { questions: number; grounded: number; insufficient: number; distinctDocuments: number };
   responseQuality: number | null;
   customerReadiness: string;
@@ -52,7 +51,6 @@ export function buildReport(s: Snapshot, audience: Role): ProgressReport {
   if (s.nextAction.kind !== "DONE") actions.push(`${s.nextAction.title}: ${s.nextAction.detail}`);
   if (overdue.length) actions.push(`Close ${overdue.length} overdue task${overdue.length === 1 ? "" : "s"} (oldest: ${overdue[0].title}, due Day ${overdue[0].due_day}).`);
   for (const x of weak) actions.push(`Reinforce ${x} with mentor coaching before the re-check.`);
-  if (m.dependency.direction === "WORSENING") actions.push("Dependency on mentor support is rising — agree a plan to handle routine items independently.");
   if (s.journey.currentGate && s.journey.currentGate.approverRole && s.journey.currentGate.status === "SUBMITTED") actions.push(`${s.journey.currentGate.approverRole === "MENTOR" ? "Mentor" : "Reporting Boss"} decision pending on ${s.journey.currentGate.name}.`);
 
   const cust = s.journey.exposure.customer;
@@ -103,7 +101,6 @@ export function buildReport(s: Snapshot, audience: Role): ProgressReport {
       ...s.feedback.filter((f) => f.author_role === "REPORTING_BOSS").map((f) => ({ date: at(f.created_at), text: f.content })),
       ...s.managerReviews.filter((r) => r.review_type !== "HR_PANEL_INPUT").map((r) => ({ date: at(r.created_at), text: `${r.review_type.replace(/_/g, " ")}: ${r.decision}${r.comments ? ` — ${r.comments}` : ""}` })),
     ],
-    dependency: { direction: m.dependency.direction, latestIndex: m.dependency.latestIndex, events: m.dependency.totalEvents, series: m.dependency.series.map((x) => ({ label: x.label, index: x.index })) },
     knowledgeUsage: m.knowledgeUsage,
     responseQuality: m.responseQuality,
     customerReadiness, pricingReadiness, finalDecision,
@@ -132,7 +129,6 @@ export function reportToCsv(r: ProgressReport): string {
     ...r.sessions.map((s) => ["Sessions", s.title, `${s.type} · ${s.when} · ${s.status}`] as [string, string, unknown]),
     ...r.mentorFeedback.map((f) => ["Mentor feedback", f.date, f.text] as [string, string, unknown]),
     ...r.bossFeedback.map((f) => ["Reporting Boss feedback", f.date, f.text] as [string, string, unknown]),
-    ["Dependency", "trend", r.dependency.direction], ["Dependency", "latest index", r.dependency.latestIndex], ["Dependency", "recorded events", r.dependency.events],
     ...Object.entries(r.knowledgeUsage).map(([k, v]) => ["Knowledge source usage", k, v] as [string, string, unknown]),
     ["Readiness", "response quality", r.responseQuality], ["Readiness", "customer", r.customerReadiness], ["Readiness", "pricing", r.pricingReadiness], ["Readiness", "final Day-30 decision", r.finalDecision],
   ];

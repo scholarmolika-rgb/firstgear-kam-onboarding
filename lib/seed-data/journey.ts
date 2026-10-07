@@ -227,7 +227,7 @@ export const TASKS: SeedTask[] = [
   t("D26-01", 26, "Own agreed account scope", "PEOPLE", "ACTIVITY", "Own the agreed account scope; daily light-touch review.", { exposure: "CUSTOMER" }),
   t("D27-01", 27, "Daily review log", "PROCESS", "ACTIVITY", "Log daily review outcomes with your mentor.", { exposure: "CUSTOMER" }),
   t("D28-01", 28, "Alternate-day review log", "PROCESS", "ACTIVITY", "Review cadence moves to alternate days.", { exposure: "CUSTOMER" }),
-  t("D29-01", 29, "Assemble panel evidence", "GOVERNANCE", "DELIVERABLE", "Assemble evidence: live cases, outputs, scenario results, dependency trend."),
+  t("D29-01", 29, "Assemble panel evidence", "GOVERNANCE", "DELIVERABLE", "Assemble evidence: live cases, outputs, scenario results, support-event history."),
   // Day 30 — Readiness panel
   t("D30-01", 30, "Mentor panel input", "PEOPLE", "REVIEW", "Mentor submits panel input.", { ref: "panel:MENTOR", owner: "MENTOR" }),
   t("D30-02", 30, "HR panel input", "PEOPLE", "REVIEW", "HR submits panel input.", { ref: "panel:HR", owner: "HR_ADMIN" }),

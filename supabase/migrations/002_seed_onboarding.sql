@@ -186,7 +186,7 @@ select tpl.id, t.* from tpl, (values
   ('D26-01', 26, 'Own agreed account scope', 'Own the agreed account scope; daily light-touch review.', 'PEOPLE', 'ACTIVITY', 'KAM', 26, true, false, 'CUSTOMER', 'G3', null, null, 94),
   ('D27-01', 27, 'Daily review log', 'Log daily review outcomes with your mentor.', 'PROCESS', 'ACTIVITY', 'KAM', 27, true, false, 'CUSTOMER', 'G3', null, null, 95),
   ('D28-01', 28, 'Alternate-day review log', 'Review cadence moves to alternate days.', 'PROCESS', 'ACTIVITY', 'KAM', 28, true, false, 'CUSTOMER', 'G3', null, null, 96),
-  ('D29-01', 29, 'Assemble panel evidence', 'Assemble evidence: live cases, outputs, scenario results, dependency trend.', 'GOVERNANCE', 'DELIVERABLE', 'KAM', 29, true, false, 'NONE', 'G3', null, null, 97),
+  ('D29-01', 29, 'Assemble panel evidence', 'Assemble evidence: live cases, outputs, scenario results, support-event history.', 'GOVERNANCE', 'DELIVERABLE', 'KAM', 29, true, false, 'NONE', 'G3', null, null, 97),
   ('D30-01', 30, 'Mentor panel input', 'Mentor submits panel input.', 'PEOPLE', 'REVIEW', 'MENTOR', 30, true, false, 'NONE', 'G3', 'panel:MENTOR', null, 98),
   ('D30-02', 30, 'HR panel input', 'HR submits panel input.', 'PEOPLE', 'REVIEW', 'HR_ADMIN', 30, true, false, 'NONE', 'G3', 'panel:HR', null, 99),
   ('D30-03', 30, 'Reporting Boss final sign-off', 'Reporting Boss records the final readiness decision.', 'GOVERNANCE', 'REVIEW', 'REPORTING_BOSS', 30, true, false, 'NONE', 'G3', 'panel:SIGNOFF', null, 100)

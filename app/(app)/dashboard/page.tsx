@@ -2,7 +2,7 @@ import Link from "next/link";
 import { ArrowRight, CalendarDays, Sparkles } from "lucide-react";
 import { kamSnapshot } from "@/lib/services/page";
 import { Card, PageHeader, Stat, StatusPill, Notice, fmtDate, scoreTone, bandTone } from "@/components/ui";
-import { PillarBars, GateTimeline, Ring, DependencyBars } from "@/components/charts";
+import { PillarBars, GateTimeline, Ring } from "@/components/charts";
 import { TaskList } from "@/components/kam/TaskList";
 import { AlertCards, JourneyStrip } from "@/components/kam/Widgets";
 import { trainingSteps, resumeStep } from "@/lib/engine/training";
@@ -94,10 +94,6 @@ export default async function KamDashboard() {
               <div className="flex items-center justify-between"><dt className="text-ink-muted">Pricing</dt><dd><StatusPill status={j.exposure.pricing} /></dd></div>
               <div className="flex items-center justify-between"><dt className="text-ink-muted">Phase</dt><dd className="text-ink-soft">{phaseLabel(j.phase)}</dd></div>
             </dl>
-          </Card>
-          <Card title="Dependency trend" subtitle={m.dependency.direction === "INSUFFICIENT_DATA" ? "Not enough recorded support events yet" : `Trend: ${m.dependency.direction.toLowerCase()}`}>
-            <DependencyBars series={m.dependency.series.slice(0, Math.ceil(Math.max(snap.day, 5) / 5))} />
-            <p className="mt-2 text-[11px] text-ink-faint">Amber: mentor/colleague help & escalations · Green: resolved independently. Calculated only from recorded events.</p>
           </Card>
           {nextSession && (
             <Card title="Next session" action={<Link href="/sessions" className="link text-xs">All sessions</Link>}>

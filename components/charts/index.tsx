@@ -81,24 +81,6 @@ export function TrendLine({ points, height = 90, max = 100, label, suffix = "%" 
   );
 }
 
-/** Dependency bars per 5-day block: dependent vs independent recorded events. */
-export function DependencyBars({ series }: { series: { label: string; dependent: number; independent: number; index: number | null }[] }) {
-  const max = Math.max(1, ...series.map((s) => s.dependent + s.independent));
-  return (
-    <div className="flex h-[96px] items-end gap-2" role="img" aria-label="Dependency events by block">
-      {series.map((s) => (
-        <div key={s.label} className="flex flex-1 flex-col items-center gap-1">
-          <div className="flex w-full max-w-[34px] flex-col-reverse overflow-hidden rounded-sm" style={{ height: 70 }}>
-            <div className="bg-warn/70" style={{ height: `${(s.dependent / max) * 70}px` }} title={`${s.dependent} support/escalation events`} />
-            <div className="bg-ok/70" style={{ height: `${(s.independent / max) * 70}px` }} title={`${s.independent} independent resolutions`} />
-          </div>
-          <span className="text-[10px] text-ink-faint">{s.label}</span>
-        </div>
-      ))}
-    </div>
-  );
-}
-
 const GATE_ICON: Record<string, React.ReactNode> = {
   PASSED: <CheckCircle2 size={16} className="text-ok" />, APPROVED: <CheckCircle2 size={16} className="text-ok" />,
   FAILED: <XCircle size={16} className="text-bad" />, BLOCKED: <Ban size={16} className="text-bad" />,

@@ -3,7 +3,7 @@ import { createServerSupabase } from "@/lib/supabase/server";
 import { loadSnapshot, NoOnboardingError } from "@/lib/services/snapshot";
 import { buildReport } from "@/lib/report/build";
 import { Card, PageHeader, Notice, StatusPill, Stat, fmtPct } from "@/components/ui";
-import { PillarBars, GateTimeline, TrendLine, DependencyBars } from "@/components/charts";
+import { PillarBars, GateTimeline, TrendLine } from "@/components/charts";
 import { ReportExport } from "@/components/staff/ReportExport";
 
 export const metadata = { title: "Progress report" };
@@ -39,7 +39,6 @@ export default async function ReportPage({ searchParams }: { searchParams: Promi
         <Card title="Gates"><GateTimeline gates={snap.journey.gates} /></Card>
         <Card title="Task completion trend"><TrendLine label="Task completion" points={(hist ?? []).map((h) => ({ label: `D${h.day_number}`, value: Number(h.task_completion_pct) }))} /></Card>
         <Card title="Readiness trend"><TrendLine label="Overall readiness" points={(hist ?? []).map((h) => ({ label: `D${h.day_number}`, value: Number(h.overall_readiness) }))} /></Card>
-        <Card title="Dependency trend" subtitle={`${r.dependency.direction.replace("_", " ").toLowerCase()} · ${r.dependency.events} recorded events`}><DependencyBars series={snap.metrics.dependency.series} /></Card>
         <Card title="Knowledge source usage">
           <dl className="grid grid-cols-2 gap-3 text-sm">
             <div><dt className="label">Questions asked</dt><dd className="text-xl font-semibold">{r.knowledgeUsage.questions}</dd></div>
