@@ -2,8 +2,8 @@ import { LoginForm } from "./LoginForm";
 
 export const metadata = { title: "Sign in" };
 
-export default async function LoginPage({ searchParams }: { searchParams: Promise<{ next?: string }> }) {
-  const { next } = await searchParams;
+export default async function LoginPage({ searchParams }: { searchParams: Promise<{ next?: string; error?: string }> }) {
+  const { next, error } = await searchParams;
   const configured = !!process.env.NEXT_PUBLIC_SUPABASE_URL && !!process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
   return (
     <div className="grid min-h-screen lg:grid-cols-[1.1fr_1fr]">
@@ -36,6 +36,10 @@ export default async function LoginPage({ searchParams }: { searchParams: Promis
           </div>
           <h2 className="text-[22px] font-semibold tracking-[-0.015em]">Welcome back</h2>
           <p className="mt-1 text-sm text-ink-muted">Sign in with your FirstGear account.</p>
+          {configured && (
+            <a href="/auth/neeraj" className="btn-secondary mt-6 w-full justify-center">Continue as Neeraj (KAM) — no password</a>
+          )}
+          {error === "direct" && <div role="alert" className="mt-3 rounded-md border border-bad/30 bg-bad-soft px-3 py-2 text-sm text-bad">Direct sign-in is unavailable right now. Please sign in with email and password.</div>}
           {configured ? <LoginForm next={next} /> : (
             <div className="mt-6 rounded-md border border-warn/30 bg-warn-soft p-4 text-sm text-warn">
               Supabase is not configured. Copy <code>.env.example</code> to <code>.env.local</code>, add your project URL and anon key, then restart. See <code>docs/SUPABASE_SETUP.md</code>.
