@@ -11,7 +11,8 @@ import { mistralChat } from "@/lib/ai/llm/mistral";
 import { renderPrompt } from "@/lib/ai/prompts";
 import { phaseLabel } from "@/lib/report/build";
 import { PILLAR_LABEL, type Pillar } from "@/types/domain";
-import { classify, matchKam, matchPlaybook, helpText, type Link, type StaffIntent, type StaffRole } from "./guide";
+import { classify, matchKam, matchPlaybook, helpText, SUGGESTIONS, type Link, type StaffIntent, type StaffRole } from "./guide";
+import { firstNameOf, relatedQuestions, sourceLead, warmText, type ToneKind } from "@/lib/ai/tone";
 
 /**
  * Ask Compass — the staff assistant for Mentors, Reporting Bosses and HR.
@@ -23,7 +24,22 @@ import { classify, matchKam, matchPlaybook, helpText, type Link, type StaffInten
 
 export type StaffGrounding = "COHORT_STATE" | "APP_GUIDE" | "COMPANY_KNOWLEDGE" | "INSUFFICIENT" | "GUARDRAIL" | "GENERAL";
 
-export interface StaffReply { text: string; intent: StaffIntent; grounding: StaffGrounding; links: Link[]; citations: Citation[]; model: string | null }
+export interface StaffReply { text: string; intent: StaffIntent; grounding: StaffGrounding; links: Link[]; citations: Citation[]; model: string | null; suggestions: string[] }
+type Draft = Omit<StaffReply, "intent" | "suggestions"> & { suggestions?: string[] };
+
+/** Follow-up questions that make sense after each kind of answer. */
+function followUps(intent: StaffIntent, role: StaffRole, asked: string, kamName: string | null): string[] {
+  const first = kamName ? firstNameOf(kamName) : null;
+  const askedNorm = asked.toLowerCase();
+  const defaults = SUGGESTIONS[role].map((s) => s.replace("{kam}", first ?? "")).filter((s) => !s.includes("support ?") && s.toLowerCase() !== askedNorm);
+  switch (intent) {
+    case "KAM_STATUS": return first ? [`How can I support ${first}?`, "How do I record coaching feedback?", "Who is at risk or overdue?"] : defaults.slice(0, 3);
+    case "SUPPORT_KAM": return first ? [`Where is ${first} now?`, "How do I record coaching feedback?", "What happens on Amber or Red?"] : defaults.slice(0, 3);
+    case "PENDING": return ["Who is at risk or overdue?", "Give me a cohort summary"];
+    case "COHORT": return ["Who is at risk or overdue?", role === "REPORTING_BOSS" ? "What decisions are waiting on me?" : "What needs my review today?"];
+    default: return defaults.slice(0, 3);
+  }
+}
 
 const STAFF: StaffRole[] = ["MENTOR", "REPORTING_BOSS", "HR_ADMIN"];
 const profileLink = (s: Snapshot): Link => ({ label: `Open ${s.employee.full_name}`, href: `/people/${s.employee.id}` });
@@ -77,11 +93,11 @@ function supportPlan(s: Snapshot, role: StaffRole): string {
   return out.join("\n\n");
 }
 
-async function knowledge(ctx: ActionContext, role: StaffRole, question: string, history: string): Promise<Omit<StaffReply, "intent">> {
+async function knowledge(ctx: ActionContext, role: StaffRole, question: string, history: string): Promise<Draft> {
   const cfg = await getConfig(ctx.admin);
   const r = await retrieve(ctx.db, question, { topK: cfg.ragTopK, minSimilarity: cfg.ragMinSimilarity });
   if (!r.sufficient || !r.passages.length) {
-    return { text: "I couldn't find enough in the approved documents to answer that reliably, so I won't guess. Try naming the process or policy, or ask me about a KAM, your pending items or how to do something in the app.", grounding: "INSUFFICIENT", links: [{ label: "Browse knowledge", href: "/knowledge" }], citations: [], model: null };
+    return { text: "I couldn't find this in our approved documents, so I'd rather not guess. Try naming the process or policy — or ask me about a KAM, what's waiting on you, or how to do something in the app.", grounding: "INSUFFICIENT", links: [{ label: "Browse knowledge", href: "/knowledge" }], citations: [], model: null };
   }
   const citations = toCitations(r.passages);
   const block = citations.map((c, i) => `[${c.tag}] ${formatCitation(c)}\n${r.passages[i].content}`).join("\n\n");
@@ -91,10 +107,10 @@ async function knowledge(ctx: ActionContext, role: StaffRole, question: string, 
   ]);
   if (llm) {
     const v = validateCitations(llm.text, citations);
-    if (v.used.length) return { text: v.text, grounding: "COMPANY_KNOWLEDGE", links: [], citations: v.used, model: llm.model };
+    if (v.used.length) return { text: v.text, grounding: "COMPANY_KNOWLEDGE", links: [], citations: v.used, model: llm.model, suggestions: relatedQuestions(r.passages.slice(2).map((p) => p.section), question) };
   }
   const top = r.passages.slice(0, 2).map((p, i) => `${focusedExcerpt(p.content, question)} [${citations[i].tag}]`);
-  return { text: `From the approved sources:\n\n${top.join("\n\n")}`, grounding: "COMPANY_KNOWLEDGE", links: [], citations: citations.slice(0, 2), model: null };
+  return { text: `${sourceLead(r.passages[0].document_name)}\n\n${top.join("\n\n")}`, grounding: "COMPANY_KNOWLEDGE", links: [], citations: citations.slice(0, 2), model: null, suggestions: relatedQuestions(r.passages.slice(2).map((p) => p.section), question) };
 }
 
 export async function handleStaffMessage(ctx: ActionContext, message: string, history: { role: "user" | "assistant"; text: string }[] = []): Promise<StaffReply> {
@@ -107,7 +123,7 @@ export async function handleStaffMessage(ctx: ActionContext, message: string, hi
   const kam = matchKam(message, kams ?? []);
   const intent = classify(message, role, !!kam);
   const hist = history.slice(-6).map((h) => `${h.role === "user" ? "Staff" : "Assistant"}: ${h.text.slice(0, 300)}`).join("\n");
-  let reply: Omit<StaffReply, "intent">;
+  let reply: Draft;
 
   switch (intent) {
     case "DECISION_GUARD": {
@@ -147,7 +163,8 @@ export async function handleStaffMessage(ctx: ActionContext, message: string, hi
       const cohort = await loadCohort(ctx.db);
       const flagged = cohort.map((s) => ({ s, r: risk(s) })).filter((x) => x.r.length).sort((a, b) => b.r.length - a.r.length);
       reply = {
-        text: flagged.length ? `${flagged.length} of ${cohort.length} KAM${cohort.length === 1 ? "" : "s"} need attention:\n${flagged.map((x) => `• ${x.s.employee.full_name} (Day ${Math.max(x.s.day, 0)}) — ${x.r.join(", ")}`).join("\n")}\n\nAsk "How can I support <name>?" for a plan.` : `None of your ${cohort.length} KAMs is flagged: no overdue work, Amber/Red results or blocked gates.`,
+        text: flagged.length ? `${flagged.length} of ${cohort.length} KAM${cohort.length === 1 ? "" : "s"} need attention:\n${flagged.map((x) => `• ${x.s.employee.full_name} (Day ${Math.max(x.s.day, 0)}) — ${x.r.join(", ")}`).join("\n")}` : `Good news — none of your ${cohort.length} KAMs is flagged: no overdue work, Amber/Red results or blocked gates.`,
+        suggestions: flagged.slice(0, 3).map((x) => `How can I support ${firstNameOf(x.s.employee.full_name)}?`),
         grounding: "COHORT_STATE", links: flagged.slice(0, 4).map((x) => profileLink(x.s)), citations: [], model: null,
       };
       break;
@@ -181,6 +198,11 @@ export async function handleStaffMessage(ctx: ActionContext, message: string, hi
       reply = await knowledge(ctx, role, message, hist);
   }
 
+  // Warm, suggestive voice around the grounded content (facts untouched).
+  const suggestions = reply.suggestions?.length ? reply.suggestions : followUps(intent, role, message, kam?.full_name ?? null);
+  const tone: ToneKind = reply.grounding === "INSUFFICIENT" ? "INSUFFICIENT" : reply.grounding === "COMPANY_KNOWLEDGE" ? "KNOWLEDGE" : reply.grounding === "GUARDRAIL" ? "GUARD" : reply.grounding === "APP_GUIDE" ? "ACTION" : "STATE";
+  const text = reply.model ? reply.text : warmText(reply.text, { kind: tone, intent: tone === "KNOWLEDGE" || tone === "INSUFFICIENT" ? tone : intent, firstName: firstNameOf(ctx.actor.name), seed: message, hasSuggestions: suggestions.length > 0 });
+
   await audit(ctx.admin, { employeeId: kam?.id ?? null, actor: ctx.actor, event: "STAFF_ASSISTANT_QUERY", entityType: "assistant", next: { intent, grounding: reply.grounding } });
-  return { ...reply, intent };
+  return { ...reply, text, suggestions, intent };
 }

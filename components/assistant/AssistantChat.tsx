@@ -7,10 +7,10 @@ import { toggleTaskAction, escalateAction } from "@/app/actions/onboarding";
 import { cn } from "@/components/ui";
 
 interface Citation { tag: string; document_name: string; section: string | null; page: number | null; version: string; effective_date: string | null; source_url: string | null; snippet: string }
-interface Action { kind: "link" | "complete_task" | "ask_mentor" | "ask_manager"; label: string; href?: string; taskId?: string }
+interface Action { kind: "link" | "complete_task" | "ask_mentor" | "ask_manager" | "suggest"; label: string; href?: string; taskId?: string }
 export interface ChatMessage { id: string; role: "user" | "assistant"; content: string; citations?: Citation[]; actions?: Action[]; grounding?: string | null; intent?: string | null; intent_source?: string | null }
 
-const SUGGESTIONS = ["What should I do next?", "What is the RFQ process?", "Why is Day 16 locked?", "Who approves a price below the margin floor?", "What are Northwind's open commitments?", "How am I progressing?"];
+const SUGGESTIONS = ["What should I do next?", "How many casual leaves do I get?", "What is the RFQ process?", "What is the daily allowance on travel?", "How am I progressing?", "Who approves a price below the margin floor?"];
 
 function sectionLabel(c: Citation) {
   const num = c.section?.match(/^(\d+(\.\d+)*)/)?.[1];
@@ -27,7 +27,7 @@ function SourceCard({ c }: { c: Citation }) {
   return c.source_url ? <Link href={c.source_url} className="block rounded-md border border-line bg-canvas px-2.5 py-2 hover:bg-white">{body}</Link> : <div className="rounded-md border border-line bg-canvas px-2.5 py-2">{body}</div>;
 }
 
-export function AssistantChat({ initial, sessionId: initialSession, employeeId, compact = false, prefill, dock = false }: { initial: ChatMessage[]; sessionId: string | null; employeeId: string; compact?: boolean; prefill?: string; dock?: boolean }) {
+export function AssistantChat({ initial, sessionId: initialSession, employeeId, compact = false, prefill, dock = false, firstName }: { initial: ChatMessage[]; sessionId: string | null; employeeId: string; compact?: boolean; prefill?: string; dock?: boolean; firstName?: string }) {
   const router = useRouter();
   const [messages, setMessages] = useState<ChatMessage[]>(initial);
   const [sessionId, setSessionId] = useState(initialSession);
@@ -81,10 +81,10 @@ export function AssistantChat({ initial, sessionId: initialSession, employeeId, 
       <div className="flex-1 space-y-5 overflow-y-auto px-1 pb-4" aria-live="polite">
         {messages.length === 0 && (
           <div className={cn("mx-auto max-w-xl text-center", dock ? "pt-3" : "pt-8")}>
-            <div className="text-sm font-semibold">Ask FirstGear</div>
-            <p className="mt-1 text-sm text-ink-muted">Answers about company knowledge come only from approved documents, with sources. Answers about your progress come from your recorded journey.</p>
+            <div className="text-[15px] font-semibold text-ink">{firstName ? `Hi ${firstName}, how can I help today?` : "Hi, how can I help today?"}</div>
+            <p className="mt-1.5 text-sm leading-relaxed text-ink-muted">Ask me about your training, products, processes or any company policy — leave, travel, expenses and more. I answer from approved documents and always show the source.</p>
             <div className="mt-5 flex flex-wrap justify-center gap-2">
-              {SUGGESTIONS.map((s) => <button key={s} onClick={() => send(s)} className="rounded-full border border-line-strong bg-white px-3 py-1.5 text-xs text-ink-soft hover:bg-canvas">{s}</button>)}
+              {SUGGESTIONS.slice(0, dock ? 4 : 6).map((s) => <button key={s} onClick={() => send(s)} className="rounded-full border border-line bg-surface px-3 py-1.5 text-xs text-ink-soft transition-colors hover:border-accent/40 hover:text-accent">{s}</button>)}
             </div>
           </div>
         )}
@@ -111,18 +111,28 @@ export function AssistantChat({ initial, sessionId: initialSession, employeeId, 
                       <div className={cn("grid gap-1.5", !dock && "sm:grid-cols-2")}>{m.citations.map((c) => <SourceCard key={c.tag} c={c} />)}</div>
                     </div>
                   )}
-                  {!!m.actions?.length && (
+                  {!!m.actions?.some((a) => a.kind !== "suggest") && (
                     <div className="flex flex-wrap gap-2">
-                      {m.actions.map((a) => {
+                      {m.actions!.filter((a) => a.kind !== "suggest").map((a) => {
                         const key = `${m.id}:${a.label}`;
-                        if (a.kind === "link" && a.href) return <Link key={key} href={a.href} className="btn-secondary btn-sm uppercase tracking-wide">{a.label}<ArrowRight size={12} /></Link>;
+                        if (a.kind === "link" && a.href) return <Link key={key} prefetch={false} href={a.href} className="btn-secondary btn-sm">{a.label}<ArrowRight size={12} /></Link>;
                         const st = actionState[key];
                         return (
-                          <button key={key} className="btn-secondary btn-sm uppercase tracking-wide" disabled={!!st} onClick={() => runAction(m.id, a, lastUserBefore(idx))}>
+                          <button key={key} className="btn-secondary btn-sm" disabled={!!st} onClick={() => runAction(m.id, a, lastUserBefore(idx))}>
                             {st === "…" ? <Loader2 size={12} className="animate-spin" /> : st ? <CheckCircle2 size={12} /> : null}{st && st !== "…" ? st : a.label}
                           </button>
                         );
                       })}
+                    </div>
+                  )}
+                  {idx === messages.length - 1 && !busy && !!m.actions?.some((a) => a.kind === "suggest") && (
+                    <div>
+                      <div className="mb-1.5 text-[11px] text-ink-faint">You might also ask</div>
+                      <div className="flex flex-wrap gap-1.5">
+                        {m.actions!.filter((a) => a.kind === "suggest").map((a) => (
+                          <button key={a.label} onClick={() => void send(a.label)} className="rounded-full border border-line bg-surface px-3 py-1 text-left text-xs text-ink-soft transition-colors hover:border-accent/40 hover:text-accent">{a.label}</button>
+                        ))}
+                      </div>
                     </div>
                   )}
                 </div>

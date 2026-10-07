@@ -10,11 +10,12 @@ import { ServiceError, type ActionContext } from "@/lib/services/context";
 import { assistantLimiter } from "@/lib/security/rate-limit";
 import { phaseLabel } from "@/lib/report/build";
 import { PILLAR_LABEL, type Pillar } from "@/types/domain";
+import { firstNameOf, relatedQuestions, sourceLead, stateSuggestions, warmText, type ToneKind } from "./tone";
 
 export type Grounding = "COMPANY_KNOWLEDGE" | "EMPLOYEE_STATE" | "GENERAL" | "INSUFFICIENT" | "OUT_OF_SCOPE";
 
 export interface AssistantAction {
-  kind: "link" | "complete_task" | "ask_mentor" | "ask_manager";
+  kind: "link" | "complete_task" | "ask_mentor" | "ask_manager" | "suggest";
   label: string;
   href?: string;
   taskId?: string;
@@ -131,10 +132,12 @@ async function knowledgeAnswer(ctx: ActionContext, snap: Snapshot, intent: Inten
     sufficient = sufficient || true;
   }
   const citations = toCitations(passages);
+  // Other FAQ entries retrieval found → gentle "you might also ask" suggestions.
+  const related = relatedQuestions(passages.slice(2).map((p) => p.section), question);
   if (!sufficient || !passages.length) {
     return {
-      text: "I couldn't find enough evidence in the approved FirstGear knowledge base to answer that reliably, so I won't guess. Your Mentor can help — or try rephrasing with the process or document name.",
-      grounding: "INSUFFICIENT" as Grounding, citations: [] as Citation[], model: null as string | null,
+      text: "I couldn't find this in our approved documents yet, so I'd rather not guess and risk giving you the wrong answer.",
+      grounding: "INSUFFICIENT" as Grounding, citations: [] as Citation[], model: null as string | null, related: [] as string[],
     };
   }
   const block = citations.map((c, i) => `[${c.tag}] ${formatCitation(c)}\n${passages[i].content}`).join("\n\n");
@@ -145,12 +148,12 @@ async function knowledgeAnswer(ctx: ActionContext, snap: Snapshot, intent: Inten
   ]);
   if (llm) {
     const v = validateCitations(llm.text, citations);
-    if (v.used.length) return { text: v.text, grounding: "COMPANY_KNOWLEDGE" as Grounding, citations: v.used, model: llm.model };
+    if (v.used.length) return { text: v.text, grounding: "COMPANY_KNOWLEDGE" as Grounding, citations: v.used, model: llm.model, related };
     // The model answered without citing — fall through to the extractive answer rather than show an unsourced claim.
   }
   // Extractive fallback: quote the best passages directly, each with its tag.
   const top = passages.slice(0, 2).map((p, i) => `${focusedExcerpt(p.content, question)} [${citations[i].tag}]`);
-  return { text: `From the approved sources:\n\n${top.join("\n\n")}`, grounding: "COMPANY_KNOWLEDGE" as Grounding, citations: citations.slice(0, 2), model: null };
+  return { text: `${sourceLead(passages[0].document_name)}\n\n${top.join("\n\n")}`, grounding: "COMPANY_KNOWLEDGE" as Grounding, citations: citations.slice(0, 2), model: null, related };
 }
 
 export async function handleAssistantMessage(ctx: ActionContext, message: string, sessionId?: string): Promise<AssistantReply> {
@@ -181,6 +184,7 @@ export async function handleAssistantMessage(ctx: ActionContext, message: string
   let citations: Citation[] = [];
   let actions: AssistantAction[] = [];
   let model: string | null = null;
+  let related: string[] = [];
 
   if (routed.guard === "OUT_OF_SCOPE_IT") {
     text = "I can't create accounts, grant system access or change permissions — that's handled by the IT service desk, outside the onboarding programme. Please raise a request with IT (your Reporting Boss can approve access if needed). I can help with your onboarding tasks, products, processes and policies.";
@@ -193,17 +197,18 @@ export async function handleAssistantMessage(ctx: ActionContext, message: string
     grounding = k.grounding === "COMPANY_KNOWLEDGE" ? "COMPANY_KNOWLEDGE" : "GENERAL";
     citations = k.citations;
     model = k.model;
+    related = k.related;
     actions = [{ kind: "ask_manager", label: "Ask Reporting Boss" }, ASK_MENTOR];
   } else {
     const kind = INTENT_GROUNDING[routed.intent];
     if (kind === "KNOWLEDGE") {
       const k = await knowledgeAnswer(ctx, snap, routed.intent, message, history);
-      ({ text, grounding, citations, model } = k);
+      ({ text, grounding, citations, model, related } = k);
       actions = k.grounding === "INSUFFICIENT" ? [ASK_MENTOR] : [{ kind: "link", label: "Browse knowledge", href: "/knowledge" }];
     } else if (kind === "ACCOUNT") {
       const brief = await approvedBriefHit(ctx, employeeId);
       const k = await knowledgeAnswer(ctx, snap, routed.intent, message, history, { categories: ["Account", "Customers"], extra: brief });
-      ({ text, grounding, citations, model } = k);
+      ({ text, grounding, citations, model, related } = k);
       actions = [{ kind: "link", label: "Open Customer 360", href: "/customer-360" }, ...(k.grounding === "INSUFFICIENT" ? [ASK_MENTOR] : [])];
     } else if (routed.intent === "TASK_COMPLETE") {
       const t = matchTask(snap, message);
@@ -230,6 +235,14 @@ export async function handleAssistantMessage(ctx: ActionContext, message: string
       actions = f.actions;
     }
   }
+
+  // Warm, suggestive voice around the grounded content (facts and citations untouched).
+  const suggestions = related.length ? related : grounding === "EMPLOYEE_STATE" ? stateSuggestions(routed.intent) : [];
+  const tone: ToneKind = routed.guard === "OUT_OF_SCOPE_IT" ? "OUT_OF_SCOPE" : routed.guard === "PRICING_AUTHORITY" ? "PRICING"
+    : grounding === "INSUFFICIENT" ? "INSUFFICIENT" : grounding === "COMPANY_KNOWLEDGE" ? "KNOWLEDGE"
+    : ["TASK_COMPLETE", "MENTOR_REQUEST", "MANAGER_REQUEST"].includes(routed.intent) ? "ACTION" : "STATE";
+  if (!model) text = warmText(text, { kind: tone, intent: routed.intent, firstName: firstNameOf(snap.employee.full_name), seed: message, hasSuggestions: suggestions.length > 0 });
+  actions = [...actions, ...suggestions.map((q): AssistantAction => ({ kind: "suggest", label: q }))];
 
   const { data: saved } = await ctx.admin.from("conversation_messages").insert({
     session_id: sid, employee_id: employeeId, role: "assistant", content: text, intent: routed.intent, intent_confidence: routed.confidence,

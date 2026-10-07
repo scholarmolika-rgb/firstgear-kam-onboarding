@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ArrowRight, CalendarDays, MessageSquareText, Sparkles } from "lucide-react";
+import { ArrowRight, CalendarDays, Sparkles } from "lucide-react";
 import { kamSnapshot } from "@/lib/services/page";
 import { Card, PageHeader, Stat, StatusPill, Notice, fmtDate, scoreTone, bandTone } from "@/components/ui";
 import { PillarBars, GateTimeline, Ring, DependencyBars } from "@/components/charts";
@@ -39,14 +39,13 @@ export default async function KamDashboard() {
         title={`Welcome, ${firstName}`}
         subtitle={<>{dayLabel} · Current status <strong className="font-semibold text-ink">{PHASE_STATUS[j.phase]}</strong> · Overall readiness <strong className="font-semibold text-ink">{m.overallReadiness}%</strong></>}
         actions={<>
-          <Link href="/assistant" className="btn-secondary"><MessageSquareText size={15} />Ask FirstGear</Link>
           <Link href="/journey" className="btn-secondary">Open journey</Link>
           <Link prefetch={false} href={trainingHref} className="btn-primary">Continue training<ArrowRight size={15} /></Link>
         </>}
       />
 
-      <div className="grid grid-cols-2 gap-3 md:grid-cols-3 xl:grid-cols-6">
-        <div className="card card-pad col-span-2 flex items-center gap-4 md:col-span-1 xl:col-span-1">
+      <div className="grid grid-cols-2 gap-3 md:grid-cols-3 2xl:grid-cols-6">
+        <div className="card card-pad col-span-2 flex items-center gap-4 md:col-span-1">
           <Ring value={m.overallReadiness} size={76} label="Overall readiness" />
           <div><div className="label">Progress</div><div className="mt-1 text-xs text-ink-muted">Overall readiness · {m.taskCompletionPct}% tasks</div></div>
         </div>

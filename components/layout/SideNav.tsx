@@ -79,7 +79,7 @@ export function SideNav({ role, chat = true }: { role: Role; chat?: boolean }) {
     <nav className="space-y-5" aria-label="Main">
       {groups.map((g, i) => (
         <div key={i}>
-          {g.section && <div className="label mb-1.5 px-3">{g.section}</div>}
+          {g.section && <div className="mb-1.5 px-3 text-[11px] font-medium text-ink-faint">{g.section}</div>}
           <ul className="space-y-0.5">
             {g.items.map((it) => {
               const active = path === it.href || (it.href !== "/" && path.startsWith(it.href + "/"));
@@ -87,7 +87,7 @@ export function SideNav({ role, chat = true }: { role: Role; chat?: boolean }) {
               return (
                 <li key={it.href}>
                   <Link href={it.href} onClick={() => setOpen(false)} aria-current={active ? "page" : undefined}
-                    className={cn("flex items-center gap-2.5 rounded-md px-3 py-2 text-[13px] font-medium", active ? "bg-accent-soft text-accent" : "text-ink-soft hover:bg-canvas hover:text-ink")}>
+                    className={cn("relative flex items-center gap-2.5 rounded-md px-3 py-2 text-[13px] transition-colors", active ? "bg-canvas font-medium text-ink before:absolute before:inset-y-2 before:left-0 before:w-[2px] before:rounded-full before:bg-accent" : "text-ink-muted hover:bg-canvas hover:text-ink")}>
                     <Icon size={16} className={active ? "text-accent" : "text-ink-faint"} />
                     {it.label}
                   </Link>
@@ -102,7 +102,7 @@ export function SideNav({ role, chat = true }: { role: Role; chat?: boolean }) {
   return (
     <>
       <button className="btn-ghost -ml-2 lg:hidden" onClick={() => setOpen(true)} aria-label="Open navigation"><Menu size={18} /></button>
-      <aside className="hidden w-60 shrink-0 border-r border-line bg-surface px-3 py-5 lg:block">{list}</aside>
+      <aside className="sticky top-14 hidden h-[calc(100vh-3.5rem)] w-60 shrink-0 overflow-y-auto border-r border-line bg-surface px-3 py-6 lg:block">{list}</aside>
       {open && (
         <div className="fixed inset-0 z-50 lg:hidden">
           <div className="absolute inset-0 bg-ink/30" onClick={() => setOpen(false)} />

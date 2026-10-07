@@ -13,7 +13,7 @@ const KEY = "ask-dock-open";
  * opens a drawer. The conversation is the same one as the full Ask FirstGear
  * page (stored server-side), loaded when the dock first opens.
  */
-export function AskDock({ employeeId }: { employeeId: string }) {
+export function AskDock({ employeeId, firstName }: { employeeId: string; firstName?: string }) {
   const path = usePathname();
   const [open, setOpen] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -35,7 +35,7 @@ export function AskDock({ employeeId }: { employeeId: string }) {
   if (path.startsWith("/assistant")) return null; // the full-page assistant is already open
 
   const chat = history
-    ? <AssistantChat key={history.sessionId ?? "new"} dock initial={history.messages} sessionId={history.sessionId} employeeId={employeeId} />
+    ? <AssistantChat key={history.sessionId ?? "new"} dock firstName={firstName} initial={history.messages} sessionId={history.sessionId} employeeId={employeeId} />
     : <div className="flex flex-1 items-center justify-center gap-2 text-xs text-ink-muted"><Loader2 size={14} className="animate-spin" />Loading your conversation…</div>;
 
   return (

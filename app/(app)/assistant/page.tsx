@@ -26,11 +26,11 @@ export default async function AssistantPage({ searchParams }: { searchParams: Pr
     <>
       <PageHeader
         title="Ask FirstGear"
-        subtitle="Your onboarding assistant. It reads your journey state, answers company questions only from approved sources, and hands judgement calls to your Mentor or Reporting Boss."
+        subtitle="Your friendly onboarding guide. Ask about your training, products, processes or any company policy — answers come from approved documents with sources, and judgement calls go to your Mentor or Reporting Boss."
         actions={<a href="/assistant?new=1" className="btn-secondary">New conversation</a>}
       />
       <div className="grid gap-6 lg:grid-cols-[1fr_300px]">
-        <Card><AssistantChat initial={initial} sessionId={sessionId} employeeId={snap.employee.id} prefill={q} /></Card>
+        <Card><AssistantChat initial={initial} sessionId={sessionId} employeeId={snap.employee.id} prefill={q} firstName={snap.employee.full_name.split(" ")[0]} /></Card>
         <div className="space-y-6">
           <Card title="What I'm watching"><AlertCards alerts={snap.alerts.filter((a) => a.audience.includes("KAM"))} max={4} /></Card>
           <Card title="How answers work">

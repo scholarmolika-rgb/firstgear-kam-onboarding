@@ -8,7 +8,7 @@ export function Card({ children, className, title, action, subtitle }: { childre
   return (
     <section className={cn("card", className)}>
       {(title || action) && (
-        <div className="flex items-start justify-between gap-3 border-b border-line px-5 py-3.5">
+        <div className="flex items-start justify-between gap-3 border-b border-line px-5 py-4">
           <div className="min-w-0">
             {title && <h2 className="h2">{title}</h2>}
             {subtitle && <p className="mt-0.5 text-xs text-ink-muted">{subtitle}</p>}
@@ -23,11 +23,11 @@ export function Card({ children, className, title, action, subtitle }: { childre
 
 export function PageHeader({ title, subtitle, actions, eyebrow }: { title: ReactNode; subtitle?: ReactNode; actions?: ReactNode; eyebrow?: ReactNode }) {
   return (
-    <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+    <div className="mb-8 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
       <div className="min-w-0">
         {eyebrow && <div className="label mb-1.5">{eyebrow}</div>}
         <h1 className="h1">{title}</h1>
-        {subtitle && <p className="mt-1 max-w-3xl text-sm text-ink-muted">{subtitle}</p>}
+        {subtitle && <p className="mt-1.5 max-w-3xl text-sm leading-relaxed text-ink-muted">{subtitle}</p>}
       </div>
       {actions && <div className="no-print flex flex-wrap gap-2">{actions}</div>}
     </div>
@@ -37,8 +37,8 @@ export function PageHeader({ title, subtitle, actions, eyebrow }: { title: React
 export function Stat({ label, value, sub, tone }: { label: string; value: ReactNode; sub?: ReactNode; tone?: "ok" | "warn" | "bad" | "accent" }) {
   return (
     <div className="card card-pad">
-      <div className="label">{label}</div>
-      <div className={cn("mt-2 text-2xl font-semibold tabular-nums tracking-tight", tone === "ok" && "text-ok", tone === "warn" && "text-warn", tone === "bad" && "text-bad", tone === "accent" && "text-accent")}>{value}</div>
+      <div className="flex items-center gap-1.5 text-xs text-ink-muted">{tone && <span aria-hidden className={cn("h-1.5 w-1.5 rounded-full", { "bg-ok": tone === "ok", "bg-warn": tone === "warn", "bg-bad": tone === "bad", "bg-accent": tone === "accent" })} />}{label}</div>
+      <div className="mt-2 text-[26px] font-semibold leading-none tracking-[-0.02em] text-ink tabular-nums">{value}</div>
       {sub && <div className="mt-1 text-xs text-ink-muted">{sub}</div>}
     </div>
   );
@@ -48,7 +48,7 @@ export function ProgressBar({ value, tone = "accent", label, className }: { valu
   const v = Math.max(0, Math.min(100, value));
   return (
     <div className={cn("w-full", className)} role="progressbar" aria-valuenow={Math.round(v)} aria-valuemin={0} aria-valuemax={100} aria-label={label}>
-      <div className="h-2 w-full overflow-hidden rounded-full bg-line">
+      <div className="h-1.5 w-full overflow-hidden rounded-full bg-line">
         <div className={cn("h-full rounded-full transition-[width] duration-500", { "bg-accent": tone === "accent", "bg-ok": tone === "ok", "bg-warn": tone === "warn", "bg-bad": tone === "bad" })} style={{ width: `${v}%` }} />
       </div>
     </div>
@@ -56,17 +56,19 @@ export function ProgressBar({ value, tone = "accent", label, className }: { valu
 }
 
 type Tone = "neutral" | "ok" | "warn" | "bad" | "accent" | "muted";
+/** Notices keep a soft tint; badges stay neutral and colour only their icon. */
 const toneCls: Record<Tone, string> = {
-  neutral: "bg-canvas text-ink-soft border-line-strong",
-  ok: "bg-ok-soft text-ok border-ok/25",
-  warn: "bg-warn-soft text-warn border-warn/25",
-  bad: "bg-bad-soft text-bad border-bad/25",
-  accent: "bg-accent-soft text-accent border-accent/20",
-  muted: "bg-white text-ink-muted border-line",
+  neutral: "bg-canvas text-ink-soft border-line",
+  ok: "bg-ok-soft text-ok border-ok/15",
+  warn: "bg-warn-soft text-warn border-warn/15",
+  bad: "bg-bad-soft text-bad border-bad/15",
+  accent: "bg-accent-soft text-accent border-accent/15",
+  muted: "bg-surface text-ink-muted border-line",
 };
+const iconCls: Record<Tone, string> = { neutral: "text-ink-faint", ok: "text-ok", warn: "text-warn", bad: "text-bad", accent: "text-accent", muted: "text-ink-faint" };
 
 export function Badge({ children, tone = "neutral", icon, className }: { children: ReactNode; tone?: Tone; icon?: ReactNode; className?: string }) {
-  return <span className={cn("inline-flex items-center gap-1 whitespace-nowrap rounded-full border px-2 py-0.5 text-[11px] font-medium", toneCls[tone], className)}>{icon}{children}</span>;
+  return <span className={cn("inline-flex items-center gap-1 whitespace-nowrap rounded-full border border-line bg-surface px-2 py-0.5 text-[11px] font-medium text-ink-soft", className)}>{icon && <span className={cn("inline-flex", iconCls[tone])}>{icon}</span>}{children}</span>;
 }
 
 /** Status pill with icon + text, so status never relies on colour alone. */
@@ -124,7 +126,7 @@ export function scoreTone(score: number | null | undefined, green = 80, amber = 
 
 export function Empty({ title, children, icon }: { title: string; children?: ReactNode; icon?: ReactNode }) {
   return (
-    <div className="flex flex-col items-center justify-center rounded-lg border border-dashed border-line-strong px-6 py-10 text-center">
+    <div className="flex flex-col items-center justify-center rounded-lg border border-dashed border-line px-6 py-12 text-center">
       {icon && <div className="mb-2 text-ink-faint">{icon}</div>}
       <div className="text-sm font-medium text-ink-soft">{title}</div>
       {children && <div className="mt-1 max-w-md text-xs text-ink-muted">{children}</div>}
@@ -145,7 +147,7 @@ export function Field({ label, hint, children, error }: { label: string; hint?: 
 
 export function Notice({ tone = "neutral", title, children, icon }: { tone?: Tone; title?: ReactNode; children?: ReactNode; icon?: ReactNode }) {
   return (
-    <div className={cn("flex gap-3 rounded-md border px-4 py-3 text-sm", toneCls[tone])}>
+    <div className={cn("flex gap-3 rounded-lg border px-4 py-3 text-sm", toneCls[tone])}>
       {icon && <div className="mt-0.5 shrink-0">{icon}</div>}
       <div className="min-w-0">
         {title && <div className="font-medium">{title}</div>}

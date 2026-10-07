@@ -27,13 +27,13 @@ export function AlertCards({ alerts, max = 5 }: { alerts: Alert[]; max?: number 
 }
 
 const DAY_STYLE: Record<string, { cls: string; icon: React.ReactNode; label: string }> = {
-  COMPLETED: { cls: "border-ok/40 bg-ok-soft text-ok", icon: <CheckCircle2 size={13} />, label: "Completed" },
+  COMPLETED: { cls: "border-line bg-surface text-ok", icon: <CheckCircle2 size={13} />, label: "Completed" },
   CURRENT: { cls: "border-accent bg-accent text-white", icon: <CircleDot size={13} />, label: "Current" },
-  AVAILABLE: { cls: "border-accent/30 bg-white text-accent", icon: <Circle size={13} />, label: "Available" },
-  REQUIRES_REVIEW: { cls: "border-warn/40 bg-warn-soft text-warn", icon: <Hourglass size={13} />, label: "Requires review" },
+  AVAILABLE: { cls: "border-accent/30 bg-surface text-accent", icon: <Circle size={13} />, label: "Available" },
+  REQUIRES_REVIEW: { cls: "border-line bg-surface text-warn", icon: <Hourglass size={13} />, label: "Requires review" },
   LOCKED: { cls: "border-line bg-canvas text-ink-faint", icon: <Lock size={12} />, label: "Locked" },
-  BLOCKED: { cls: "border-bad/30 bg-bad-soft text-bad", icon: <Ban size={12} />, label: "Blocked" },
-  UPCOMING: { cls: "border-line bg-white text-ink-muted", icon: <Circle size={12} />, label: "Upcoming" },
+  BLOCKED: { cls: "border-line bg-canvas text-bad", icon: <Ban size={12} />, label: "Blocked" },
+  UPCOMING: { cls: "border-line bg-surface text-ink-muted", icon: <Circle size={12} />, label: "Upcoming" },
 };
 
 export function JourneyStrip({ days, gateDays, hrefBase = "/journey" }: { days: DayView[]; gateDays: number[]; hrefBase?: string | null }) {
@@ -47,7 +47,7 @@ export function JourneyStrip({ days, gateDays, hrefBase = "/journey" }: { days: 
               <span className="text-[10px] font-medium opacity-80">Day</span>
               <span className="text-sm font-semibold tabular-nums leading-none">{d.day}</span>
               <span className="mt-0.5" aria-hidden>{st.icon}</span>
-              {gateDays.includes(d.day) && <span className="absolute -right-1 -top-1 rounded bg-ink px-1 text-[8px] font-bold text-white">GATE</span>}
+              {gateDays.includes(d.day) && <span className="absolute -right-1 -top-1 rounded bg-ink-soft px-1 text-[8px] font-semibold tracking-wide text-white">GATE</span>}
             </>
           );
           const cls = cn("relative flex h-[66px] flex-col items-center justify-center rounded-md border", st.cls, d.isToday && d.status !== "CURRENT" && "ring-2 ring-accent ring-offset-1");

@@ -39,13 +39,13 @@ export function PillarRadar({ scores, size = 200 }: { scores: Record<string, num
   return (
     <svg viewBox={`0 0 ${size} ${size}`} className="mx-auto h-auto w-full max-w-[220px]" role="img" aria-label="Pillar radar">
       {[25, 50, 75, 100].map((g) => (
-        <polygon key={g} points={PILLAR_ORDER.map((_, i) => pt(i, g).join(",")).join(" ")} fill="none" stroke="#E3E5E8" />
+        <polygon key={g} points={PILLAR_ORDER.map((_, i) => pt(i, g).join(",")).join(" ")} fill="none" className="stroke-line" />
       ))}
-      {PILLAR_ORDER.map((_, i) => <line key={i} x1={c} y1={c} x2={pt(i, 100)[0]} y2={pt(i, 100)[1]} stroke="#E3E5E8" />)}
-      <polygon points={poly} fill="rgba(31,78,121,0.15)" stroke="#1F4E79" strokeWidth={1.5} />
+      {PILLAR_ORDER.map((_, i) => <line key={i} x1={c} y1={c} x2={pt(i, 100)[0]} y2={pt(i, 100)[1]} className="stroke-line" />)}
+      <polygon points={poly} className="fill-accent/10 stroke-accent" strokeWidth={1.5} />
       {PILLAR_ORDER.map((p, i) => {
         const [x, y] = pt(i, 122);
-        return <text key={p} x={x} y={y} textAnchor="middle" dominantBaseline="middle" fontSize="10" fill="#646B74">{PILLAR_NAME[p]}</text>;
+        return <text key={p} x={x} y={y} textAnchor="middle" dominantBaseline="middle" fontSize="10" className="fill-ink-muted">{PILLAR_NAME[p]}</text>;
       })}
     </svg>
   );
@@ -72,9 +72,9 @@ export function TrendLine({ points, height = 90, max = 100, label, suffix = "%" 
   return (
     <div>
       <svg viewBox={`0 0 ${w} ${height}`} className="h-[90px] w-full" role="img" aria-label={`${label} trend`} preserveAspectRatio="none">
-        <line x1={pad} x2={w - pad} y1={y(max / 2)} y2={y(max / 2)} stroke="#E3E5E8" strokeDasharray="3 3" />
-        {segs.map((d, i) => <path key={i} d={d} fill="none" stroke="#1F4E79" strokeWidth={1.8} vectorEffect="non-scaling-stroke" />)}
-        {points.map((p, i) => p.value !== null && <circle key={i} cx={x(i)} cy={y(p.value)} r={2.5} fill="#1F4E79" />)}
+        <line x1={pad} x2={w - pad} y1={y(max / 2)} y2={y(max / 2)} className="stroke-line" strokeDasharray="3 3" />
+        {segs.map((d, i) => <path key={i} d={d} fill="none" className="stroke-accent" strokeWidth={1.8} vectorEffect="non-scaling-stroke" />)}
+        {points.map((p, i) => p.value !== null && <circle key={i} cx={x(i)} cy={y(p.value)} r={2.5} className="fill-accent" />)}
       </svg>
       <div className="mt-1 flex justify-between text-[10px] text-ink-faint"><span>{points[0].label}</span><span className="text-ink-soft">Latest {last.value}{suffix}</span><span>{points.at(-1)!.label}</span></div>
     </div>
@@ -137,10 +137,10 @@ export function Ring({ value, size = 92, label }: { value: number; size?: number
   const c = 2 * Math.PI * r;
   const v = Math.max(0, Math.min(100, value));
   return (
-    <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`} role="img" aria-label={`${label} ${v}%`}>
-      <circle cx={size / 2} cy={size / 2} r={r} stroke="#E3E5E8" strokeWidth={7} fill="none" />
-      <circle cx={size / 2} cy={size / 2} r={r} stroke="#1F4E79" strokeWidth={7} fill="none" strokeDasharray={`${(v / 100) * c} ${c}`} strokeLinecap="round" transform={`rotate(-90 ${size / 2} ${size / 2})`} />
-      <text x="50%" y="50%" textAnchor="middle" dominantBaseline="central" fontSize={size / 4.6} fontWeight={600} fill="#1F2328">{Math.round(v)}%</text>
+    <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`} role="img" aria-label={`${label} ${v}%`} className="shrink-0">
+      <circle cx={size / 2} cy={size / 2} r={r} className="stroke-line" strokeWidth={6} fill="none" />
+      <circle cx={size / 2} cy={size / 2} r={r} className="stroke-accent" strokeWidth={6} fill="none" strokeDasharray={`${(v / 100) * c} ${c}`} strokeLinecap="round" transform={`rotate(-90 ${size / 2} ${size / 2})`} />
+      <text x="50%" y="50%" textAnchor="middle" dominantBaseline="central" fontSize={size / 4.6} fontWeight={600} className="fill-ink">{Math.round(v)}%</text>
     </svg>
   );
 }

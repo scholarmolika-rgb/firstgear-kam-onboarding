@@ -4,7 +4,7 @@ import Link from "next/link";
 import { ArrowRight, Bot, Loader2, Send } from "lucide-react";
 import { cn } from "@/components/ui";
 
-interface Turn { role: "user" | "assistant"; text: string; links?: { label: string; href: string }[]; citations?: { tag: string; document_name: string; version: string; section?: string | null }[]; grounding?: string }
+interface Turn { role: "user" | "assistant"; text: string; suggestions?: string[]; links?: { label: string; href: string }[]; citations?: { tag: string; document_name: string; version: string; section?: string | null }[]; grounding?: string }
 
 const BADGE: Record<string, string> = { COHORT_STATE: "Live data", APP_GUIDE: "App guide", COMPANY_KNOWLEDGE: "Approved documents", GUARDRAIL: "Human decision", INSUFFICIENT: "Not enough evidence" };
 const KEY = "ask-compass-history";
@@ -37,7 +37,7 @@ export function StaffAssistant({ suggestions, compact = false, intro }: { sugges
       const res = await fetch("/api/staff-assistant", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ message, history }) });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error ?? "Something went wrong.");
-      setTurns((cur) => [...cur, { role: "assistant", text: data.text, links: data.links, citations: data.citations, grounding: data.grounding }]);
+      setTurns((cur) => [...cur, { role: "assistant", text: data.text, links: data.links, citations: data.citations, grounding: data.grounding, suggestions: data.suggestions }]);
     } catch (e) {
       setErr((e as Error).message);
     } finally {
@@ -63,6 +63,12 @@ export function StaffAssistant({ suggestions, compact = false, intro }: { sugges
                   {t.citations.map((c) => <li key={c.tag}>[{c.tag}] {c.document_name} · v{c.version}{c.section ? ` · ${c.section}` : ""}</li>)}
                 </ul>
               )}
+              {i === turns.length - 1 && !busy && !!t.suggestions?.length && (
+                <div className="mt-2.5 border-t border-line pt-2">
+                  <div className="mb-1.5 text-[11px] text-ink-faint">You might also ask</div>
+                  <div className="flex flex-wrap gap-1.5">{t.suggestions.map((s) => <button key={s} type="button" onClick={() => void ask(s)} className="rounded-full border border-line bg-surface px-2.5 py-1 text-left text-xs text-ink-soft transition-colors hover:border-accent/40 hover:text-accent">{s}</button>)}</div>
+                </div>
+              )}
               {!!t.links?.length && (
                 <div className="mt-2 flex flex-wrap gap-1.5">
                   {t.links.map((l) => <Link key={l.href} prefetch={false} href={l.href} className="btn-secondary btn-sm">{l.label}<ArrowRight size={12} /></Link>)}
@@ -75,7 +81,7 @@ export function StaffAssistant({ suggestions, compact = false, intro }: { sugges
         <div ref={end} />
       </div>
       <div className="mt-3 flex flex-wrap gap-1.5">
-        {suggestions.map((s) => <button key={s} type="button" disabled={busy} onClick={() => void ask(s)} className="rounded-full border border-line bg-surface px-2.5 py-1 text-xs text-ink-soft hover:bg-canvas">{s}</button>)}
+        {turns.length === 0 && suggestions.map((s) => <button key={s} type="button" disabled={busy} onClick={() => void ask(s)} className="rounded-full border border-line bg-surface px-2.5 py-1 text-xs text-ink-soft transition-colors hover:border-accent/40 hover:text-accent">{s}</button>)}
       </div>
       <form className="mt-3 flex items-end gap-2" onSubmit={(e) => { e.preventDefault(); void ask(text); }}>
         <textarea className="input min-h-[2.5rem] flex-1 resize-y" rows={2} maxLength={2000} value={text} placeholder="Ask about a KAM, your pending items, how to do something, or a policy…"

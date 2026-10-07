@@ -1,5 +1,10 @@
 import type { Config } from "tailwindcss";
 
+/**
+ * FirstGear Compass design tokens — a deliberately small palette:
+ * neutrals for structure, one accent for action and focus, and three muted
+ * status colours used only to signal state (always paired with an icon).
+ */
 const config: Config = {
   content: ["./app/**/*.{ts,tsx}", "./components/**/*.{ts,tsx}"],
   theme: {
@@ -9,17 +14,17 @@ const config: Config = {
         mono: ["ui-monospace", "SFMono-Regular", "Menlo", "monospace"],
       },
       colors: {
-        canvas: "#F7F7F5",
+        canvas: "#F7F7F8",
         surface: "#FFFFFF",
-        ink: { DEFAULT: "#1F2328", soft: "#3D434B", muted: "#646B74", faint: "#8B929A" },
-        line: { DEFAULT: "#E3E5E8", strong: "#CDD1D6" },
-        accent: { DEFAULT: "#1F4E79", soft: "#E8EEF5", strong: "#163A5B" },
-        ok: { DEFAULT: "#2F6B4F", soft: "#E7F1EC" },
-        warn: { DEFAULT: "#9A6200", soft: "#FBF1DE" },
-        bad: { DEFAULT: "#A23B32", soft: "#F8E8E6" },
+        ink: { DEFAULT: "#18181B", soft: "#3F3F46", muted: "#71717A", faint: "#A1A1AA" },
+        line: { DEFAULT: "#EAEAEC", strong: "#D9D9DE" },
+        accent: { DEFAULT: "#2F55B4", soft: "#EEF2FB", strong: "#244394" },
+        ok: { DEFAULT: "#2F7A4F", soft: "#EEF6F1" },
+        warn: { DEFAULT: "#A25E0B", soft: "#FBF5EA" },
+        bad: { DEFAULT: "#B4382E", soft: "#FBEFEE" },
       },
-      borderRadius: { md: "6px", lg: "8px" },
-      boxShadow: { card: "0 1px 2px rgba(16,24,40,0.04)" },
+      borderRadius: { md: "8px", lg: "12px" },
+      boxShadow: { card: "none", pop: "0 8px 24px rgba(24,24,27,0.08)" },
       gridTemplateColumns: { 15: "repeat(15, minmax(0, 1fr))" },
     },
   },
