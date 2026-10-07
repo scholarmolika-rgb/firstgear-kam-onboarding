@@ -49,7 +49,7 @@ describe("Day 1 for a new KAM", () => {
 
   it("recommends the first available task as next action", () => {
     const n = nextActionFor(evaluateJourney(freshContext()));
-    expect(n).toMatchObject({ kind: "TASK", title: "Business overview" });
+    expect(n).toMatchObject({ kind: "TASK", title: "Company profile" });
   });
 });
 

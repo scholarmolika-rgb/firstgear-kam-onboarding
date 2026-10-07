@@ -23,6 +23,7 @@ notepad .env.local
 | `003_assessments.sql` | 3 assessments, 37 questions, 10 scenarios with rubrics |
 | `004_rls.sql` | Row Level Security, guard triggers, append-only audit, Realtime publication |
 | `005_three_gates.sql` | Upgrades an existing project from five gates to three (Day 15 · Day 21 · Day 30). No-op on a fresh install |
+| `006_real_company_profile.sql` | Upgrades an existing project to the real-company content: Day 1–2 tasks, FAQ links on journey days, realigned quiz questions and scenarios. No-op on a fresh install. Then run `npx tsx scripts/ingest-knowledge.ts` |
 
 CLI: `npx supabase link --project-ref <ref>` then `npx supabase db push`.
 Dashboard: **SQL Editor → New query** → paste each file → **Run**, in order.
@@ -58,7 +59,7 @@ The same checks run automatically in `tests/db/migrations-and-rls.test.ts` (17 t
 ```powershell
 npx tsx scripts/seed.ts
 ```
-Creates the four synthetic users, **Riya Sharma** (KAM, starts today = Day 1), her 100 task rows and 5 gate rows, six sessions, and ingests `knowledge/**/*.md` (14 approved documents).
+Creates the four synthetic users, **Riya Sharma** (KAM, starts today = Day 1), her 100 task rows and 3 gate rows, six sessions, and ingests `knowledge/**/*.md` (19 approved documents).
 
 ## 11. Verify task persistence
 1. Sign in as Riya, tick **Business overview**.

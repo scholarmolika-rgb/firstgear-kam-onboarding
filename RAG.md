@@ -33,7 +33,9 @@ Section 3.2 · Version 4.1 · effective 2026-01-15
 `EMBEDDINGS_PROVIDER=hf-api` (default; needs `HF_API_TOKEN`), `transformers` (in-process ONNX; `npm i @huggingface/transformers`; best on self-hosted Node), or `none`. If embeddings are unavailable the pipeline still indexes chunks for full-text retrieval and records `embedding_model = fts-only`; **Re-index embeddings** fills vectors later. Query and document embeddings must come from the same model.
 
 ## Replacing the sample content
-The 14 documents in `knowledge/` are synthetic. Upload real SOPs/policies in **Knowledge management** with the same `document_key` and a higher version, or add Markdown files with front matter and run `npx tsx scripts/ingest-knowledge.ts`.
+`knowledge/` holds 19 documents. The company, product and manufacturing documents use the publicly reported data (FY 2025-26 annual report, Q1 FY 2026-27 results) of a real NSE/BSE-listed mobility-technology company under the alias "FirstGear", with its name and identifying names withheld. Internal policies, SOPs and the Northwind Motors account remain illustrative. `knowledge/faq/` holds five KAM FAQ documents (100+ questions); each question is its own `###` heading so a chunk is one Q&A with its source, which retrieval can return directly. `tests/unit/knowledge.test.ts` checks front matter, journey links, FAQ structure and that identifying names stay out.
+
+Upload real SOPs/policies in **Knowledge management** with the same `document_key` and a higher version, or add Markdown files with front matter and run `npx tsx scripts/ingest-knowledge.ts`.
 
 ## Tests
 `tests/unit/ai.test.ts`: front matter, section chunking within budget, page tracking, fusion/re-ranking, sufficiency thresholds, citation formatting, stripping of invented citations. `tests/db/…`: SQL retrieval returns only approved + current chunks (vector and full-text).
