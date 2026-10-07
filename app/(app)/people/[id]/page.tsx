@@ -45,13 +45,12 @@ export default async function PersonPage({ params }: { params: Promise<{ id: str
         subtitle={<>Day {snap.day} of {snap.config.duration} · {phaseLabel(j.phase)} · You are viewing as <strong>{rel === "HR_ADMIN" ? "HR" : rel === "MENTOR" ? "Mentor" : "Reporting Boss"}</strong></>}
         actions={<Link href={`/report?employee=${id}`} className="btn-primary"><BarChart3 size={15} />Generate progress report</Link>} />
 
-      <div className="grid grid-cols-2 gap-3 md:grid-cols-3 xl:grid-cols-6">
+      <div className="grid grid-cols-2 gap-3 md:grid-cols-3 xl:grid-cols-5">
         <div className="card card-pad flex items-center gap-3"><Ring value={m.overallReadiness} size={64} label="Overall readiness" /><div className="label">Overall readiness</div></div>
         <Stat label="Task completion" value={fmtPct(m.taskCompletionPct)} sub={`${m.overdueCount} overdue`} />
         <Stat label="Day-15" value={fmtPct(m.assessmentScore, 1)} sub={m.band ? <StatusPill status={m.band} /> : "Not assessed"} />
         <Stat label="Day-21 scenarios" value={fmtPct(m.scenarioScore, 1)} sub={`Δ vs Day-15: ${(g("G2").evidence.delta_vs_day15 as number | null) ?? "—"}`} />
         <Stat label="Current gate" value={<span className="text-base">{j.currentGate ? `Day ${j.currentGate.day}` : "Cleared"}</span>} sub={j.currentGate ? <StatusPill status={j.currentGate.status} /> : null} />
-        <Stat label="Dependency" value={<span className="text-base">{m.dependency.direction.replace("_", " ").toLowerCase()}</span>} sub={`${m.dependency.totalEvents} recorded events`} />
       </div>
 
       <div className="mt-6 grid gap-6 lg:grid-cols-[1fr_380px]">
