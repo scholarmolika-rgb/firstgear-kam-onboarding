@@ -75,7 +75,6 @@ export default async function HrDashboard({ searchParams }: { searchParams: Prom
     { label: "Gate 3 · Day 30 sign-off", value: cleared("G3") },
   ];
   const pillarAvg = Object.fromEntries(PILLARS.map((p) => [p, avg(cohort.map((c) => c.day15Pillars?.[p] ?? null))]));
-  const depTrend = cohort.reduce((acc, c) => { acc[c.metrics.dependency.direction] = (acc[c.metrics.dependency.direction] ?? 0) + 1; return acc; }, {} as Record<string, number>);
   const rows = cohort.filter((s) =>
     view === "attention" ? flags(s).length > 0 : view === "phase1" ? inPhase1(s) : view === "phase2" ? !inPhase1(s) && !decided(s) : view === "done" ? decided(s) : true);
 
@@ -154,15 +153,9 @@ export default async function HrDashboard({ searchParams }: { searchParams: Prom
             <div className="pt-5"><CohortTable rows={rows} pending={(c) => pendingFor(c, "HR_ADMIN")} showExposure /></div>
           </Card>
 
-          <div className="grid gap-6 md:grid-cols-2">
-            <Card title="Average Day-15 pillar scores">
-              <ul className="space-y-2 text-sm">{PILLARS.map((p) => <li key={p} className="flex justify-between"><span>{PILLAR_LABEL[p]}</span><span className="tabular-nums">{fmtPct(pillarAvg[p], 1)}</span></li>)}</ul>
-            </Card>
-            <Card title="Dependency trends">
-              <ul className="space-y-2 text-sm">{Object.entries(depTrend).map(([k, v]) => <li key={k} className="flex justify-between"><span>{k.replace("_", " ").toLowerCase()}</span><span className="tabular-nums">{v}</span></li>)}</ul>
-              <p className="mt-3 text-[11px] text-ink-faint">Calculated only from recorded support and escalation events.</p>
-            </Card>
-          </div>
+          <Card title="Average Day-15 pillar scores">
+            <ul className="grid gap-x-8 gap-y-2 text-sm sm:grid-cols-2">{PILLARS.map((p) => <li key={p} className="flex justify-between"><span>{PILLAR_LABEL[p]}</span><span className="tabular-nums">{fmtPct(pillarAvg[p], 1)}</span></li>)}</ul>
+          </Card>
         </div>
 
         <div className="space-y-6">

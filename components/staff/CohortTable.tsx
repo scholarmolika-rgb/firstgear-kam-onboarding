@@ -9,7 +9,7 @@ export function CohortTable({ rows, pending, showExposure = false }: { rows: Sna
   return (
     <div className="-mx-5 -my-5 overflow-x-auto">
       <table className="table min-w-[820px]">
-        <thead><tr><th>KAM</th><th>Day</th><th>Overall readiness</th><th>Current gate</th><th>Day-15</th><th>Day-21</th><th>Overdue</th>{showExposure && <th>Exposure</th>}<th>Dependency</th>{pending && <th>Waiting on you</th>}</tr></thead>
+        <thead><tr><th>KAM</th><th>Day</th><th>Overall readiness</th><th>Current gate</th><th>Day-15</th><th>Day-21</th><th>Overdue</th>{showExposure && <th>Exposure</th>}{pending && <th>Waiting on you</th>}</tr></thead>
         <tbody>
           {rows.map((s) => {
             const p = pending?.(s) ?? [];
@@ -24,7 +24,6 @@ export function CohortTable({ rows, pending, showExposure = false }: { rows: Sna
                 <td className="text-xs tabular-nums">{fmtPct(s.metrics.scenarioScore)}</td>
                 <td className={s.metrics.overdueCount ? "font-medium text-bad" : "text-ink-faint"}>{s.metrics.overdueCount}</td>
                 {showExposure && <td className="space-y-1"><div className="text-[11px] text-ink-muted">Customer <StatusPill status={s.journey.exposure.customer} /></div><div className="text-[11px] text-ink-muted">Pricing <StatusPill status={s.journey.exposure.pricing} /></div></td>}
-                <td className="text-xs">{s.metrics.dependency.direction === "INSUFFICIENT_DATA" ? <span className="text-ink-faint">insufficient data</span> : s.metrics.dependency.direction.toLowerCase()}</td>
                 {pending && <td className="text-xs">{p.length ? <ul className="space-y-0.5">{p.slice(0, 3).map((x) => <li key={x.label} className="text-warn">• {x.label}</li>)}{p.length > 3 && <li className="text-ink-faint">+{p.length - 3} more</li>}</ul> : <span className="text-ink-faint">Nothing</span>}</td>}
               </tr>
             );

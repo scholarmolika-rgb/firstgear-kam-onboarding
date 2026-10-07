@@ -63,7 +63,6 @@ function risk(s: Snapshot): string[] {
   if (s.metrics.overdueCount) r.push(`${s.metrics.overdueCount} overdue task${s.metrics.overdueCount === 1 ? "" : "s"}`);
   if (s.metrics.band === "RED" || s.metrics.band === "AMBER") r.push(`Day-15 ${s.metrics.band}`);
   for (const g of s.journey.gates) if (g.status === "FAILED" || g.status === "BLOCKED") r.push(`${g.name} ${g.status.toLowerCase()}`);
-  if (s.metrics.dependency.direction === "WORSENING") r.push("dependency worsening");
   return r;
 }
 

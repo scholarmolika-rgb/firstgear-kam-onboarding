@@ -15,7 +15,6 @@
     "test:e2e": "playwright test",
     "seed": "tsx scripts/seed.ts",
     "ingest": "tsx scripts/ingest-knowledge.ts",
-    "db:three-gates": "tsx scripts/apply-three-gates.ts",
     "db:migrate": "tsx scripts/run-migration.ts",
     "generate:intents": "tsx scripts/generate-intent-dataset.ts"
   },

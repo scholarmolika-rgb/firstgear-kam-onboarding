@@ -6,7 +6,7 @@ import { createServerSupabase } from "@/lib/supabase/server";
 import { loadSnapshot } from "@/lib/services/snapshot";
 import { relationTo } from "@/lib/auth/access";
 import { Card, PageHeader, Stat, StatusPill, fmtPct, fmtDate, Notice } from "@/components/ui";
-import { PillarBars, GateTimeline, DependencyBars, Ring } from "@/components/charts";
+import { PillarBars, GateTimeline, Ring } from "@/components/charts";
 import { JourneyStrip } from "@/components/kam/Widgets";
 import { TaskList } from "@/components/kam/TaskList";
 import { DecisionForm, FeedbackForm, SupportEventForm, ScenarioReviewForm, TaskReviewButtons } from "@/components/staff/Decisions";
@@ -127,7 +127,7 @@ export default async function PersonPage({ params }: { params: Promise<{ id: str
           <Card title="Gates"><GateTimeline gates={j.gates} /></Card>
           <Card title="Pillar scores"><PillarBars scores={snap.day15Pillars} threshold={snap.config.greenThreshold} weights={snap.config.weights} /></Card>
           <Card title="Exposure"><div className="space-y-2 text-sm"><div className="flex justify-between"><span className="text-ink-muted">Customer</span><StatusPill status={j.exposure.customer} /></div><div className="flex justify-between"><span className="text-ink-muted">Pricing</span><StatusPill status={j.exposure.pricing} /></div></div></Card>
-          <Card title="Dependency trend" subtitle="Record support events to make this measurable"><DependencyBars series={m.dependency.series} /><div className="mt-3"><SupportEventForm employeeId={id} /></div></Card>
+          <Card title="Support events" subtitle="Log when the KAM needed help or resolved something on their own"><SupportEventForm employeeId={id} /></Card>
           <Card title="Feedback & coaching notes"><FeedbackForm employeeId={id} isMentor={rel === "MENTOR"} />
             <ul className="mt-4 space-y-2 border-t border-line pt-3">{snap.feedback.slice(0, 6).map((f) => <li key={f.id} className="text-xs"><span className="text-ink-faint">{fmtDate(f.created_at)} · {f.author_name ?? f.author_role}</span><div className="text-ink-soft">{f.content}</div></li>)}</ul>
           </Card>

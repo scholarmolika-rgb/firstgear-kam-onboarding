@@ -11,7 +11,7 @@
 -- decisions / gate results that reference them — are preserved. The old
 -- Day-5 and Day-10 gates are removed (their gate_results cascade).
 -- Idempotent: safe to re-run, and a no-op on a fresh install (002 already
--- seeds three gates). Same steps as scripts/apply-three-gates.ts.
+-- seeds three gates).
 -- ════════════════════════════════════════════════════════════════════
 
 do $$
