@@ -14,7 +14,9 @@ export function PageStepper({ role }: { role: Role }) {
   const path = usePathname();
   if (/^\/journey\/\d+/.test(path)) return null;
   const flow = NAV[role].flatMap((g) => g.items);
-  const i = flow.findIndex((it) => path === it.href || path.startsWith(it.href + "/"));
+  let i = flow.findIndex((it) => path === it.href || path.startsWith(it.href + "/"));
+  // A KAM's profile (/people/:id) is reached from the staff dashboard — step back to it.
+  if (i < 0 && path.startsWith("/people/")) i = 0;
   if (i < 0) return null;
   const prev = flow[i - 1];
   const next = flow[i + 1];
